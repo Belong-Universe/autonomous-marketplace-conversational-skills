@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Internal Active Service Actions"
+  short_description: "Internal Active Service capability"
+  default_prompt: "Use $belong-internal-active-service-actions only as an internal agent capability."

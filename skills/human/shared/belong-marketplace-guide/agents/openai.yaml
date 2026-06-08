@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Guide"
+  short_description: "Navigate the Belong Skill Pack"
+  default_prompt: "Use $belong-marketplace-guide to show me where I am in the Belong marketplace experience."

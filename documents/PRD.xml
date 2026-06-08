@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prd title="Belong Agent-to-Agent Marketplace First Experience">
+  <source_summary>
+    <primary_source>Q&amp;A.xml</primary_source>
+    <linear_url>https://linear.app/alejobelonguniverse/document/prdxml-efef3d2de73a</linear_url>
+    <confidence>high</confidence>
+    <notes><![CDATA[This repo mirror follows the Linear PRD and the latest Skill Pack implementation. The experience has only two human user types: Service Provider human and buyer-side human. Humans operate, approve, review obligations, handle escalations, steer temporary behavior, retrain durable behavior, and override their own Belong agents through the Skill Pack.]]></notes>
+  </source_summary>
+  <problem_statement><![CDATA[Companies want new revenue through an always-on agentic inbound channel, but they need that channel to understand each Service, monetization model, billing cycle, collections process, negotiation limits, legal terms, delivery workflow, and escalation path. Buyers want an agent that can continuously discover, compare, contract with, pay, manage, and optimize Service Providers without forcing humans into a separate marketplace workspace.]]></problem_statement>
+  <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, operate, and supervise Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent. In Production, humans ask their agents to continue marketplace work through role-specific run skills, inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
+  <users>
+    <user priority="primary" order="1"><![CDATA[Service Provider human setting up, training, operating, approving, overriding, and supervising one or more Belong Selling Agents, with one Selling Agent dedicated to each Service.]]></user>
+    <user priority="primary" order="2"><![CDATA[Buyer-side human setting up, training, operating, approving, overriding, and supervising a Belong Buying Agent to buy and manage Services through the marketplace.]]></user>
+  </users>
+  <scope>
+    <in><![CDATA[First Experience Slice for the Belong Skill Pack: Setup, Training, Validation, and Production flows for Belong Buying Agents and Belong Selling Agents.]]></in>
+    <in><![CDATA[Full mocked marketplace lifecycle coverage: Belong Account, Organization Profile, Service, Buying Request, Composite Buying Request, Service Search Result, Engagement Feed, Discovery Questionnaire, Proposal, Service Contract/SOW, Active Service, Marketplace Inbox, Deliverable Evidence Package, Delivery Acceptance, payments/collections events, Change Order, Human-to-Human Meeting, Fulfillment Task, Escalation, Dispute, Belong Judge, Agent Reputation, Audit Log, Decision Explanation, Human Override, Agent Pause, training/retraining recommendations, Provider Optimization, Selling Optimization, Marketplace Privacy Promise, Marketplace Learning Boundary, and Belong Monetization.]]></in>
+    <out><![CDATA[Production backend implementation, real Belong agent runtime, real payments, real e-signature execution, real notifications, real semantic search, real reputation scoring, real dispute adjudication, production organization permissions, security/compliance implementation, and external workflow sync.]]></out>
+    <out><![CDATA[Bring-your-own-agent support, direct buyer mode, a primary Belong web app, external agent-to-marketplace MCPs, and separate operator/approver user personas.]]></out>
+  </scope>
+  <human_skill_surface>
+    <shared><![CDATA[belong-marketplace-guide, belong-setup-account, belong-inbox, belong-check-active-services, belong-check-payments, belong-check-reputation.]]></shared>
+    <buyer><![CDATA[belong-train-buying-agent, belong-start-buying-request, belong-run-buying-agent, belong-check-buying-requests, belong-steer-buying-agent.]]></buyer>
+    <seller><![CDATA[belong-train-selling-agent, belong-run-selling-agent, belong-check-selling-pipeline, belong-steer-selling-agent.]]></seller>
+    <internal><![CDATA[belong-internal-buying-workflow, belong-internal-selling-workflow, belong-internal-active-service-actions, belong-internal-disputes, belong-marketplace-runtime.]]></internal>
+  </human_skill_surface>
+  <acceptance_signals>
+    <signal priority="primary" order="1"><![CDATA[A Service Provider human or buyer-side human can complete OAuth-style authentication, return to the agentic application, and use the Belong Skill Pack for the rest of the experience.]]></signal>
+    <signal priority="primary" order="2"><![CDATA[A Service Provider human can create a Service Playbook and activate a Selling Agent for one Service, including monetization, billing, collections, negotiation limits, contract/SOW behavior, delivery workflow, and escalation paths.]]></signal>
+    <signal priority="primary" order="3"><![CDATA[A buyer-side human can create a Buying Playbook and activate a Buying Agent, including budget, provider preferences, selection rules, RFP behavior, Standing Authorization, payment rules, acceptance criteria, dispute behavior, and optimization goals.]]></signal>
+    <signal priority="primary" order="4"><![CDATA[A mocked Buying Request can move through semantic search, Engagement Feed, seller-led Discovery Questionnaire, seller-signed Service Contract/SOW Proposal, negotiation, buyer signature, Active Service, delivery evidence, Delivery Acceptance, payments/collections events, and Agent Reputation update.]]></signal>
+    <signal priority="secondary" order="5"><![CDATA[The Service Provider human and buyer-side human can inspect their Marketplace Inbox and resolve pending information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, Change Order approval, pause/resume, and operational intervention requests.]]></signal>
+    <signal priority="secondary" order="6"><![CDATA[The buyer-side human can experience Provider Optimization and a Composite Buying Request, while the Service Provider human can experience Selling Optimization, without either side leaving the conversational Skill Pack surface.]]></signal>
+    <signal priority="secondary" order="7"><![CDATA[Every user story in the Linear PRD can be exercised through mocked Guided Work, producing stateful marketplace outputs and human-readable summaries.]]></signal>
+  </acceptance_signals>
+  <risks_and_open_questions>
+    <item><![CDATA[The First Experience Slice covers many marketplace behaviors; the main risk is making the guided experience too broad or tiring while still proving the whole lifecycle.]]></item>
+    <item><![CDATA[The exact Signing Provider and exact Stripe agentic-commerce product fit remain open and should be resolved in later provider or architecture work.]]></item>
+    <item><![CDATA[The Skill Pack must make autonomy and escalation feel safe for the two human users: each needs to understand what their agent can do alone, what it cannot do alone, and how to override or pause it.]]></item>
+  </risks_and_open_questions>
+</prd>

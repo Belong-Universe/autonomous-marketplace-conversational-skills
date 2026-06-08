@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alejo_questions_v2 topic="Belong Agent-to-Agent Marketplace" status="complete">
+  <product_snapshot>
+    <end_user><![CDATA[Humans and organizations that want Belong agents to buy services or sell services through an agent-to-agent marketplace from their favorite agentic application.]]></end_user>
+    <value_proposition><![CDATA[Belong lets buyers and service providers use autonomous Belong Buying Agents and Belong Selling Agents to discover services, negotiate legal contracts/SOWs, transact through Stripe, coordinate delivery, resolve disputes, and build agent reputation with minimal human intervention.]]></value_proposition>
+    <experience><![CDATA[Humans authenticate once, install a GitHub-hosted Belong Skill Pack, and complete guided work inside their favorite agentic application to set up, train, validate, operate, supervise, and override Belong agents. The first prototype mocks all marketplace functionality while preserving the production interaction pattern.]]></experience>
+    <scope><![CDATA[Belong is the backend marketplace, legal workflow, payment orchestration, dispute, reputation, inbox, audit, and native Belong-agent infrastructure layer. Belong is not the underlying service fulfiller and is not the merchant of record; Service Providers deliver the services and remain the legally responsible sellers.]]></scope>
+  </product_snapshot>
+  <resolved_decisions>
+    <decision source="Q1-Q2"><![CDATA[Buying Agent and Selling Agent loops are co-equal parts of one end-to-end marketplace; Belong owns orchestration, not service fulfillment.]]></decision>
+    <decision source="Q3-Q7"><![CDATA[Service is the supply primitive; Buying Request is the demand primitive; onboarding produces an Agent Playbook and Standing Authorization.]]></decision>
+    <decision source="Q8-Q17"><![CDATA[There is no bring-your-own-agent or direct buyer mode. Humans use a GitHub-hosted Belong Skill Pack in their favorite agentic application; Belong agents are natively integrated with the backend marketplace.]]></decision>
+    <decision source="Q18-Q23"><![CDATA[Human-owned Belong Accounts and Organization Profiles own/control agents, services, contracts, payments, notifications, reputation, and audit history. Agent lifecycle is Setup, Training, Validation, Production.]]></decision>
+    <decision source="Q24-Q37"><![CDATA[Canonical transaction lifecycle is Need -> Discovery -> seller-signed Service Contract/SOW Proposal -> negotiation/iteration -> buyer signature -> Active Service -> Delivery -> Acceptance -> Reputation.]]></decision>
+    <decision source="Q38-Q41"><![CDATA[Active Service is the post-signature container. Selling Agent primarily delivers; Buying Agent primarily accepts/reviews/pays; both coordinate messages, meetings, Change Orders, and disputes.]]></decision>
+    <decision source="Q42-Q44"><![CDATA[Search is semantic-first with optional Service Tags, and results represent Services with provider identity, Selling Agent reputation, price/timeline signals, availability, and supported terms.]]></decision>
+    <decision source="Q45-Q51"><![CDATA[Onboarding is OAuth plus guided setup/training in the Skill Pack. Notifications route humans back to their agentic application and Marketplace Inbox. External work tool integrations begin as notifications only.]]></decision>
+    <decision source="Q52-Q55"><![CDATA[Belong keeps a complete Audit Log and Decision Explanations from evidence, supports Human Override and Agent Pause, and preserves obligations while paused.]]></decision>
+    <decision source="Q56-Q65"><![CDATA[Belong monetizes through seller-side platform fees; agent-level reputation, network effects, composite buying, provider optimization, selling optimization, privacy boundaries, and aggregated learning are core product concepts.]]></decision>
+    <decision source="Q66-Q75"><![CDATA[The first build is a full mocked Skill Pack prototype with stateful local JSON, guided work, coherent lifecycle rules, inbox/audit/reputation updates, and complete conversational coverage of the marketplace.]]></decision>
+  </resolved_decisions>
+  <implementation_note><![CDATA[The full conversational working capture is mirrored in QA-working-capture.md. The current Skill Pack implements the public human surface as shared skills, buyer-specific skills, seller-specific skills, autonomous/internal capabilities, and a mocked marketplace runtime.]]></implementation_note>
+</alejo_questions_v2>

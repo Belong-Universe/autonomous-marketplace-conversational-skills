@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Train Buying Agent"
+  short_description: "Train or retrain a Buying Agent"
+  default_prompt: "Use $belong-train-buying-agent to train or retrain my Belong Buying Agent."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Check Buying Requests"
+  short_description: "Check buyer pipeline"
+  default_prompt: "Use $belong-check-buying-requests to show my Buying Requests, search results, feeds, and proposals."

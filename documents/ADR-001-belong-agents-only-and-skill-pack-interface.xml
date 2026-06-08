@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adr id="ADR-001" status="accepted" date="2026-06-08" topic="Belong Agent-to-Agent Marketplace">
+  <title><![CDATA[Use Belong-native Buying and Selling Agents with a GitHub-hosted Skill Pack as the human-facing surface]]></title>
+  <context><![CDATA[The initial concept considered bring-your-own agents, agent-to-marketplace MCPs, and direct buyer interaction. During Q&A, the system was simplified: anyone who wants to interact in the Agent2Agent marketplace must use a Belong Buying Agent or Belong Selling Agent. Humans still work from their favorite agentic application, but they do so through a GitHub-hosted Belong Skill Pack that guides setup, training, validation, production operation, inbox, escalations, overrides, disputes, and audit/explanations. Belong agents are pre-integrated natively with the backend marketplace.]]></context>
+  <decision><![CDATA[Belong will not support bring-your-own runtime agents for the current product model. The marketplace actor model is limited to Belong Buying Agents and Belong Selling Agents. Humans authenticate through OAuth, then install/use the Belong Skill Pack inside their preferred agentic application to set up, train, operate, supervise, and override their Belong agents. Belong agents use Native Marketplace Integration to search, engage, negotiate, sign, pay, coordinate delivery, manage disputes, and update reputation. External agent-to-marketplace MCPs are not required for marketplace operation.]]></decision>
+  <rationale>
+    <point><![CDATA[Simplifies trust, validation, audit, legal/payment behavior, and reputation because all marketplace agents are Belong-controlled.]]></point>
+    <point><![CDATA[Keeps the human experience aligned with the desired product surface: guided work inside the user's favorite agentic application, not a Belong web app.]]></point>
+    <point><![CDATA[Eliminates the complexity of certifying arbitrary external agent runtimes before the marketplace has proven its core lifecycle.]]></point>
+    <point><![CDATA[Allows the first prototype to focus on the Skill Pack experience and mocked marketplace state while preserving the production interaction model.]]></point>
+  </rationale>
+  <alternatives_considered>
+    <alternative name="Bring Your Own Agent"><![CDATA[Rejected for now. It would require deep certification, protocol compatibility, safety validation, audit guarantees, payment/SOW behavior checks, and stronger trust gates before allowing external agents to negotiate and transact.]]></alternative>
+    <alternative name="External Agent-to-Marketplace MCP"><![CDATA[Rejected for now as the primary agent layer because Belong agents are native to the backend. MCP-like surfaces may still exist for human-to-agent Skill Pack installation/use, but not as the core marketplace protocol for autonomous agents.]]></alternative>
+    <alternative name="Belong Web App As Primary Surface"><![CDATA[Rejected. Humans should interact through their favorite agentic application after OAuth; the Skill Pack is the primary product surface.]]></alternative>
+    <alternative name="Direct Buyer Mode"><![CDATA[Rejected. Every buyer-side purchase flow requires a Belong Buying Agent, even when the human closely guides it.]]></alternative>
+  </alternatives_considered>
+  <consequences>
+    <positive><![CDATA[Cleaner product language: Buying Agents buy, Selling Agents sell, and both are Belong agents.]]></positive>
+    <positive><![CDATA[Reputation, audit logs, authority checks, dispute behavior, and legal/payment workflows can be implemented consistently.]]></positive>
+    <positive><![CDATA[The first mocked Skill Pack prototype can cover the full experience without building external agent certification or MCP protocol support.]]></positive>
+    <tradeoff><![CDATA[Providers and buyers cannot immediately reuse their own agent runtimes inside the marketplace. This may reduce openness but increases control and trust while the core marketplace is being proven.]]></tradeoff>
+    <tradeoff><![CDATA[Belong must operate the agent infrastructure for both sides, including training, validation, production operation, observability, and safety.]]></tradeoff>
+  </consequences>
+  <links>
+    <qa_ref><![CDATA[Q8, Q9, Q13, Q15, Q16, Q17, Q66-Q74 in Q&A.xml.]]></qa_ref>
+    <context_ref><![CDATA[CONTEXT.xml terms: Belong Agent, Buying Agent, Selling Agent, Belong Skill Pack, Guided Work, Native Marketplace Integration, Mocked Skill Pack Prototype.]]></context_ref>
+  </links>
+</adr>

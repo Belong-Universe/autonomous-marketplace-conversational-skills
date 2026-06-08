@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Steer Selling Agent"
+  short_description: "Temporarily guide selling"
+  default_prompt: "Use $belong-steer-selling-agent to temporarily guide my Selling Agent without changing its Service Playbook."
