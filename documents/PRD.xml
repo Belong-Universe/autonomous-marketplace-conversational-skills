@@ -9,7 +9,7 @@
   <problem_statement><![CDATA[Companies want new revenue through an always-on agentic inbound channel, but they need that channel to understand each Service, monetization model, billing cycle, collections process, negotiation limits, legal terms, delivery workflow, and escalation path. Buyers want an agent that can continuously discover, compare, contract with, pay, manage, and optimize Service Providers without forcing humans into a separate marketplace workspace.]]></problem_statement>
   <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, supervise, and retrain Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent and starts Buying Requests. In Production, agents continue marketplace work autonomously inside their Playbooks and Standing Authorization. Humans inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
   <user_sequence>
-    <summary><![CDATA[Primary two-sided journey: a Service Provider human trains a Selling Agent for one Service, a buyer-side human trains a Buying Agent and starts a Buying Request, the agents transact autonomously inside their Playbooks and Standing Authorization, and each human has a Belong Inbox pool they check from their own agentic app after receiving a preferred-channel notification.]]></summary>
+    <summary><![CDATA[Primary two-sided journey: a Service Provider human trains a Selling Agent for one Service, a buyer-side human trains a Buying Agent and starts a Buying Request, the agents transact autonomously inside their Playbooks and Standing Authorization, legal signature creates an Active Service, contract/SOW billing terms drive Stripe money movement, and each human has a Belong Inbox pool they check from their own agentic app after receiving a preferred-channel notification.]]></summary>
     <diagram language="mermaid"><![CDATA[
 sequenceDiagram
   autonumber
@@ -19,87 +19,160 @@ sequenceDiagram
   participant SellerInbox as "Seller Belong Inbox pool"
   participant SellingAgent as "Belong Selling Agent"
   participant Marketplace as "Belong Marketplace"
+  participant SigningProvider as "Signing Provider"
+  participant StripeAccounts as "Stripe connected accounts"
+  participant BelongJudge as "Belong Judge"
+  participant ReputationAudit as "Reputation and Audit"
   participant BuyingAgent as "Belong Buying Agent"
   participant BuyerInbox as "Buyer Belong Inbox pool"
   participant BuyerApp as "Buyer's agentic app"
   participant BuyerNotify as "Buyer notification app"
   actor BuyerHuman as "Buyer-side human"
 
+  Note over SellerHuman,BuyerHuman: Phase 1 - Setup and training
   SellerHuman->>SellerApp: $belong-setup-account
   SellerHuman->>SellerApp: $belong-train-selling-agent
   SellerApp->>SellingAgent: Create Service Playbook and Standing Authorization
   SellingAgent->>Marketplace: List Service for semantic discovery
-
   BuyerHuman->>BuyerApp: $belong-setup-account
   BuyerHuman->>BuyerApp: $belong-train-buying-agent
   BuyerApp->>BuyingAgent: Create Buying Playbook and Standing Authorization
   BuyerHuman->>BuyerApp: $belong-start-buying-request
   BuyerApp->>BuyingAgent: Create Buying Request
 
+  Note over SellerHuman,BuyerHuman: Phase 2 - Search, engagement, discovery, and negotiation
   BuyingAgent->>Marketplace: Search semantically with optional tags
   Marketplace-->>BuyingAgent: Return matching Services and Selling Agents
-  BuyingAgent->>SellingAgent: Open engagement or competitive RFP feed
+  BuyingAgent->>SellingAgent: Open direct engagement or competitive RFP feed
   SellingAgent->>BuyingAgent: Send seller-led Discovery Questionnaire
-
-  alt Inside Buying Playbook
+  alt Discovery fits Buying Playbook
     BuyingAgent->>SellingAgent: Answer discovery autonomously
-  else Needs buyer judgment or authority
-    BuyingAgent->>BuyerInbox: Add pending information, authorization, or instruction item
+  else Buyer input, authorization, or instruction needed
+    BuyingAgent->>BuyerInbox: Add pending buyer Inbox item
     BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
     BuyerNotify-->>BuyerHuman: Email, Slack, WhatsApp, or similar notification
     BuyerHuman->>BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
-    BuyerApp->>BuyerInbox: Fetch pending buyer Inbox item
-    BuyerApp->>BuyerInbox: Resolve escalation after human response
+    BuyerApp->>BuyerInbox: Fetch and resolve buyer Inbox item
+    BuyerApp->>BuyingAgent: Return human response to Buying Agent
   end
-
   SellingAgent->>BuyingAgent: Send seller-signed Service Contract/SOW Proposal
-  BuyingAgent->>BuyingAgent: Compare, negotiate, and check authority
+  Note over SellingAgent,BuyingAgent: Proposal already includes scope, legal terms, billing cycle, payment milestones, acceptance criteria, and platform fee
+  BuyingAgent->>BuyingAgent: Compare proposals, negotiate, and check authority
+  loop Contract/SOW negotiation if needed
+    BuyingAgent->>SellingAgent: Request contract/SOW changes
+    SellingAgent->>BuyingAgent: Send revised seller-signed Contract/SOW
+  end
 
+  Note over SellerHuman,BuyerHuman: Phase 3 - Legal signing and Active Service creation
   alt Proposal fits Standing Authorization
-    BuyingAgent->>Marketplace: Sign and create Active Service
-  else Proposal exceeds authority
-    BuyingAgent->>BuyerInbox: Add pending buyer authorization item
+    BuyingAgent->>SigningProvider: Execute buyer signature inside authority
+  else Legal, budget, payment, or authority limit exceeded
+    BuyingAgent->>BuyerInbox: Add pending buyer signature authorization item
     BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
     BuyerNotify-->>BuyerHuman: Email, Slack, WhatsApp, or similar notification
     BuyerHuman->>BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
-    BuyerApp->>BuyerInbox: Fetch and resolve buyer authorization
-    BuyerApp->>Marketplace: Approve, reject, or request changes
+    BuyerApp->>BuyerInbox: Fetch and resolve signature authorization
+    BuyerApp->>SigningProvider: Approve signature or request contract changes
+  end
+  SigningProvider-->>Marketplace: Return executed Service Contract/SOW and signature audit trail
+  Marketplace->>SellingAgent: Create Active Service with seller obligations
+  Marketplace->>BuyingAgent: Create Active Service with buyer obligations
+  Marketplace->>ReputationAudit: Log executed contract, Playbook versions, and authority checks
+
+  Note over SellerHuman,BuyerHuman: Phase 4 - Contract/SOW billing and Stripe money movement
+  Marketplace->>Marketplace: Convert contract/SOW terms into billing events
+  Marketplace->>StripeAccounts: Configure buyer payment method, seller connected account, platform fee, and seller net
+  alt Signature payment due
+    Marketplace->>StripeAccounts: Trigger authorize, charge, hold, collect, or payout per contract/SOW
+    StripeAccounts-->>Marketplace: Return ledger event with gross, fee, seller net, hold, release, refund, or collection state
+  else Payment exception or out-of-contract movement
+    Marketplace->>BuyerInbox: Add buyer payment authorization or exception item
+    Marketplace->>SellerInbox: Add seller collections or payout exception item
+    BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
   end
 
-  Marketplace-->>SellingAgent: Active Service begins
-  Marketplace-->>BuyingAgent: Active Service begins
-  SellerHuman->>SellerApp: $belong-check-selling-pipeline or $belong-check-active-services
-  BuyerHuman->>BuyerApp: $belong-check-buying-requests or $belong-check-active-services
-
-  SellingAgent->>Marketplace: Coordinate fulfillment, meetings, deliverables, and evidence
-  BuyingAgent->>Marketplace: Review evidence against acceptance criteria
-
-  alt Seller needs provider-side human action
+  Note over SellerHuman,BuyerHuman: Phase 5 - Active Service communication, meetings, delivery, and evidence
+  SellingAgent->>BuyingAgent: Service messages, information requests, status updates
+  BuyingAgent->>SellingAgent: Buyer context, acceptance questions, constraints
+  alt Communication needs human or provider-side action
     SellingAgent->>SellerInbox: Add fulfillment, meeting, collections, or exception item
     SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
     SellerNotify-->>SellerHuman: Email, Slack, WhatsApp, or similar notification
     SellerHuman->>SellerApp: Ask agentic app: "What's in my Belong Inbox?"
     SellerApp->>SellerInbox: Fetch and resolve seller Inbox item
-  end
-
-  alt Delivery accepted
-    BuyingAgent->>Marketplace: Accept delivery and trigger payment rules
-    Marketplace-->>SellerHuman: Collections/payment status visible through $belong-check-payments
-    Marketplace-->>BuyerHuman: Payment status visible through $belong-check-payments
-  else Delivery contested
-    BuyingAgent->>Marketplace: Request revision or open Dispute
-    Marketplace->>BuyerInbox: Add buyer dispute or Belong Judge item when needed
-    Marketplace->>SellerInbox: Add seller dispute or Belong Judge item when needed
+    BuyingAgent->>BuyerInbox: Add buyer information, authorization, or instruction item
     BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify-->>BuyerHuman: Email, Slack, WhatsApp, or similar notification
+    BuyerHuman->>BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
+    BuyerApp->>BuyerInbox: Fetch and resolve buyer Inbox item
+  end
+  alt Human-to-Human Meeting needed
+    SellingAgent->>Marketplace: Request meeting for discovery, delivery, escalation, dispute, or relationship context
+    BuyingAgent->>Marketplace: Confirm meeting need, agenda, and constraints
+    Marketplace->>SellerInbox: Add seller meeting item
+    Marketplace->>BuyerInbox: Add buyer meeting item
     SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
-    BuyerNotify-->>BuyerHuman: Buyer-side dispute notification
-    SellerNotify-->>SellerHuman: Seller-side dispute notification
+    BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellingAgent-->>SellerHuman: Prepare human with brief, agenda, risks, and desired outcome
+    BuyingAgent-->>BuyerHuman: Prepare human with brief, agenda, risks, and desired outcome
+    SellerHuman->>BuyerHuman: Human-to-Human Meeting by video or in person
+    SellerHuman->>SellerApp: Share notes, decisions, and follow-up context
+    BuyerHuman->>BuyerApp: Share notes, decisions, and follow-up context
+    SellerApp->>SellingAgent: Return meeting notes and instructions
+    BuyerApp->>BuyingAgent: Return meeting notes and instructions
+    SellingAgent->>Marketplace: Update obligations, follow-ups, evidence, or Change Order need
+    BuyingAgent->>Marketplace: Update acceptance context, risks, or dispute posture
+  end
+  SellingAgent->>Marketplace: Create fulfillment tasks and submit Deliverable Evidence Package
+  BuyingAgent->>Marketplace: Review evidence against contract/SOW acceptance criteria
+  loop Billing milestone or billing cycle from contract/SOW
+    Marketplace->>StripeAccounts: Trigger invoice, authorize, charge, hold, release, refund, collect, payout, platform fee, or seller net event
+    StripeAccounts-->>Marketplace: Return payment ledger update
+  end
+  alt Scope, price, timeline, or deliverables change
+    SellingAgent->>BuyingAgent: Negotiate Change Order as signed Contract/SOW amendment
+    BuyingAgent->>SigningProvider: Execute amendment if inside authority
+    SigningProvider-->>Marketplace: Return executed amendment and audit trail
+    Marketplace->>StripeAccounts: Update billing schedule and payment expectations
   end
 
-  Marketplace-->>BuyingAgent: Update Agent Reputation, audit, and explanations
-  Marketplace-->>SellingAgent: Update Agent Reputation, audit, and explanations
-  BuyerHuman->>BuyerApp: $belong-check-reputation
-  SellerHuman->>SellerApp: $belong-check-reputation
+  Note over SellerHuman,BuyerHuman: Phase 6 - Disputes and Belong Judge
+  alt Delivery accepted
+    BuyingAgent->>Marketplace: Accept delivery
+    Marketplace->>StripeAccounts: Trigger acceptance billing, release, collection, payout, platform fee, and seller net
+  else Delivery contested
+    BuyingAgent->>SellingAgent: Attempt autonomous dispute resolution inside Buying Playbook and Service Playbook
+    SellingAgent->>BuyingAgent: Respond with contract/SOW evidence, messages, payment ledger, meeting notes, and deliverable evidence
+    alt Resolved inside Playbooks
+      BuyingAgent->>Marketplace: Record revision, refund, acceptance, or Change Order outcome
+      Marketplace->>StripeAccounts: Apply agreed hold, refund, release, collection, or payout
+    else Outside Playbook, high risk, ambiguous, or party requests review
+      Marketplace->>BelongJudge: Send dispute evidence package for autonomous review
+      BelongJudge-->>Marketplace: Return autonomous decision and explanation
+      alt Human judge escalation needed
+        Marketplace->>BuyerInbox: Add buyer Belong Judge escalation item
+        Marketplace->>SellerInbox: Add seller Belong Judge escalation item
+        BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+        SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
+      else Decision can be executed inside Playbooks
+        Marketplace->>StripeAccounts: Execute Judge-directed hold, release, refund, collection, or payout
+      end
+    end
+  end
+
+  Note over SellerHuman,BuyerHuman: Phase 7 - Reputation, ratings, audit, and learning
+  Marketplace->>ReputationAudit: Update automated reputation from delivery, payment, dispute, evidence, response time, and contract/SOW compliance
+  BuyingAgent->>ReputationAudit: Rate Selling Agent from 0 to 5 stars
+  SellingAgent->>ReputationAudit: Rate Buying Agent from 0 to 5 stars
+  alt Optional manual human rating
+    BuyerHuman->>BuyerApp: Add manual service rating
+    SellerHuman->>SellerApp: Add manual counterparty rating
+    BuyerApp->>ReputationAudit: Record buyer human rating
+    SellerApp->>ReputationAudit: Record seller human rating
+  end
+  ReputationAudit-->>BuyerApp: Reputation, audit events, and Decision Explanations visible through $belong-check-reputation
+  ReputationAudit-->>SellerApp: Reputation, audit events, and Decision Explanations visible through $belong-check-reputation
 ]]></diagram>
   </user_sequence>
   <users>
