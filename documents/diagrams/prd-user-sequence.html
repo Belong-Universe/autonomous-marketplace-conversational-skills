@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Belong A2A Marketplace User Sequence</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --ink: #17202a;
+        --muted: #5d6878;
+        --line: #d9dee7;
+        --accent: #0f766e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: #ffffff;
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      .zoom-label {
+        min-width: 58px;
+        text-align: right;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      main {
+        padding: 18px;
+      }
+
+      .stage {
+        height: calc(100vh - 108px);
+        overflow: auto;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+      }
+
+      .diagram-frame {
+        transform-origin: top left;
+        padding: 28px;
+        width: max-content;
+      }
+
+      .diagram-frame svg {
+        display: block;
+        max-width: none;
+      }
+
+      .source {
+        display: none;
+      }
+
+      .error {
+        max-width: 900px;
+        margin: 24px;
+        padding: 16px;
+        border: 1px solid #f5b8b8;
+        background: #fff4f4;
+        border-radius: 8px;
+        color: #7f1d1d;
+        white-space: pre-wrap;
+      }
+
+      @media (max-width: 760px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .toolbar {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Belong Agent-to-Agent Marketplace User Sequence</h1>
+        <div class="subtitle">
+          Buyer and seller journey with side-specific Inbox pools and preferred-channel notifications.
+        </div>
+      </div>
+      <div class="toolbar" aria-label="Diagram controls">
+        <button type="button" id="zoom-out">Zoom out</button>
+        <button type="button" id="zoom-in">Zoom in</button>
+        <button type="button" id="zoom-reset">Reset</button>
+        <button type="button" id="download-svg">Download SVG</button>
+        <span class="zoom-label" id="zoom-label">100%</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="stage" id="stage">
+        <div class="diagram-frame" id="diagram-frame"></div>
+      </div>
+      <pre class="source" id="diagram-source">sequenceDiagram
+  autonumber
+  actor SellerHuman as "Service Provider human"
+  participant SellerNotify as "Seller notification app"
+  participant SellerApp as "Seller's agentic app"
+  participant SellerInbox as "Seller Belong Inbox pool"
+  participant SellingAgent as "Belong Selling Agent"
+  participant Marketplace as "Belong Marketplace"
+  participant BuyingAgent as "Belong Buying Agent"
+  participant BuyerInbox as "Buyer Belong Inbox pool"
+  participant BuyerApp as "Buyer's agentic app"
+  participant BuyerNotify as "Buyer notification app"
+  actor BuyerHuman as "Buyer-side human"
+
+  SellerHuman-&gt;&gt;SellerApp: $belong-setup-account
+  SellerHuman-&gt;&gt;SellerApp: $belong-train-selling-agent
+  SellerApp-&gt;&gt;SellingAgent: Create Service Playbook and Standing Authorization
+  SellingAgent-&gt;&gt;Marketplace: List Service for semantic discovery
+
+  BuyerHuman-&gt;&gt;BuyerApp: $belong-setup-account
+  BuyerHuman-&gt;&gt;BuyerApp: $belong-train-buying-agent
+  BuyerApp-&gt;&gt;BuyingAgent: Create Buying Playbook and Standing Authorization
+  BuyerHuman-&gt;&gt;BuyerApp: $belong-start-buying-request
+  BuyerApp-&gt;&gt;BuyingAgent: Create Buying Request
+
+  BuyingAgent-&gt;&gt;Marketplace: Search semantically with optional tags
+  Marketplace--&gt;&gt;BuyingAgent: Return matching Services and Selling Agents
+  BuyingAgent-&gt;&gt;SellingAgent: Open engagement or competitive RFP feed
+  SellingAgent-&gt;&gt;BuyingAgent: Send seller-led Discovery Questionnaire
+
+  alt Inside Buying Playbook
+    BuyingAgent-&gt;&gt;SellingAgent: Answer discovery autonomously
+  else Needs buyer judgment or authority
+    BuyingAgent-&gt;&gt;BuyerInbox: Add pending information, authorization, or instruction item
+    BuyerInbox--&gt;&gt;BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify--&gt;&gt;BuyerHuman: Email, Slack, WhatsApp, or similar notification
+    BuyerHuman-&gt;&gt;BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
+    BuyerApp-&gt;&gt;BuyerInbox: Fetch pending buyer Inbox item
+    BuyerApp-&gt;&gt;BuyerInbox: Resolve escalation after human response
+  end
+
+  SellingAgent-&gt;&gt;BuyingAgent: Send seller-signed Service Contract/SOW Proposal
+  BuyingAgent-&gt;&gt;BuyingAgent: Compare, negotiate, and check authority
+
+  alt Proposal fits Standing Authorization
+    BuyingAgent-&gt;&gt;Marketplace: Sign and create Active Service
+  else Proposal exceeds authority
+    BuyingAgent-&gt;&gt;BuyerInbox: Add pending buyer authorization item
+    BuyerInbox--&gt;&gt;BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify--&gt;&gt;BuyerHuman: Email, Slack, WhatsApp, or similar notification
+    BuyerHuman-&gt;&gt;BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
+    BuyerApp-&gt;&gt;BuyerInbox: Fetch and resolve buyer authorization
+    BuyerApp-&gt;&gt;Marketplace: Approve, reject, or request changes
+  end
+
+  Marketplace--&gt;&gt;SellingAgent: Active Service begins
+  Marketplace--&gt;&gt;BuyingAgent: Active Service begins
+  SellerHuman-&gt;&gt;SellerApp: $belong-check-selling-pipeline or $belong-check-active-services
+  BuyerHuman-&gt;&gt;BuyerApp: $belong-check-buying-requests or $belong-check-active-services
+
+  SellingAgent-&gt;&gt;Marketplace: Coordinate fulfillment, meetings, deliverables, and evidence
+  BuyingAgent-&gt;&gt;Marketplace: Review evidence against acceptance criteria
+
+  alt Seller needs provider-side human action
+    SellingAgent-&gt;&gt;SellerInbox: Add fulfillment, meeting, collections, or exception item
+    SellerInbox--&gt;&gt;SellerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellerNotify--&gt;&gt;SellerHuman: Email, Slack, WhatsApp, or similar notification
+    SellerHuman-&gt;&gt;SellerApp: Ask agentic app: "What's in my Belong Inbox?"
+    SellerApp-&gt;&gt;SellerInbox: Fetch and resolve seller Inbox item
+  end
+
+  alt Delivery accepted
+    BuyingAgent-&gt;&gt;Marketplace: Accept delivery and trigger payment rules
+    Marketplace--&gt;&gt;SellerHuman: Payment status visible through $belong-check-payments
+    Marketplace--&gt;&gt;BuyerHuman: Payment status visible through $belong-check-payments
+  else Delivery contested
+    BuyingAgent-&gt;&gt;Marketplace: Request revision or open Dispute
+    Marketplace-&gt;&gt;BuyerInbox: Add buyer dispute or Belong Judge item
+    Marketplace-&gt;&gt;SellerInbox: Add seller dispute or Belong Judge item
+    BuyerInbox--&gt;&gt;BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellerInbox--&gt;&gt;SellerNotify: Notify preferred channel: "Check your Belong Inbox"
+  end
+
+  BuyerHuman-&gt;&gt;BuyerApp: $belong-check-reputation
+  SellerHuman-&gt;&gt;SellerApp: $belong-check-reputation
+</pre>
+    </main>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+      const source = document.getElementById("diagram-source").textContent;
+      const frame = document.getElementById("diagram-frame");
+      const label = document.getElementById("zoom-label");
+      let scale = 1;
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#e8f3f1",
+          primaryBorderColor: "#0f766e",
+          primaryTextColor: "#17202a",
+          signalColor: "#17202a",
+          signalTextColor: "#17202a",
+          actorBorder: "#0f766e",
+          actorBkg: "#ffffff",
+          actorTextColor: "#17202a",
+          noteBkgColor: "#fff7d6",
+          noteTextColor: "#17202a",
+          noteBorderColor: "#d7b54d",
+          lineColor: "#516070",
+        },
+        sequence: {
+          actorMargin: 80,
+          boxMargin: 12,
+          diagramMarginX: 24,
+          diagramMarginY: 24,
+          messageMargin: 42,
+          mirrorActors: false,
+          noteMargin: 12,
+          showSequenceNumbers: true,
+          width: 180,
+        },
+      });
+
+      function updateZoom() {
+        frame.style.transform = `scale(${scale})`;
+        label.textContent = `${Math.round(scale * 100)}%`;
+      }
+
+      function setZoom(nextScale) {
+        scale = Math.min(2.5, Math.max(0.35, nextScale));
+        updateZoom();
+      }
+
+      async function renderDiagram() {
+        try {
+          const result = await mermaid.render("belong-sequence-diagram", source);
+          frame.innerHTML = result.svg;
+          updateZoom();
+        } catch (error) {
+          frame.innerHTML = `<div class="error">Mermaid could not render the diagram.\n\n${String(error)}</div>`;
+        }
+      }
+
+      document.getElementById("zoom-in").addEventListener("click", () => setZoom(scale + 0.15));
+      document.getElementById("zoom-out").addEventListener("click", () => setZoom(scale - 0.15));
+      document.getElementById("zoom-reset").addEventListener("click", () => setZoom(1));
+      document.getElementById("download-svg").addEventListener("click", () => {
+        const svg = frame.querySelector("svg");
+        if (!svg) return;
+        const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "belong-a2a-user-sequence.svg";
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      renderDiagram();
+    </script>
+  </body>
+</html>
