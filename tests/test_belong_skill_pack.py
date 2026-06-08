@@ -187,7 +187,7 @@ class BelongSkillPackTests(unittest.TestCase):
             self.assertTrue(any(req.get("is_composite") for req in state["buying_requests"].values()))
             self.assertTrue(state["notification_events"])
 
-    def test_run_buying_and_selling_agent_wrappers_advance_marketplace_flow(self):
+    def test_internal_agent_ticks_advance_marketplace_flow(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "state.json"
             train_ready_seller(state_path)
@@ -1018,11 +1018,12 @@ class BelongSkillPackTests(unittest.TestCase):
         self.assertNotIn("skills/belong-steer-agent", (ROOT / "README.md").read_text())
         self.assertIn("$belong-steer-buying-agent", guide)
         self.assertIn("$belong-steer-selling-agent", guide)
-        self.assertIn("$belong-run-buying-agent", guide)
-        self.assertIn("$belong-run-selling-agent", guide)
+        self.assertNotIn("$belong-run-buying-agent", guide)
+        self.assertNotIn("$belong-run-selling-agent", guide)
         self.assertIn("start-buying-request", runtime_docs)
         self.assertIn("run-buying-agent", runtime_docs)
         self.assertIn("run-selling-agent", runtime_docs)
+        self.assertIn("internal mock agent tick commands", runtime_docs)
         self.assertIn("selling-pipeline", runtime_docs)
 
     def test_skill_docs_have_required_coverage_terms_and_no_todos(self):
@@ -1059,8 +1060,8 @@ class BelongSkillPackTests(unittest.TestCase):
             "Marketplace Learning Boundary",
             "Steering Instruction",
             "Training Recommendation",
-            "belong-run-buying-agent",
-            "belong-run-selling-agent",
+            "autonomously",
+            "internal mock agent tick commands",
         ]
         missing = [term for term in required_terms if term not in text]
         self.assertFalse(missing, f"Missing coverage terms: {missing}")

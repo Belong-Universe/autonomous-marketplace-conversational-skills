@@ -27,7 +27,7 @@ Show:
 ## Route Actions
 
 - Operational escalation, approval, fulfillment, meeting, payment, or discount exception: `$belong-inbox`
-- Continue Selling Agent autonomous work: `$belong-run-selling-agent`
+- Let the Selling Agent continue autonomously when the next step is inside the Service Playbook and Standing Authorization.
 - Temporary Selling Agent guidance: `$belong-steer-selling-agent`
 - Durable Service Playbook or Service positioning change: `$belong-train-selling-agent`
 - Signed/active delivery state: `$belong-check-active-services`

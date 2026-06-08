@@ -7,7 +7,7 @@
     <notes><![CDATA[This repo mirror follows the Linear PRD and the latest Skill Pack implementation. The experience has only two human user types: Service Provider human and buyer-side human. Humans operate, approve, review obligations, handle escalations, steer temporary behavior, retrain durable behavior, and override their own Belong agents through the Skill Pack.]]></notes>
   </source_summary>
   <problem_statement><![CDATA[Companies want new revenue through an always-on agentic inbound channel, but they need that channel to understand each Service, monetization model, billing cycle, collections process, negotiation limits, legal terms, delivery workflow, and escalation path. Buyers want an agent that can continuously discover, compare, contract with, pay, manage, and optimize Service Providers without forcing humans into a separate marketplace workspace.]]></problem_statement>
-  <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, operate, and supervise Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent. In Production, humans ask their agents to continue marketplace work through role-specific run skills, inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
+  <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, supervise, and retrain Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent and starts Buying Requests. In Production, agents continue marketplace work autonomously inside their Playbooks and Standing Authorization. Humans inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
   <users>
     <user priority="primary" order="1"><![CDATA[Service Provider human setting up, training, operating, approving, overriding, and supervising one or more Belong Selling Agents, with one Selling Agent dedicated to each Service.]]></user>
     <user priority="primary" order="2"><![CDATA[Buyer-side human setting up, training, operating, approving, overriding, and supervising a Belong Buying Agent to buy and manage Services through the marketplace.]]></user>
@@ -20,8 +20,8 @@
   </scope>
   <human_skill_surface>
     <shared><![CDATA[belong-marketplace-guide, belong-setup-account, belong-inbox, belong-check-active-services, belong-check-payments, belong-check-reputation.]]></shared>
-    <buyer><![CDATA[belong-train-buying-agent, belong-start-buying-request, belong-run-buying-agent, belong-check-buying-requests, belong-steer-buying-agent.]]></buyer>
-    <seller><![CDATA[belong-train-selling-agent, belong-run-selling-agent, belong-check-selling-pipeline, belong-steer-selling-agent.]]></seller>
+    <buyer><![CDATA[belong-train-buying-agent, belong-start-buying-request, belong-check-buying-requests, belong-steer-buying-agent.]]></buyer>
+    <seller><![CDATA[belong-train-selling-agent, belong-check-selling-pipeline, belong-steer-selling-agent.]]></seller>
     <internal><![CDATA[belong-internal-buying-workflow, belong-internal-selling-workflow, belong-internal-active-service-actions, belong-internal-disputes, belong-marketplace-runtime.]]></internal>
   </human_skill_surface>
   <acceptance_signals>

@@ -30,7 +30,7 @@ Show:
 ## Route Actions
 
 - Operational escalation or approval: `$belong-inbox`
-- Continue buyer-side or seller-side autonomous work: `$belong-run-buying-agent` or `$belong-run-selling-agent`
+- Let the relevant Buying Agent or Selling Agent continue autonomously when the next step is inside its Playbook and Standing Authorization.
 - Temporary guidance to a Buying Agent or Selling Agent: `$belong-steer-buying-agent` or `$belong-steer-selling-agent`
 - Durable Buying Playbook or Service Playbook change: `$belong-train-buying-agent` or `$belong-train-selling-agent`
 - Money details: `$belong-check-payments`

@@ -33,4 +33,4 @@ If the human wants to temporarily influence an existing request, route to `$belo
 
 ## Output
 
-Summarize the Buying Request, semantic Service Search Results, any Engagement Feed opened, what the Buying Agent can do autonomously next, pending Marketplace Inbox items, and the next skill: usually `$belong-run-buying-agent`, `$belong-check-buying-requests`, `$belong-inbox`, `$belong-steer-buying-agent`, or `$belong-check-reputation`.
+Summarize the Buying Request, semantic Service Search Results, any Engagement Feed opened, what the Buying Agent will continue autonomously inside its Buying Playbook, pending Marketplace Inbox items, and the next human-facing skill: usually `$belong-check-buying-requests`, `$belong-inbox`, `$belong-steer-buying-agent`, or `$belong-check-reputation`.

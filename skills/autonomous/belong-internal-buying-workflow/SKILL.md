@@ -5,7 +5,7 @@ description: Internal Buying Agent capability for Production buying workflows in
 
 # Belong Internal Buying Workflow
 
-Use this once the Buying Agent is in Production. This is an internal agent capability, not the primary human-facing surface. Humans start buyer intent through `$belong-start-buying-request`, ask the Buying Agent to continue through `$belong-run-buying-agent`, check the pre-contract pipeline through `$belong-check-buying-requests`, supervise escalations through `$belong-inbox`, give temporary guidance through `$belong-steer-buying-agent`, and make durable Buying Playbook changes through `$belong-train-buying-agent`.
+Use this once the Buying Agent is in Production. This is an internal agent capability, not the primary human-facing surface. Humans start buyer intent through `$belong-start-buying-request`, then the Buying Agent continues autonomously inside the Buying Playbook and Standing Authorization. Humans check the pre-contract pipeline through `$belong-check-buying-requests`, supervise escalations through `$belong-inbox`, give temporary guidance through `$belong-steer-buying-agent`, and make durable Buying Playbook changes through `$belong-train-buying-agent`.
 
 ## Start
 
@@ -58,4 +58,4 @@ Use `composite-request` when one buyer goal coordinates multiple Selling Agents 
 
 ## Output
 
-After every step, summarize the current Buying Request, Engagement Feed, Proposal/contract status, cumulative spend/authority result, payment ledger state, stale or pending inbox items, escalation state, and next human-facing skill: usually `$belong-run-buying-agent`, `$belong-check-buying-requests`, `$belong-inbox`, `$belong-check-active-services`, `$belong-check-payments`, `$belong-check-reputation`, `$belong-steer-buying-agent`, or `$belong-train-buying-agent`.
+After every step, summarize the current Buying Request, Engagement Feed, Proposal/contract status, cumulative spend/authority result, payment ledger state, stale or pending inbox items, escalation state, and next human-facing skill only when human attention is needed: usually `$belong-check-buying-requests`, `$belong-inbox`, `$belong-check-active-services`, `$belong-check-payments`, `$belong-check-reputation`, `$belong-steer-buying-agent`, or `$belong-train-buying-agent`.

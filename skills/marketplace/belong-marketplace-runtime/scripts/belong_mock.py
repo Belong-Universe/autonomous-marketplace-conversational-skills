@@ -3168,7 +3168,7 @@ def command_run_buying_agent(args: argparse.Namespace, state: dict[str, Any]) ->
             f"Buying Agent is waiting for Selling Agents to send seller-signed Service Contract/SOW proposals in Engagement Feed {feed['id']}.",
             {"buying_request": request, "engagement_feed": feed, "discovery_questionnaires": questionnaires},
             [
-                "Use belong-run-selling-agent for seller-side autonomous proposal creation.",
+                "The relevant Selling Agent should continue autonomously and create seller-side proposals when inside its Service Playbook.",
                 "Use belong-inbox if a seller-side human must approve discovery, scope, or contract behavior.",
             ],
         )
@@ -3179,7 +3179,7 @@ def command_run_buying_agent(args: argparse.Namespace, state: dict[str, Any]) ->
         f"Buying Agent compared proposals for Buying Request {request['id']}.",
         {"buying_request": request, "preferred_proposal_id": preferred_id},
         [
-            "Run belong-run-buying-agent with sign_best when the preferred seller-signed Service Contract/SOW fits Standing Authorization.",
+            "The Buying Agent can sign autonomously when the preferred seller-signed Service Contract/SOW fits Standing Authorization.",
             "Use belong-inbox for buyer-side authorization if the proposal exceeds budget, legal, or payment limits.",
         ],
     )
@@ -3311,7 +3311,7 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
             f"Selling Agent is waiting for buyer discovery answers in Engagement Feed {feed['id']}.",
             {"engagement_feed": feed, "discovery_questionnaires": questionnaires},
             [
-                "Use belong-run-buying-agent to let the Buying Agent answer seller-led discovery.",
+                "The Buying Agent should answer seller-led discovery autonomously when inside its Buying Playbook.",
                 "Use belong-inbox if seller-side human context is required before proposal creation.",
             ],
         )
@@ -3328,7 +3328,7 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
             {"engagement_feed": feed, "proposals": existing},
             [
                 "Use belong-check-selling-pipeline for seller visibility.",
-                "Use belong-run-buying-agent for buyer-side comparison, negotiation, or signature.",
+                "The Buying Agent should compare, negotiate, or sign autonomously when inside its Buying Playbook and Standing Authorization.",
             ],
         )
     return command_optimization(argparse.Namespace(agent_id=seller_agent_id), state)
@@ -3661,7 +3661,7 @@ def command_status(args: argparse.Namespace, state: dict[str, Any]) -> dict[str,
         [
             "If no account exists, run belong-setup-account.",
             "If agents are not in Production, complete buying or selling training.",
-            "If Production objects exist, ask the Buying or Selling Agent to continue, open Inbox, check buyer/seller pipeline, check Active Services, check Payments, check Reputation, steer temporarily, or retrain as needed.",
+            "If Production objects exist, agents continue autonomously inside their Playbooks; humans open Inbox, check buyer/seller pipeline, check Active Services, check Payments, check Reputation, steer temporarily, or retrain as needed.",
         ],
     )
 

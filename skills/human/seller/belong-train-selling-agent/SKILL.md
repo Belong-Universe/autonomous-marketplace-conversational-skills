@@ -45,4 +45,4 @@ Validation must check identity, Service Playbook completeness, payment/legal beh
 
 ## Output
 
-End with the structured Selling Agent and Service objects, phase/status, Playbook version, monetization/billing/collections summary, authority limits, escalation paths, pending inbox items, and the next human-facing action: usually `$belong-run-selling-agent`, `$belong-inbox`, `$belong-check-selling-pipeline`, `$belong-steer-selling-agent`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
+End with the structured Selling Agent and Service objects, phase/status, Playbook version, monetization/billing/collections summary, authority limits, escalation paths, pending inbox items, and the next human-facing action: usually `$belong-inbox`, `$belong-check-selling-pipeline`, `$belong-steer-selling-agent`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.

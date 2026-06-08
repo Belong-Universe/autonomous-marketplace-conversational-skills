@@ -28,7 +28,7 @@ Show:
 ## Route Actions
 
 - New buyer intent: `$belong-start-buying-request`
-- Continue Buying Agent autonomous work: `$belong-run-buying-agent`
+- Let the Buying Agent continue autonomously when the next step is inside the Buying Playbook and Standing Authorization.
 - Operational escalation or approval: `$belong-inbox`
 - Temporary Buying Agent guidance: `$belong-steer-buying-agent`
 - Durable Buying Playbook change: `$belong-train-buying-agent`

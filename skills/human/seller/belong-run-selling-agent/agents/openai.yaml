@@ -1,4 +1,0 @@
-openai:
-  display_name: "Belong Run Selling Agent"
-  short_description: "Let my Selling Agent continue"
-  default_prompt: "Use $belong-run-selling-agent to let my Selling Agent continue existing marketplace work."

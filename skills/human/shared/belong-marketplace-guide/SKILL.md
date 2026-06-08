@@ -36,14 +36,12 @@ Always orient the human by role. Seller-side humans should hear which Service, S
 
 - `$belong-train-buying-agent`: buyer-side setup, training, validation, activation, and later durable Buying Playbook retraining.
 - `$belong-start-buying-request`: buyer intent surface for "I need X"; creates a Buying Request, launches semantic Service search, and optionally opens an Engagement Feed.
-- `$belong-run-buying-agent`: asks the Buying Agent to continue existing marketplace work: discovery, proposal comparison, signature within authority, Active Service buyer work, Composite Buying Requests, or Provider Optimization.
 - `$belong-check-buying-requests`: read/check pre-contract buyer pipeline: Buying Requests, Service Search Results, Engagement Feeds, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiations, authority checks, and linked Inbox items.
 - `$belong-steer-buying-agent`: temporary non-durable guidance for a Buying Agent inside the current Buying Playbook and Standing Authorization.
 
 ## Seller-Specific Human Skills
 
 - `$belong-train-selling-agent`: Service Provider setup, training, validation, activation, and later durable Service Playbook retraining for one Selling Agent per Service.
-- `$belong-run-selling-agent`: asks the Selling Agent to continue existing marketplace work: inbound discovery/proposals, seller-side Active Service delivery/evidence/collections, or Selling Optimization.
 - `$belong-check-selling-pipeline`: read/check seller inbound pipeline: Services, buyer engagements, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiation, billing readiness, and linked Inbox items.
 - `$belong-steer-selling-agent`: temporary non-durable guidance for a Selling Agent inside the current Service Playbook and Standing Authorization.
 
@@ -73,7 +71,7 @@ Enforce these across every skill:
 - Treat pending Marketplace Inbox as the canonical work list. Resolve stale, duplicate, or superseded inbox items after each state change before saying the path is clean.
 - Check agent status, pause state, Standing Authorization, payment rules, contract authority, and cumulative spend before signing, negotiating, changing scope, or moving money.
 - Enforce pause: a paused agent does not start new autonomous work. It may still preserve obligations, notices, deadlines, payment alerts, dispute responses, and required escalations.
-- Let humans continue autonomous work through `$belong-run-buying-agent` or `$belong-run-selling-agent`; do not route humans directly into internal workflow skills as the normal product surface.
+- Let Belong agents continue autonomously inside their Playbooks and Standing Authorization. Humans do not run agent workflows manually; they check state, respond through Inbox, steer temporarily, or retrain durably.
 - Keep payments ledgered: authorization, charge, hold, release, refund, collection, seller-side platform fee, seller net, and merchant-of-record context must be visible when payment state changes.
 - Treat Change Orders as signed contract/SOW amendments. Scope, price, timeline, deliverables, and payment changes must update the contract trail and payment expectations.
 - Route durable Playbook changes through `$belong-train-buying-agent` or `$belong-train-selling-agent`. Inbox is for day-to-day operations, not durable training.

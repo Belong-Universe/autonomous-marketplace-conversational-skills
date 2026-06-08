@@ -28,11 +28,9 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --path skills/human/shared/belong-check-reputation \
   --path skills/human/buyer/belong-train-buying-agent \
   --path skills/human/buyer/belong-start-buying-request \
-  --path skills/human/buyer/belong-run-buying-agent \
   --path skills/human/buyer/belong-check-buying-requests \
   --path skills/human/buyer/belong-steer-buying-agent \
   --path skills/human/seller/belong-train-selling-agent \
-  --path skills/human/seller/belong-run-selling-agent \
   --path skills/human/seller/belong-check-selling-pipeline \
   --path skills/human/seller/belong-steer-selling-agent \
   --path skills/autonomous/belong-internal-buying-workflow \
@@ -51,9 +49,9 @@ Use:
 $belong-marketplace-guide
 ```
 
-The guide routes the human through shared setup/checks, buyer-specific Buying Agent training, Buying Request start/run/check/steering, seller-specific Selling Agent training, seller run/pipeline check/steering, Inbox escalations, Active Service checks, payment checks, reputation/audit checks, and the full mocked scenario.
+The guide routes the human through shared setup/checks, buyer-specific Buying Agent training, Buying Request start/check/steering, seller-specific Selling Agent training, seller pipeline check/steering, Inbox escalations, Active Service checks, payment checks, reputation/audit checks, and the full mocked scenario.
 
-The autonomous Buying Agent and Selling Agent capabilities remain available as internal skills. Humans should not use them as the main surface; agents execute those workflows and escalate through `belong-inbox` when needed.
+The autonomous Buying Agent and Selling Agent capabilities remain available as internal skills. Humans do not run the agent workflow manually; agents execute inside their Playbooks and Standing Authorization, then escalate through `belong-inbox` when human input is needed.
 
 ## Mock State
 

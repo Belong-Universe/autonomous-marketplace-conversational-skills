@@ -50,7 +50,7 @@ Marketplace Inbox is for day-to-day operational work: information, authorization
 
 Buyer-side "I need X" intent creates a Buying Request and starts semantic search. Steering is only temporary, non-durable guidance for an existing agent/object and must stay inside the current Playbook and Standing Authorization.
 
-Continuing autonomous work should go through the role-specific human wrapper skills: `$belong-run-buying-agent` for buyer-side continuation and `$belong-run-selling-agent` for seller-side continuation. Internal workflow skills describe agent capabilities; they are not the normal human product surface.
+Continuing autonomous work should not require a human-facing "run" skill. Buying Agents and Selling Agents continue inside their Playbooks and Standing Authorization. Internal workflow skills and runtime tick commands simulate that autonomous work; the normal human product surface is setup, training/retraining, starting buyer intent, checking state, Inbox, steering, payments, active services, and reputation.
 
 Payments must stay ledgered. Show authorization, charge, hold, release, refund, collection, gross amount, seller-side platform fee, seller net, merchant-of-record context, linked contract/SOW or Change Order, and audit path whenever payment state changes.
 

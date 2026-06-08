@@ -5,7 +5,7 @@ description: Shared mocked backend runtime for the Belong Agent-to-Agent Marketp
 
 # Belong Marketplace Runtime
 
-Use this as the shared mock backend for all Belong Skill Pack workflows. This skill is mostly a helper: human-facing flows should usually use `$belong-marketplace-guide`, `$belong-setup-account`, `$belong-train-buying-agent`, `$belong-start-buying-request`, `$belong-run-buying-agent`, `$belong-check-buying-requests`, `$belong-steer-buying-agent`, `$belong-train-selling-agent`, `$belong-run-selling-agent`, `$belong-check-selling-pipeline`, `$belong-steer-selling-agent`, `$belong-inbox`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
+Use this as the shared mock backend for all Belong Skill Pack workflows. This skill is mostly a helper: human-facing flows should usually use `$belong-marketplace-guide`, `$belong-setup-account`, `$belong-train-buying-agent`, `$belong-start-buying-request`, `$belong-check-buying-requests`, `$belong-steer-buying-agent`, `$belong-train-selling-agent`, `$belong-check-selling-pipeline`, `$belong-steer-selling-agent`, `$belong-inbox`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
 
 ## Runtime Contract
 

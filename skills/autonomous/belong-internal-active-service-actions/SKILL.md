@@ -5,7 +5,7 @@ description: Internal Buying Agent and Selling Agent capability for mocked Activ
 
 # Belong Internal Active Service Actions
 
-Use this after buyer signature creates an Active Service. This is an internal agent capability, not the primary human-facing surface. Humans ask the Buying Agent or Selling Agent to continue Active Service work through `$belong-run-buying-agent` or `$belong-run-selling-agent`, check Active Services through `$belong-check-active-services`, check money through `$belong-check-payments`, resolve escalations through `$belong-inbox`, steer temporarily through `$belong-steer-buying-agent` or `$belong-steer-selling-agent`, and retrain durably through the training skills.
+Use this after buyer signature creates an Active Service. This is an internal agent capability, not the primary human-facing surface. Buying Agents and Selling Agents continue Active Service work autonomously inside their Playbooks and Standing Authorization. Humans check Active Services through `$belong-check-active-services`, check money through `$belong-check-payments`, resolve escalations through `$belong-inbox`, steer temporarily through `$belong-steer-buying-agent` or `$belong-steer-selling-agent`, and retrain durably through the training skills.
 
 ## Start
 

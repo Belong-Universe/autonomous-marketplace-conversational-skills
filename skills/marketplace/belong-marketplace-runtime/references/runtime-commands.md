@@ -84,7 +84,7 @@ Use `optimization` to create a training recommendation. Apply durable Buying Pla
 
 Use `start-buying-request` for buyer intent such as "I need X"; it creates a Buying Request and launches semantic search. Do not model new buyer demand as steering.
 
-Use `run-buying-agent` and `run-selling-agent` as the human-facing wrappers for continuing autonomous agent work. They advance existing Buying Requests, seller pipeline work, Active Services, composite coordination, or optimization without making humans call internal workflow commands directly.
+Use `run-buying-agent` and `run-selling-agent` only as internal mock agent tick commands. They simulate autonomous progression for tests and demos: existing Buying Requests, seller pipeline work, Active Services, composite coordination, or optimization. They are not public human-facing skills; humans check state, handle Inbox escalations, steer temporarily, or retrain durably.
 
 Use `steer-buying-agent` or `steer-selling-agent` for human-facing temporary, auditable guidance inside the current Playbook and Standing Authorization. The lower-level `steer-agent` command remains a shared backend primitive. Steering cannot expand authority, change legal/payment limits, move money, sign contracts, bypass pause, or permanently alter a Playbook.
 

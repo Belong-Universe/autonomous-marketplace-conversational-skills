@@ -5,7 +5,7 @@ description: Internal Selling Agent capability for Production selling workflows 
 
 # Belong Internal Selling Workflow
 
-Use this once a Selling Agent is in Production for one Service. This is an internal agent capability, not the primary human-facing surface. Humans ask the Selling Agent to continue through `$belong-run-selling-agent`, check inbound seller work through `$belong-check-selling-pipeline`, supervise escalations through `$belong-inbox`, give temporary guidance through `$belong-steer-selling-agent`, and make durable Service Playbook changes through `$belong-train-selling-agent`.
+Use this once a Selling Agent is in Production for one Service. This is an internal agent capability, not the primary human-facing surface. The Selling Agent continues autonomously inside the Service Playbook and Standing Authorization after inbound engagement arrives. Humans check inbound seller work through `$belong-check-selling-pipeline`, supervise escalations through `$belong-inbox`, give temporary guidance through `$belong-steer-selling-agent`, and make durable Service Playbook changes through `$belong-train-selling-agent`.
 
 ## Start
 
