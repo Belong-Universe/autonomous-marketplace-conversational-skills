@@ -8,6 +8,78 @@
   </source_summary>
   <problem_statement><![CDATA[Companies want new revenue through an always-on agentic inbound channel, but they need that channel to understand each Service, monetization model, billing cycle, collections process, negotiation limits, legal terms, delivery workflow, and escalation path. Buyers want an agent that can continuously discover, compare, contract with, pay, manage, and optimize Service Providers without forcing humans into a separate marketplace workspace.]]></problem_statement>
   <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, supervise, and retrain Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent and starts Buying Requests. In Production, agents continue marketplace work autonomously inside their Playbooks and Standing Authorization. Humans inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
+  <user_sequence>
+    <summary><![CDATA[Primary two-sided journey: a Service Provider human trains a Selling Agent for one Service, a buyer-side human trains a Buying Agent and starts a Buying Request, the agents transact autonomously inside their Playbooks and Standing Authorization, and both humans supervise through checks, Inbox, steering, payments, reputation, and durable retraining.]]></summary>
+    <diagram language="mermaid"><![CDATA[
+sequenceDiagram
+  autonumber
+  actor SellerHuman as "Service Provider human"
+  participant SellerApp as "Seller's agentic app"
+  participant SellingAgent as "Belong Selling Agent"
+  participant Marketplace as "Belong Marketplace"
+  participant BuyingAgent as "Belong Buying Agent"
+  participant BuyerApp as "Buyer's agentic app"
+  actor BuyerHuman as "Buyer-side human"
+  participant Inbox as "Belong Inbox"
+
+  SellerHuman->>SellerApp: $belong-setup-account
+  SellerHuman->>SellerApp: $belong-train-selling-agent
+  SellerApp->>SellingAgent: Create Service Playbook and Standing Authorization
+  SellingAgent->>Marketplace: List Service for semantic discovery
+
+  BuyerHuman->>BuyerApp: $belong-setup-account
+  BuyerHuman->>BuyerApp: $belong-train-buying-agent
+  BuyerApp->>BuyingAgent: Create Buying Playbook and Standing Authorization
+  BuyerHuman->>BuyerApp: $belong-start-buying-request
+  BuyerApp->>BuyingAgent: Create Buying Request
+
+  BuyingAgent->>Marketplace: Search semantically with optional tags
+  Marketplace-->>BuyingAgent: Return matching Services and Selling Agents
+  BuyingAgent->>SellingAgent: Open engagement or competitive RFP feed
+  SellingAgent->>BuyingAgent: Send seller-led Discovery Questionnaire
+
+  alt Inside Buying Playbook
+    BuyingAgent->>SellingAgent: Answer discovery autonomously
+  else Needs buyer judgment or authority
+    BuyingAgent->>Inbox: Escalate information, authorization, or instruction
+    BuyerHuman->>BuyerApp: $belong-inbox
+    BuyerApp->>Inbox: Resolve escalation
+  end
+
+  SellingAgent->>BuyingAgent: Send seller-signed Service Contract/SOW Proposal
+  BuyingAgent->>BuyingAgent: Compare, negotiate, and check authority
+
+  alt Proposal fits Standing Authorization
+    BuyingAgent->>Marketplace: Sign and create Active Service
+  else Proposal exceeds authority
+    BuyingAgent->>Inbox: Escalate buyer authorization
+    BuyerHuman->>BuyerApp: $belong-inbox
+    BuyerApp->>Marketplace: Approve, reject, or request changes
+  end
+
+  Marketplace-->>SellingAgent: Active Service begins
+  Marketplace-->>BuyingAgent: Active Service begins
+  SellerHuman->>SellerApp: $belong-check-selling-pipeline or $belong-check-active-services
+  BuyerHuman->>BuyerApp: $belong-check-buying-requests or $belong-check-active-services
+
+  SellingAgent->>Marketplace: Coordinate fulfillment, meetings, deliverables, and evidence
+  BuyingAgent->>Marketplace: Review evidence against acceptance criteria
+
+  alt Delivery accepted
+    BuyingAgent->>Marketplace: Accept delivery and trigger payment rules
+    Marketplace-->>SellerHuman: Collections/payment status visible through $belong-check-payments
+    Marketplace-->>BuyerHuman: Payment status visible through $belong-check-payments
+  else Delivery contested
+    BuyingAgent->>Marketplace: Request revision or open Dispute
+    Marketplace->>Inbox: Escalate dispute or Belong Judge decision when needed
+  end
+
+  Marketplace-->>BuyingAgent: Update Agent Reputation, audit, and explanations
+  Marketplace-->>SellingAgent: Update Agent Reputation, audit, and explanations
+  BuyerHuman->>BuyerApp: $belong-check-reputation
+  SellerHuman->>SellerApp: $belong-check-reputation
+]]></diagram>
+  </user_sequence>
   <users>
     <user priority="primary" order="1"><![CDATA[Service Provider human setting up, training, operating, approving, overriding, and supervising one or more Belong Selling Agents, with one Selling Agent dedicated to each Service.]]></user>
     <user priority="primary" order="2"><![CDATA[Buyer-side human setting up, training, operating, approving, overriding, and supervising a Belong Buying Agent to buy and manage Services through the marketplace.]]></user>
