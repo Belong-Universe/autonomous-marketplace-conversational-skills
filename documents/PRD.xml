@@ -9,18 +9,21 @@
   <problem_statement><![CDATA[Companies want new revenue through an always-on agentic inbound channel, but they need that channel to understand each Service, monetization model, billing cycle, collections process, negotiation limits, legal terms, delivery workflow, and escalation path. Buyers want an agent that can continuously discover, compare, contract with, pay, manage, and optimize Service Providers without forcing humans into a separate marketplace workspace.]]></problem_statement>
   <desired_experience><![CDATA[A human authenticates once through OAuth Login, installs the Belong Skill Pack into their favorite agentic application, and uses Guided Work to set up, train, validate, supervise, and retrain Belong agents. A Service Provider human trains one Selling Agent per Service. A buyer-side human trains one Buying Agent and starts Buying Requests. In Production, agents continue marketplace work autonomously inside their Playbooks and Standing Authorization. Humans inspect state through read/check skills, handle escalations through Inbox, steer temporary behavior through steering skills, and durably retrain through training skills.]]></desired_experience>
   <user_sequence>
-    <summary><![CDATA[Primary two-sided journey: a Service Provider human trains a Selling Agent for one Service, a buyer-side human trains a Buying Agent and starts a Buying Request, the agents transact autonomously inside their Playbooks and Standing Authorization, and both humans supervise through checks, Inbox, steering, payments, reputation, and durable retraining.]]></summary>
+    <summary><![CDATA[Primary two-sided journey: a Service Provider human trains a Selling Agent for one Service, a buyer-side human trains a Buying Agent and starts a Buying Request, the agents transact autonomously inside their Playbooks and Standing Authorization, and each human has a Belong Inbox pool they check from their own agentic app after receiving a preferred-channel notification.]]></summary>
     <diagram language="mermaid"><![CDATA[
 sequenceDiagram
   autonumber
   actor SellerHuman as "Service Provider human"
+  participant SellerNotify as "Seller notification app"
   participant SellerApp as "Seller's agentic app"
+  participant SellerInbox as "Seller Belong Inbox pool"
   participant SellingAgent as "Belong Selling Agent"
   participant Marketplace as "Belong Marketplace"
   participant BuyingAgent as "Belong Buying Agent"
+  participant BuyerInbox as "Buyer Belong Inbox pool"
   participant BuyerApp as "Buyer's agentic app"
+  participant BuyerNotify as "Buyer notification app"
   actor BuyerHuman as "Buyer-side human"
-  participant Inbox as "Belong Inbox"
 
   SellerHuman->>SellerApp: $belong-setup-account
   SellerHuman->>SellerApp: $belong-train-selling-agent
@@ -41,9 +44,12 @@ sequenceDiagram
   alt Inside Buying Playbook
     BuyingAgent->>SellingAgent: Answer discovery autonomously
   else Needs buyer judgment or authority
-    BuyingAgent->>Inbox: Escalate information, authorization, or instruction
-    BuyerHuman->>BuyerApp: $belong-inbox
-    BuyerApp->>Inbox: Resolve escalation
+    BuyingAgent->>BuyerInbox: Add pending information, authorization, or instruction item
+    BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify-->>BuyerHuman: Email, Slack, WhatsApp, or similar notification
+    BuyerHuman->>BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
+    BuyerApp->>BuyerInbox: Fetch pending buyer Inbox item
+    BuyerApp->>BuyerInbox: Resolve escalation after human response
   end
 
   SellingAgent->>BuyingAgent: Send seller-signed Service Contract/SOW Proposal
@@ -52,8 +58,11 @@ sequenceDiagram
   alt Proposal fits Standing Authorization
     BuyingAgent->>Marketplace: Sign and create Active Service
   else Proposal exceeds authority
-    BuyingAgent->>Inbox: Escalate buyer authorization
-    BuyerHuman->>BuyerApp: $belong-inbox
+    BuyingAgent->>BuyerInbox: Add pending buyer authorization item
+    BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify-->>BuyerHuman: Email, Slack, WhatsApp, or similar notification
+    BuyerHuman->>BuyerApp: Ask agentic app: "What's in my Belong Inbox?"
+    BuyerApp->>BuyerInbox: Fetch and resolve buyer authorization
     BuyerApp->>Marketplace: Approve, reject, or request changes
   end
 
@@ -65,13 +74,26 @@ sequenceDiagram
   SellingAgent->>Marketplace: Coordinate fulfillment, meetings, deliverables, and evidence
   BuyingAgent->>Marketplace: Review evidence against acceptance criteria
 
+  alt Seller needs provider-side human action
+    SellingAgent->>SellerInbox: Add fulfillment, meeting, collections, or exception item
+    SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellerNotify-->>SellerHuman: Email, Slack, WhatsApp, or similar notification
+    SellerHuman->>SellerApp: Ask agentic app: "What's in my Belong Inbox?"
+    SellerApp->>SellerInbox: Fetch and resolve seller Inbox item
+  end
+
   alt Delivery accepted
     BuyingAgent->>Marketplace: Accept delivery and trigger payment rules
     Marketplace-->>SellerHuman: Collections/payment status visible through $belong-check-payments
     Marketplace-->>BuyerHuman: Payment status visible through $belong-check-payments
   else Delivery contested
     BuyingAgent->>Marketplace: Request revision or open Dispute
-    Marketplace->>Inbox: Escalate dispute or Belong Judge decision when needed
+    Marketplace->>BuyerInbox: Add buyer dispute or Belong Judge item when needed
+    Marketplace->>SellerInbox: Add seller dispute or Belong Judge item when needed
+    BuyerInbox-->>BuyerNotify: Notify preferred channel: "Check your Belong Inbox"
+    SellerInbox-->>SellerNotify: Notify preferred channel: "Check your Belong Inbox"
+    BuyerNotify-->>BuyerHuman: Buyer-side dispute notification
+    SellerNotify-->>SellerHuman: Seller-side dispute notification
   end
 
   Marketplace-->>BuyingAgent: Update Agent Reputation, audit, and explanations
