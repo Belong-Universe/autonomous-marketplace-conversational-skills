@@ -1,4 +1,7 @@
-.belong/
+.DS_Store
+.belong/*
+!.belong/selling-playbooks/
+!.belong/selling-playbooks/**
 __pycache__/
 *.py[cod]
 .pytest_cache/
