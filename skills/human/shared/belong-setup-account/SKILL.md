@@ -1,6 +1,6 @@
 ---
 name: belong-setup-account
-description: Guide a Service Provider human or buyer-side human through mocked Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, mocked payment readiness, mocked legal/signing readiness, and routing into Buying Agent or Selling Agent training.
+description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, payment readiness, legal/signing readiness, and routing into Buying Agent or Selling Agent training.
 ---
 
 # Belong Setup Account
@@ -19,7 +19,7 @@ To change rather than add, use `update-account`:
 
 ## Guided Flow
 
-Start with runtime `status`, then explain that this mocked flow represents the one web/OAuth moment. After it completes, all work returns to the user's favorite agentic application.
+Start with runtime `status`, then explain that this flow represents the one web/OAuth moment. After it completes, all work returns to the user's favorite agentic application.
 
 Collect:
 
@@ -39,11 +39,11 @@ python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py set
 
 Summarize:
 
-- Mock OAuth status
+- OAuth status
 - Belong Account owner
 - Organization Profile
 - Notification channels and the "return to your agentic application and open the inbox" pattern
-- Mocked payment/legal readiness
+- Payment/legal readiness
 - Which training skill comes next: `$belong-train-buying-agent`, `$belong-train-selling-agent`, or both
 
 If the human is a Service Provider, route to `$belong-train-selling-agent`. If the human is a buyer-side human, route to `$belong-train-buying-agent`. If both, tell them to train both agents but keep one Selling Agent per Service.
