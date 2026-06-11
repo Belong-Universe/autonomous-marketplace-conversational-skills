@@ -35,3 +35,16 @@ Show:
 - Durable Buying Playbook or Service Playbook change: `$belong-train-buying-agent` or `$belong-train-selling-agent`
 - Money details: `$belong-check-payments`
 - Trust and Decision Explanation details: `$belong-check-reputation`
+
+## Output
+
+This is a read-only view, so nothing changes. Summarize:
+
+- Which Active Service(s) the human is looking at, by owner role and status
+- Current lifecycle phase: delivery, evidence, acceptance, payment, Change Order, meeting, or dispute
+- The most relevant state: what is done, what is in progress, and what is blocked or waiting
+- Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail
+- Anything notable the structured view does not capture: risks, anomalies, or approaching deadlines
+- Recommended next skill or action, without taking it here
+
+Always remind the human that this skill only reads state. To act, route to `$belong-inbox` for approvals, the training or steering skills for behavior, or `$belong-check-payments` and `$belong-check-reputation` for deeper detail.

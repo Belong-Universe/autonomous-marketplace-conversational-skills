@@ -5,7 +5,17 @@ description: Guide a Service Provider human or buyer-side human through mocked B
 
 # Belong Setup Account
 
-Use this for the Setup phase before any Buying Agent or Selling Agent training.
+Use this for the Setup phase before any Buying Agent or Selling Agent training, and to manage an existing Belong Account.
+
+## Returning Human
+
+If an account already exists for this human, do not treat setup as new. Re-running setup is additive: it adds a role (for example, a buyer who now also sells), adds an organization, and unions notification channels onto the existing account. Confirm whether the human is adding a role, organization, or channel rather than starting over.
+
+To change rather than add, use `update-account`:
+
+- Replace the notification channel(s) with `--set-notifications`. An account must keep at least one channel; it cannot be left without any.
+- Rename an organization with `--rename-org` (and `--org-id` when the account has more than one organization).
+- Remove a role with `--remove-role buyer|seller`. A role cannot be removed while agents still back it: the seller role is blocked while a Selling Agent exists, and the buyer role is blocked while a Buying Agent exists. Retire those agents first.
 
 ## Guided Flow
 

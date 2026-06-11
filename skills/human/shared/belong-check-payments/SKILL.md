@@ -29,3 +29,17 @@ Show:
 - Durable payment rule or collections change: `$belong-train-buying-agent` or `$belong-train-selling-agent`
 - Temporary preference about payment handling inside current authority: `$belong-steer-buying-agent` or `$belong-steer-selling-agent`
 - Delivery context: `$belong-check-active-services`
+
+## Output
+
+This is a read-only view, so nothing changes. Summarize:
+
+- Bank/payment readiness and which owner role the view covers
+- Current payment phase per Active Service: authorization, charge, hold, release, refund, or collection
+- The money breakdown: gross amount, seller-side platform fee, and seller net
+- Anything blocked or waiting: failed readiness, pending authorization, unreleased hold, or open collection
+- Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail
+- Anything notable the structured view does not capture: payment risks, anomalies, or approaching deadlines
+- Recommended next skill or action, without taking it here
+
+Always remind the human that this skill only reads state and never moves money. To act, route to `$belong-inbox` for payment exceptions, the training skills for durable payment rules, or `$belong-check-active-services` for delivery context.

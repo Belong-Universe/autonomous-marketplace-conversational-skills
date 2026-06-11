@@ -34,3 +34,17 @@ Show:
 - Durable Buying Playbook change: `$belong-train-buying-agent`
 - Signed/active delivery state: `$belong-check-active-services`
 - Trust and Decision Explanation details: `$belong-check-reputation`
+
+## Output
+
+This is a read-only view, so nothing changes. Summarize:
+
+- Which Buying Request(s) the human is looking at, by status and need
+- Current pre-contract phase: search, engagement, discovery, proposals, or negotiation
+- The most relevant state: results found, feeds open, proposals received, and how they compare
+- Authority signals when present: budget, cumulative spend, and whether signature is within Standing Authorization
+- Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail
+- Anything notable the structured view does not capture: risks, anomalies, or approaching deadlines
+- Recommended next skill or action, without taking it here
+
+Always remind the human that this skill only reads state. To act, route to `$belong-start-buying-request` for a new need, `$belong-inbox` for approvals, the steering or training skills for behavior, or `$belong-check-active-services` once a proposal is signed.

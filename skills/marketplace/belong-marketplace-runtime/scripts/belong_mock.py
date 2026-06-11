@@ -467,6 +467,156 @@ def command_setup_account(args: argparse.Namespace, state: dict[str, Any]) -> di
     )
 
 
+def expand_account_roles(roles: list[str]) -> set[str]:
+    caps: set[str] = set()
+    for role in roles:
+        if role == "both":
+            caps.update({"buyer", "seller"})
+        elif role in {"buyer", "seller"}:
+            caps.add(role)
+    return caps
+
+
+def collapse_account_roles(caps: set[str]) -> list[str]:
+    if {"buyer", "seller"}.issubset(caps):
+        return ["both"]
+    return sorted(caps)
+
+
+def command_update_account(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+    account_id = args.account_id
+    if not account_id and args.human_name:
+        account_id = find_by_name(state["accounts"], args.human_name)
+    if not account_id or account_id not in state["accounts"]:
+        raise ValueError(
+            "No matching Belong Account. Provide an existing --account-id or --human-name, or run belong-setup-account first."
+        )
+    account = state["accounts"][account_id]
+
+    if args.set_notifications is None and not args.rename_org and not args.remove_role:
+        raise ValueError(
+            "Nothing to update. Provide --set-notifications, --rename-org, or --remove-role."
+        )
+
+    changes: list[str] = []
+
+    if args.set_notifications is not None:
+        channels = sorted(set(split_list(args.set_notifications)))
+        if not channels:
+            raise ValueError(
+                "An account cannot be left without a notification channel. Provide at least one channel to --set-notifications."
+            )
+        previous = list(account.get("notifications", []))
+        for notification_id in [
+            nid for nid, item in state["notifications"].items() if item.get("account_id") == account_id
+        ]:
+            del state["notifications"][notification_id]
+        account["notifications"] = channels
+        for channel in channels:
+            notification_id = next_id(state, "notification")
+            state["notifications"][notification_id] = {
+                "id": notification_id,
+                "account_id": account_id,
+                "channel": channel,
+                "status": "mocked_ready",
+                "message_pattern": "Go to your favorite agentic application and open your Belong Marketplace Inbox.",
+            }
+        audit(
+            state,
+            account["name"],
+            "account.notifications.updated",
+            "Belong Account",
+            account_id,
+            f"Notification channels changed from {previous or ['email']} to {channels}.",
+            {"previous": previous, "current": channels},
+        )
+        changes.append(f"notification channels set to {', '.join(channels)}")
+
+    if args.rename_org:
+        new_name = args.rename_org.strip()
+        if not new_name:
+            raise ValueError("Provide a non-empty organization name for --rename-org.")
+        org_ids = account.get("organizations", [])
+        org_id = args.org_id
+        if not org_id:
+            if len(org_ids) == 1:
+                org_id = org_ids[0]
+            else:
+                raise ValueError(
+                    f"This account has multiple organizations ({', '.join(org_ids)}). Specify which one with --org-id."
+                )
+        if org_id not in org_ids or org_id not in state["organizations"]:
+            raise ValueError(f"Organization {org_id} is not linked to this account.")
+        collision = find_by_name(state["organizations"], new_name)
+        if collision and collision != org_id:
+            raise ValueError(
+                f"Another organization ({collision}) already uses the name '{new_name}'. Choose a different name."
+            )
+        previous_name = state["organizations"][org_id]["name"]
+        state["organizations"][org_id]["name"] = new_name
+        audit(
+            state,
+            account["name"],
+            "organization.renamed",
+            "Organization",
+            org_id,
+            f"Organization renamed from '{previous_name}' to '{new_name}'.",
+            {"previous": previous_name, "current": new_name},
+        )
+        changes.append(f"organization {org_id} renamed to {new_name}")
+
+    if args.remove_role:
+        role = args.remove_role
+        caps = expand_account_roles(account.get("roles", []))
+        if role not in caps:
+            raise ValueError(f"This account does not hold the {role} role; nothing to remove.")
+        if role == "seller":
+            backing = [
+                aid
+                for aid, agent in state["agents"].items()
+                if agent.get("type") == "Selling Agent" and agent.get("account_id") == account_id
+            ]
+        else:
+            backing = [
+                aid
+                for aid, agent in state["agents"].items()
+                if agent.get("type") == "Buying Agent" and agent.get("account_id") == account_id
+            ]
+        if backing:
+            raise ValueError(
+                f"Cannot remove the {role} role while agents still back it: {', '.join(backing)}. "
+                "Retire those agents before removing the role."
+            )
+        caps.discard(role)
+        account["roles"] = collapse_account_roles(caps)
+        audit(
+            state,
+            account["name"],
+            "account.role.removed",
+            "Belong Account",
+            account_id,
+            f"Removed {role} role; remaining roles {account['roles']}.",
+            {"removed": role, "current": account["roles"]},
+        )
+        changes.append(f"{role} role removed")
+
+    return output(
+        f"Updated Belong Account for {account['name']}: {'; '.join(changes)}.",
+        {
+            "account": account,
+            "organizations": {
+                oid: state["organizations"][oid]
+                for oid in account.get("organizations", [])
+                if oid in state["organizations"]
+            },
+        },
+        [
+            "Open the Marketplace Inbox with belong-inbox to see pending guided work.",
+            "Re-run belong-setup-account to add a role, organization, or notification channel.",
+        ],
+    )
+
+
 def service_price(args: argparse.Namespace) -> dict[str, Any]:
     amount = float(args.starting_price or 5000)
     return {
@@ -3823,6 +3973,14 @@ def build_parser() -> argparse.ArgumentParser:
     setup.add_argument("--org-kind", choices=["individual", "company"], default="company")
     setup.add_argument("--notifications", default="email")
 
+    update_account = sub.add_parser("update-account")
+    update_account.add_argument("--account-id")
+    update_account.add_argument("--human-name")
+    update_account.add_argument("--set-notifications")
+    update_account.add_argument("--rename-org")
+    update_account.add_argument("--org-id")
+    update_account.add_argument("--remove-role", choices=["buyer", "seller"])
+
     sell = sub.add_parser("train-selling")
     sell.add_argument("--human-name", required=True)
     sell.add_argument("--org-name", required=True)
@@ -4122,6 +4280,7 @@ COMMANDS = {
     "reset": command_reset,
     "status": command_status,
     "setup-account": command_setup_account,
+    "update-account": command_update_account,
     "train-selling": command_train_selling,
     "train-buying": command_train_buying,
     "buying-request": command_buying_request,

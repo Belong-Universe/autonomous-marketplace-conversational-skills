@@ -9,13 +9,13 @@ Use this once a Selling Agent is in Production for one Service. This is an inter
 
 ## Start
 
-Run runtime `status`. If no Selling Agent is in Production, route the human to `$belong-train-selling-agent`.
+Run runtime `status` to confirm preconditions. This workflow only runs once a Selling Agent is in Production and inbound buyer engagement exists; it does not run proactively. If the precondition is not met, stop instead of proceeding.
 
-Identify the Service Provider human, Selling Agent, Service, buyer-side object, seller inbox state, billing/collections state, and whether the Selling Agent is paused before guiding seller work.
+Identify the Service Provider human, Selling Agent, Service, buyer-side object, seller inbox state, billing/collections state, and whether the Selling Agent is paused before acting on seller work.
 
 ## Production Responsibilities
 
-Keep the Service Provider human oriented around what the Selling Agent does:
+The Selling Agent's Production responsibilities:
 
 - Represents one Service 24/7
 - Answers buyer questions through Engagement Feeds

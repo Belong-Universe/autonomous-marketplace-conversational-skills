@@ -27,6 +27,7 @@ Delivery acceptance requires a Deliverable Evidence Package. Direct `payment` re
 - `status`
 - `reset --seed-catalog`
 - `setup-account --human-name ... --role buyer|seller|both --org-name ... --notifications email,Slack`
+- `update-account [--account-id ...] [--human-name ...] [--set-notifications ...] [--rename-org ... [--org-id ...]] [--remove-role buyer|seller]`
 - `train-buying --human-name ... --org-name ... --goals ... --timeline ... --selection-rules ... --contract-authority ... --payment-rules ... --acceptance-criteria ... --escalation-rules ... --activate`
 - `train-selling --human-name ... --org-name ... --service-name ... --description ... --tags ... --buyer-personas ... --use-cases ... --discovery-questions ... --pricing-model ... --billing-cycle ... --collections ... --contract-terms ... --discount-limit ... --scope-limits ... --delivery-workflow ... --deliverables ... --evidence-requirements ... --escalation-paths ... --meeting-rules ... --dispute-rules ... --reputation-rules ... --activate`
 - `update-buying-playbook --agent-id ... --changes ... --reason ...`
@@ -81,6 +82,8 @@ For Change Orders, include the contract/SOW delta, price change, timeline change
 - `optimization --agent-id ...`
 
 Use `optimization` to create a training recommendation. Apply durable Buying Playbook or Service Playbook changes through `update-buying-playbook` or `update-selling-playbook`, not Inbox.
+
+Use `setup-account` for new accounts and for additive changes (re-running it adds a role, an organization, or notification channels). Use `update-account` to change rather than add: replace the notification channel(s) with `--set-notifications` (at least one channel is always required), rename an organization with `--rename-org`, or remove a role with `--remove-role`. A role cannot be removed while agents still back it: the seller role is blocked while a Selling Agent exists, and the buyer role while a Buying Agent exists.
 
 Use `start-buying-request` for buyer intent such as "I need X"; it creates a Buying Request and launches semantic search. Do not model new buyer demand as steering.
 

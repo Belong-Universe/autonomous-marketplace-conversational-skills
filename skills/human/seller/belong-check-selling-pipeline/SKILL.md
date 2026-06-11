@@ -33,3 +33,17 @@ Show:
 - Signed/active delivery state: `$belong-check-active-services`
 - Payment ledger details: `$belong-check-payments`
 - Trust and Decision Explanation details: `$belong-check-reputation`
+
+## Output
+
+This is a read-only view, so nothing changes. Summarize:
+
+- Which Service(s) and Selling Agent(s) the human is looking at, by status and Playbook version
+- Current pre-contract phase: listing, engagement, discovery, proposals, or negotiation
+- The most relevant state: inbound feeds open, discovery answered, proposals issued, and where they wait
+- Billing readiness when present: billing/collections setup, platform fee, seller net, and merchant-of-record state
+- Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail
+- Anything notable the structured view does not capture: risks, anomalies, or approaching deadlines
+- Recommended next skill or action, without taking it here
+
+Always remind the human that this skill only reads state. To act, route to `$belong-inbox` for approvals and exceptions, the steering or training skills for behavior, or `$belong-check-active-services` once a buyer signs a proposal.

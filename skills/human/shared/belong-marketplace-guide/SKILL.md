@@ -19,10 +19,31 @@ If the runtime path is not present, locate sibling skill `belong-marketplace-run
 
 - New Service Provider human: use `$belong-setup-account`, then `$belong-train-selling-agent`.
 - New buyer-side human: use `$belong-setup-account`, then `$belong-train-buying-agent`, then `$belong-start-buying-request`.
+- New human who both buys and sells: use `$belong-setup-account` with role `both`, then train each side independently: `$belong-train-buying-agent` for buying, and `$belong-train-selling-agent` for each Service. One account holds one Buying Agent and one Selling Agent per Service, each with its own Playbook.
 - Wants the complete mocked experience fast: run `scenario full-lifecycle --reset`, then summarize the generated state and next inbox items.
 - Already in Production: route by role and intent to the shared, buyer-specific, or seller-specific skills below.
 
 Always orient the human by role. Seller-side humans should hear which Service, Selling Agent, buyer feed, contract, billing state, fulfillment task, and seller inbox item they are acting on.
+
+Whenever a Belong agent needs the human, it adds an item to the Marketplace Inbox and sends a notification on the human's preferred channel. The human returns to their agentic application and opens `$belong-inbox`. The notification is mocked; the Inbox is the canonical work list.
+
+## Find Your Next Step By Intent
+
+Map what the human wants to the right skill. Route by intent first, then confirm role.
+
+| The human wants to... | Use |
+| --- | --- |
+| Get started or is unsure where to begin | `$belong-setup-account` |
+| Buy something ("I need X") | `$belong-start-buying-request` |
+| See what needs their approval or input | `$belong-inbox` |
+| Check how a purchase is progressing (pre-contract) | `$belong-check-buying-requests` |
+| Check inbound buyer pipeline (seller side) | `$belong-check-selling-pipeline` |
+| See delivery and active work after signature | `$belong-check-active-services` |
+| See money, charges, holds, refunds, or payouts | `$belong-check-payments` |
+| Understand why an agent acted, or review audit/reputation | `$belong-check-reputation` |
+| Handle a contested delivery or dispute | `$belong-inbox` to respond; `$belong-check-active-services` and `$belong-check-reputation` for detail |
+| Temporarily nudge an agent | `$belong-steer-buying-agent` or `$belong-steer-selling-agent` |
+| Permanently change how an agent behaves | `$belong-train-buying-agent` or `$belong-train-selling-agent` |
 
 ## Shared Human Skills
 
@@ -46,6 +67,8 @@ Always orient the human by role. Seller-side humans should hear which Service, S
 - `$belong-steer-selling-agent`: temporary non-durable guidance for a Selling Agent inside the current Service Playbook and Standing Authorization.
 
 ## Internal Agent Skills
+
+These run automatically as part of the Belong agents' autonomous work. The human does not invoke them directly; agents execute them inside their Playbooks and Standing Authorization, then escalate to the human through `$belong-inbox` when input is needed.
 
 - `$belong-internal-buying-workflow`: internal Buying Agent capability for Buying Request, semantic search, Engagement Feed, Discovery Questionnaire answers, seller-signed Service Contract/SOW comparison, negotiation, buyer signature, Composite Buying Request, and Provider Optimization.
 - `$belong-internal-selling-workflow`: internal Selling Agent capability for seller-led discovery, seller-signed Service Contract/SOW proposals, negotiation, billing/collections, Service readiness, and Selling Optimization.

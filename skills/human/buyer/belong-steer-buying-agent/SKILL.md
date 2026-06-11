@@ -36,6 +36,8 @@ Run runtime `status`, identify the target Buying Agent, and confirm the intended
 - `buying_request`
 - `active_service`
 
+When scope is `general` and no expiration is given, clarify intent before recording: propose a temporary window if the nudge is short-lived, or route to `$belong-train-buying-agent` if the human means a permanent, from-now-on change. An open-ended general steer that never expires should become durable training instead.
+
 Then run `steer-buying-agent` with the instruction, scope, linked object when needed, expiration when provided, and actor.
 
 ## Output

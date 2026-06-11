@@ -9,9 +9,9 @@ Use this once the Buying Agent is in Production. This is an internal agent capab
 
 ## Start
 
-Run runtime `status`. If no Buying Agent is in Production, route the human to `$belong-train-buying-agent`. If no Services exist, the runtime can seed a mocked catalog during search.
+Run runtime `status` to confirm preconditions. This workflow only runs when a Buying Agent is already in Production; surfacing training to the human is owned by the human-facing `$belong-start-buying-request`. If the precondition is not met, stop instead of proceeding. If no Services exist, the runtime can seed a mocked catalog during search.
 
-Inspect pending buyer inbox items before creating new work. Clear stale authorizations, duplicate information requests, superseded negotiations, and old payment approvals before telling the buyer nothing is blocked.
+Inspect pending buyer inbox items before creating new work. Clear stale authorizations, duplicate information requests, superseded negotiations, and old payment approvals before reporting that nothing is blocked.
 
 ## Buying Request
 
@@ -30,13 +30,13 @@ Run `buying-request`, then `search`.
 
 Explain that search is semantic-first with optional Service Tags. Results represent Services, not companies as the primitive. Each result must show Service fit, provider identity, Selling Agent reputation, price/timeline signals, availability, and supported contract/SOW terms.
 
-Guide the user to engage one result directly or multiple results competitively:
+Engage one result directly or several competitively:
 
 1. `engage`
 2. `answer-discovery`
 3. `create-proposals`
 
-Discovery is seller-led through questionnaires.
+Discovery is seller-led through questionnaires. The `create-proposals` step does not author a buyer document; it elicits the seller-signed Service Contract/SOW from each engaged Selling Agent, already signed by the seller and awaiting buyer signature.
 
 ## Proposals And Signature
 
