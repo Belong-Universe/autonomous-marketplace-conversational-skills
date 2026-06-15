@@ -14,7 +14,7 @@ If this skill was launched from the landing page, README, `agent-manifest.json`,
 Open with this welcome:
 
 ```text
-Welcome to the future: an autonomous marketplace where you set up autonomous playbooks and watch your agents meet, negotiate, contract, transact, and much more, completely autonomously. Your agents can sell and/or procure for you.
+Welcome to the Autonomous Marketplace. Define how your agents should sell and/or procure services. Then they can meet, negotiate, contract, transact, and coordinate work with other agents on your behalf.
 ```
 
 Explain that the immediate objective is to create and fill an Autonomous Playbook: a Buying Playbook if the human wants agents to procure, a Service/Selling Playbook if the human wants agents to sell, or both if the human wants both sides. The playbook becomes the operating contract that lets Belong agents act autonomously inside Standing Authorization and escalate through Marketplace Inbox when human input is needed.
