@@ -4,7 +4,7 @@
 
 Status: Missing
 
-The final Selling Playbook will be assembled only after all eight sections are approved.
+The final Selling Playbook will be assembled only after all nine sections are approved.
 
 ## 1. Value Proposition
 
@@ -38,3 +38,6 @@ TBD
 
 TBD
 
+## 9. Capacity And Objective
+
+TBD

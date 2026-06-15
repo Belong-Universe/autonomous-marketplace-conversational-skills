@@ -9,6 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "skills" / "marketplace" / "belong-marketplace-runtime" / "scripts" / "belong_mock.py"
 SKILLS = ROOT / "skills"
+INSTALLER = ROOT / "scripts" / "install-local-skills.sh"
+SYNC_MIRRORS = ROOT / "scripts" / "sync-skill-mirrors.sh"
+MIRROR_ROOTS = [
+    ROOT / ".agents" / "skills",
+    ROOT / ".claude" / "skills",
+]
 
 
 def skill_path(name):
@@ -49,6 +55,25 @@ def run_belong_raw(state_path, *args):
     )
     payload = json.loads(completed.stdout)
     return completed.returncode, payload
+
+
+def run_installer(*args):
+    return subprocess.run(
+        [str(INSTALLER), *args],
+        cwd=ROOT,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+
+def source_skill_dirs():
+    return sorted(path.parent for path in SKILLS.rglob("SKILL.md"))
+
+
+def files_under(path):
+    return sorted(candidate.relative_to(path) for candidate in path.rglob("*") if candidate.is_file())
 
 
 def train_ready_buyer(state_path, name="Nia Buyer", org="Quill Health", budget="20000", max_spend="20000"):
@@ -980,13 +1005,100 @@ class BelongSkillPackTests(unittest.TestCase):
             ]
             self.assertEqual(len(ready_items), 1)
 
-    def test_readme_install_paths_exist(self):
+    def test_installer_and_docs_use_host_native_destinations(self):
         readme = (ROOT / "README.md").read_text()
-        install_paths = re.findall(r"--path (skills/[\w/.-]+)", readme)
+        installer = INSTALLER.read_text()
 
-        self.assertTrue(install_paths)
-        for install_path in install_paths:
-            self.assertTrue((ROOT / install_path).is_dir(), f"Missing README install path: {install_path}")
+        self.assertIn("BELONG_SKILLS_DEST", readme)
+        self.assertIn("--host codex --scope repo", readme)
+        self.assertIn("--host cursor --scope repo", readme)
+        self.assertIn("--host claude-code --scope repo", readme)
+        self.assertIn(".agents/skills", readme)
+        self.assertIn(".claude/skills", readme)
+        self.assertIn("Missing skill destination.", installer)
+        self.assertIn("--host codex|cursor|claude-code|custom", installer)
+        self.assertIn("BELONG_SKILLS_DEST", installer)
+        self.assertNotIn('${CODEX_HOME:-$HOME/.codex}/skills', readme)
+        self.assertNotIn('DEST_DIR="${CODEX_HOME:-$HOME/.codex}/skills"', installer)
+
+    def test_skill_mirrors_exist_and_match_source(self):
+        sources = source_skill_dirs()
+        self.assertEqual(len(sources), 18)
+
+        for mirror_root in MIRROR_ROOTS:
+            self.assertTrue(mirror_root.exists(), f"Missing mirror root: {mirror_root}")
+            mirrored_names = sorted(path.parent.name for path in mirror_root.rglob("SKILL.md"))
+            source_names = sorted(path.name for path in sources)
+            self.assertEqual(mirrored_names, source_names)
+
+            for source in sources:
+                mirror = mirror_root / source.name
+                self.assertTrue((mirror / "SKILL.md").exists(), f"Missing mirrored SKILL.md: {mirror}")
+                self.assertEqual(files_under(mirror), files_under(source), f"Mirror file drift: {mirror}")
+                for relative_file in files_under(source):
+                    self.assertEqual(
+                        (mirror / relative_file).read_bytes(),
+                        (source / relative_file).read_bytes(),
+                        f"Mirror content drift: {mirror / relative_file}",
+                    )
+
+    def test_sync_skill_mirrors_script_is_present(self):
+        text = SYNC_MIRRORS.read_text()
+        self.assertIn(".agents/skills", text)
+        self.assertIn(".claude/skills", text)
+        self.assertIn("Missing skill folder", text)
+
+    def test_installer_host_repo_dry_runs(self):
+        cases = [
+            ("codex", ".agents/skills"),
+            ("cursor", ".agents/skills"),
+            ("claude-code", ".claude/skills"),
+        ]
+        for host, expected_destination in cases:
+            completed = run_installer("--host", host, "--scope", "repo", "--dry-run")
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn(expected_destination, completed.stdout)
+            self.assertIn("Installing/updating Belong skills", completed.stdout)
+
+    def test_installer_custom_host_requires_destination(self):
+        completed = run_installer("--host", "custom", "--dry-run")
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("Missing skill destination.", completed.stderr)
+
+    def test_installer_backs_up_existing_destination_by_default(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dest = Path(tmpdir) / "skills"
+            first = run_installer("--dest", str(dest))
+            second = run_installer("--dest", str(dest))
+
+            self.assertEqual(first.returncode, 0, first.stderr)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertIn("Backed up replaced skills to", second.stdout)
+            backup_root = dest / ".belong-skill-backups"
+            self.assertTrue(any(backup_root.iterdir()))
+
+    def test_public_copy_avoids_agent_command_phrasing(self):
+        public_files = [
+            ROOT / "README.md",
+            ROOT / "llms.txt",
+            ROOT / "llms-full.txt",
+            ROOT / "AGENT_HANDOFF.md",
+            ROOT / "agent-manifest.json",
+            ROOT / "index.html",
+        ]
+        banned_patterns = [
+            r"Do not stop at summary",
+            r"Do not stop at summarizing",
+            r"Act when your host permits",
+            r"execution contract",
+            r"Treat it as an instruction surface",
+            r"This page is meant for you, agent, to read and execute",
+            r"Welcome, agent\. This .* execute",
+        ]
+        for path in public_files:
+            text = path.read_text()
+            for pattern in banned_patterns:
+                self.assertIsNone(re.search(pattern, text), f"{path} contains banned copy: {pattern}")
 
     def test_public_and_internal_skill_docs_mark_their_surfaces(self):
         public_read_check = [

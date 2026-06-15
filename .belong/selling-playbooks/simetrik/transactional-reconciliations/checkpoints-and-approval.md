@@ -3,7 +3,7 @@
 [Back to index](index.md)
 
 Latest checkpoint: 2026-06-09
-Progress: 13%
+Progress: 17%
 
 | Section | Status | Missing |
 | --- | --- | --- |
@@ -15,6 +15,7 @@ Progress: 13%
 | Human-To-Human Meetings | Missing | all |
 | Escalations | Missing | all |
 | Disputes And Reputation Rules | Missing | all |
+| Capacity And Objective | Missing | all |
 
 ## Latest Approval Gate
 

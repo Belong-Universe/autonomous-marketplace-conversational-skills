@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Steer Buying Agent"
+  short_description: "Temporarily guide buying"
+  default_prompt: "Use $belong-steer-buying-agent to temporarily guide my Buying Agent without changing its Playbook."

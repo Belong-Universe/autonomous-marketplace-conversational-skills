@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Start Buying Request"
+  short_description: "Start a buyer need"
+  default_prompt: "Use $belong-start-buying-request to tell my Buying Agent what I need and start marketplace search."

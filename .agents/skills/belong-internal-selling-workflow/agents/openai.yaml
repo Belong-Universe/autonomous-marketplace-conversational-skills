@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Internal Selling Workflow"
+  short_description: "Internal Selling Agent capability"
+  default_prompt: "Use $belong-internal-selling-workflow only as an internal Selling Agent capability."

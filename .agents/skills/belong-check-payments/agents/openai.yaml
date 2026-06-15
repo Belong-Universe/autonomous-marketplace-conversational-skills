@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Check Payments"
+  short_description: "Check bank and transactions"
+  default_prompt: "Use $belong-check-payments to show my Belong payment ledger, bank readiness, and transactions."

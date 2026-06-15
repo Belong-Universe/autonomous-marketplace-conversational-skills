@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Check Reputation"
+  short_description: "Inspect trust, audit, and explanations"
+  default_prompt: "Use $belong-check-reputation to explain what happened and how reputation changed."

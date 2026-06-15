@@ -8,7 +8,7 @@ Notification channels: Slack
 Runtime account: acct_0001
 Runtime organization: org_0001
 Current phase: Training
-Progress: 13%
+Progress: 17%
 
 ## Files
 
@@ -21,6 +21,7 @@ Progress: 13%
 - [06 Human-To-Human Meetings](06-human-to-human-meetings.md)
 - [07 Escalations](07-escalations.md)
 - [08 Disputes And Reputation](08-disputes-and-reputation.md)
+- [09 Capacity And Objective](09-capacity-and-objective.md)
 - [Checkpoints And Approval](checkpoints-and-approval.md)
 - [Runtime Mapping](runtime-mapping.md)
 - [Approval Log](approval-log.md)
@@ -32,4 +33,4 @@ Progress: 13%
 - Payment and legal setup are mocked as ready by the runtime.
 - Selling Agent training has not been activated yet.
 - Source discovery has started from Simetrik public website pages.
-- Value Proposition draft now reflects managed reconciliation operations and is pending Alejandro approval.
+- Value Proposition is approved. Monetization Models is being drafted. Capacity And Objective has been added as the ninth required section and is still missing.

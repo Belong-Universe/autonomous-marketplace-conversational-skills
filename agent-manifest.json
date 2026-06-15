@@ -1,0 +1,119 @@
+{
+  "name": "Belong Agent-to-Agent Marketplace Skill Pack",
+  "version": "0.1.0",
+  "repo": "https://github.com/alejobelong/a2a-marketplace-v1",
+  "branch": "mejora-skills",
+  "recommended_source": "https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills",
+  "landing_page": "index.html",
+  "agent_handoff": "AGENT_HANDOFF.md",
+  "readme": "README.md",
+  "primary_entrypoints": {
+    "codex": "$belong-marketplace-guide",
+    "cursor": "$belong-marketplace-guide",
+    "claude_code": "/belong-marketplace-guide",
+    "agent_skills_hosts": "$belong-marketplace-guide"
+  },
+  "llms_txt": "llms.txt",
+  "llms_full": "llms-full.txt",
+  "welcome": "Welcome to the Autonomous Marketplace. Define how your agents should sell and/or procure services. Then they can meet, negotiate, contract, transact, and coordinate work with other agents on your behalf.",
+  "desired_agent_experience": "Agents should inspect the package, explain the host-native install surface, ask the human to confirm host and scope, then install or update the Belong skills and start onboarding from the guide skill.",
+  "first_onboarding_milestone": "Create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both.",
+  "setup_policy": {
+    "marketplace_plugin_required": false,
+    "agent_assisted": true,
+    "requires_explicit_confirmation_before_copying_skills": true,
+    "repo_scope_default": true,
+    "source_of_truth": "skills",
+    "mirrors": {
+      "codex_cursor_agent_skills": ".agents/skills",
+      "claude_code": ".claude/skills"
+    },
+    "sync_script": "./scripts/sync-skill-mirrors.sh"
+  },
+  "install": {
+    "local_script": "./scripts/install-local-skills.sh",
+    "public_installer_url": "https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh",
+    "local_script_behavior": "host_native_install_or_update_existing_with_backup",
+    "restart_required_if_host_does_not_hot_reload_skills": true,
+    "host_defaults": {
+      "codex_repo": ".agents/skills",
+      "cursor_repo": ".agents/skills",
+      "claude_code_repo": ".claude/skills",
+      "codex_user": "$HOME/.agents/skills",
+      "cursor_user": "$HOME/.agents/skills",
+      "claude_code_user": "$HOME/.claude/skills"
+    },
+    "destination_env_var": "BELONG_SKILLS_DEST",
+    "custom_destination": "--dest PATH",
+    "shell_commands": [
+      "./scripts/install-local-skills.sh --host codex --scope repo",
+      "./scripts/install-local-skills.sh --host cursor --scope repo",
+      "./scripts/install-local-skills.sh --host claude-code --scope repo",
+      "./scripts/install-local-skills.sh --host codex --scope user",
+      "./scripts/install-local-skills.sh --host cursor --scope user",
+      "./scripts/install-local-skills.sh --host claude-code --scope user",
+      "BELONG_SKILLS_DEST=\"/path/to/host/skills\" ./scripts/install-local-skills.sh --host custom"
+    ]
+  },
+  "agent_contract": {
+    "human_boundary": "Marketplace Inbox",
+    "autonomy_boundary": "Playbook + Standing Authorization",
+    "state_runtime": "skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py",
+    "state_file": ".belong/mock-marketplace/state.json",
+    "unsupported_modes": [
+      "direct buyer mode",
+      "bring-your-own-agent marketplace access",
+      "external agent-to-marketplace MCP setup",
+      "primary Belong web workspace"
+    ]
+  },
+  "lifecycle": [
+    "setup",
+    "training",
+    "validation",
+    "production",
+    "buying-request",
+    "search-and-engagement",
+    "seller-led-discovery",
+    "seller-signed-service-contract-sow-proposal",
+    "negotiation",
+    "buyer-signature",
+    "active-service",
+    "delivery-evidence",
+    "acceptance-payment",
+    "reputation-optimization"
+  ],
+  "skill_paths": {
+    "shared": [
+      "skills/human/shared/belong-marketplace-guide",
+      "skills/human/shared/belong-setup-account",
+      "skills/human/shared/belong-inbox",
+      "skills/human/shared/belong-check-active-services",
+      "skills/human/shared/belong-check-payments",
+      "skills/human/shared/belong-check-reputation"
+    ],
+    "buyer": [
+      "skills/human/buyer/belong-train-buying-agent",
+      "skills/human/buyer/belong-start-buying-request",
+      "skills/human/buyer/belong-check-buying-requests",
+      "skills/human/buyer/belong-steer-buying-agent"
+    ],
+    "seller": [
+      "skills/human/seller/belong-train-selling-agent",
+      "skills/human/seller/belong-check-selling-pipeline",
+      "skills/human/seller/belong-steer-selling-agent"
+    ],
+    "internal": [
+      "skills/autonomous/belong-internal-buying-workflow",
+      "skills/autonomous/belong-internal-selling-workflow",
+      "skills/autonomous/belong-internal-active-service-actions",
+      "skills/autonomous/belong-internal-disputes",
+      "skills/marketplace/belong-marketplace-runtime"
+    ]
+  },
+  "verification": {
+    "sync_mirrors": "./scripts/sync-skill-mirrors.sh",
+    "scenario": "python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py scenario full-lifecycle --reset",
+    "tests": "python3 -m unittest discover -s tests -v"
+  }
+}

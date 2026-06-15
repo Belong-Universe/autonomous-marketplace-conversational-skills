@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Internal Buying Workflow"
+  short_description: "Internal Buying Agent capability"
+  default_prompt: "Use $belong-internal-buying-workflow only as an internal Buying Agent capability."

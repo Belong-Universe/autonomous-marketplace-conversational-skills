@@ -5,10 +5,6 @@
 Status: Missing
 Approval: Not requested
 
-## What I Understood
-
-- TBD
-
 ## Playbook Rules
 
 - TBD
@@ -26,6 +22,9 @@ Approval: Not requested
 - Internal owners for each escalation path
 
 ## Source Notes
+
+Derived from approval chat:
+- TBD
 
 - No source reviewed yet.
 

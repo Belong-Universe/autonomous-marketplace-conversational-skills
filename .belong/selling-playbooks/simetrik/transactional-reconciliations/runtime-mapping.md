@@ -11,6 +11,7 @@ Status: Missing
 - `--service-name`: Transactional Reconciliations
 - `--description`: Managed reconciliation operations for companies with high-volume, multi-source transaction flows that need automated matching, discrepancy handling, operational balance validation, money-leakage prevention, faster close cycles, and audit-ready traceability.
 - `--tags`: transactional-reconciliation, finance-operations, accounting-automation, payment-reconciliation, settlement-reconciliation, exception-management, audit-readiness, no-code-integrations, financial-close
+- `--availability`: TBD
 - `--buyer-personas`: Finance Operations leaders; Accounting and Controller teams; Platform Operations and IT leaders; operators inside PSPs, marketplaces, acquirers, issuers, neobanks, banks, retailers, fintechs, and complex transaction businesses
 - `--use-cases`: transaction reconciliation; payment and settlement reconciliation; fee validation; operational balance reconciliation; ERP and accounting sync; discrepancy and exception management; audit evidence; regulatory reporting support; financial close support
 - `--discovery-questions`: Which transaction flows need reconciliation today, and which systems produce the source files or data? What volume do you process daily or monthly, and how much of the work is currently manual? Which mismatches are most expensive or risky? Which teams depend on the reconciliation output? What is the required reconciliation cadence? What evidence, audit trail, dashboards, reports, or ERP outputs must the implementation produce? Which systems must Simetrik integrate with first? What deadline or business event makes this urgent?
@@ -30,3 +31,8 @@ Status: Missing
 - `--dispute-rules`: TBD
 - `--reputation-rules`: TBD
 - `--activate`: pending all section approvals
+
+## Capacity And Objective Mapping
+
+- Delivery capacity maps to `--availability` and at-capacity behavior maps to `--escalation-paths`.
+- Optimization objective has no dedicated seller runtime flag; reflect it through `--negotiation-limits` and `--reputation-rules`.

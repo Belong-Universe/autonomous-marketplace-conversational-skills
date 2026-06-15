@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Runtime"
+  short_description: "Mock backend for Belong marketplace state"
+  default_prompt: "Use $belong-marketplace-runtime to inspect or run the mocked Belong marketplace backend."

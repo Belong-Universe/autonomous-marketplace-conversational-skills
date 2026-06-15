@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Check Active Services"
+  short_description: "Check Active Services"
+  default_prompt: "Use $belong-check-active-services to show my Active Services, obligations, evidence, and linked Inbox items."

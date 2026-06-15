@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Inbox"
+  short_description: "Handle escalations and overrides"
+  default_prompt: "Use $belong-inbox to show what needs my attention."

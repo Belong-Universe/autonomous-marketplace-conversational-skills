@@ -1,0 +1,4 @@
+interface:
+  display_name: "Belong Check Selling Pipeline"
+  short_description: "Check seller pipeline"
+  default_prompt: "Use $belong-check-selling-pipeline to show my Service pipeline, engagements, discovery, proposals, and linked Inbox items."
