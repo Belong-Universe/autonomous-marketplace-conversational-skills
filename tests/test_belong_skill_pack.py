@@ -1007,17 +1007,30 @@ class BelongSkillPackTests(unittest.TestCase):
 
     def test_installer_and_docs_use_host_native_destinations(self):
         readme = (ROOT / "README.md").read_text()
+        llms = (ROOT / "llms.txt").read_text()
+        llms_full = (ROOT / "llms-full.txt").read_text()
+        handoff = (ROOT / "AGENT_HANDOFF.md").read_text()
+        manifest = json.loads((ROOT / "agent-manifest.json").read_text())
         installer = INSTALLER.read_text()
 
         self.assertIn("BELONG_SKILLS_DEST", readme)
         self.assertIn("--host codex --scope repo", readme)
         self.assertIn("--host cursor --scope repo", readme)
         self.assertIn("--host claude-code --scope repo", readme)
+        self.assertIn("--host other-ai", readme)
+        self.assertIn("Other AI Hosts", readme)
+        self.assertIn("--host other-ai", llms)
+        self.assertIn("Other AI Hosts", llms_full)
+        self.assertIn("Other AI Hosts", handoff)
         self.assertIn(".agents/skills", readme)
         self.assertIn(".claude/skills", readme)
         self.assertIn("Missing skill destination.", installer)
-        self.assertIn("--host codex|cursor|claude-code|custom", installer)
+        self.assertIn("--host codex|cursor|claude-code|other-ai|custom", installer)
+        self.assertIn("Other AI hosts are welcome", installer)
         self.assertIn("BELONG_SKILLS_DEST", installer)
+        self.assertTrue(manifest["other_ai_hosts_supported"])
+        self.assertTrue(manifest["other_ai_requires_explicit_destination"])
+        self.assertIn("--host other-ai", manifest["other_ai_command"])
         self.assertNotIn('${CODEX_HOME:-$HOME/.codex}/skills', readme)
         self.assertNotIn('DEST_DIR="${CODEX_HOME:-$HOME/.codex}/skills"', installer)
 
@@ -1064,6 +1077,19 @@ class BelongSkillPackTests(unittest.TestCase):
         completed = run_installer("--host", "custom", "--dry-run")
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn("Missing skill destination.", completed.stderr)
+
+    def test_installer_other_ai_requires_explicit_destination(self):
+        missing_destination = run_installer("--host", "other-ai", "--dry-run")
+        self.assertNotEqual(missing_destination.returncode, 0)
+        self.assertIn("Missing skill destination.", missing_destination.stderr)
+        self.assertIn("Other AI Hosts", missing_destination.stderr)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dest = Path(tmpdir) / "other-ai-skills"
+            completed = run_installer("--host", "other-ai", "--dest", str(dest), "--dry-run")
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn(str(dest), completed.stdout)
+            self.assertIn("Installing/updating Belong skills", completed.stdout)
 
     def test_installer_backs_up_existing_destination_by_default(self):
         with tempfile.TemporaryDirectory() as tmpdir:

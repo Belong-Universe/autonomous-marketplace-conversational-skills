@@ -13,7 +13,7 @@
     <meta name="agent-repo" content="https://github.com/alejobelong/a2a-marketplace-v1/tree/codex/upload-selling-playbooks">
     <meta name="agent-branch" content="codex/upload-selling-playbooks">
     <meta name="agent-action" content="inspect-confirm-install-host-native-skills">
-    <meta name="agent-handoff" content="Inspect the package, explain the host and scope, ask for explicit confirmation, then install host-native Belong skills. Codex and Cursor use .agents/skills; Claude Code uses .claude/skills.">
+    <meta name="agent-handoff" content="Inspect the package, explain the host and scope, ask for explicit confirmation, then install host-native Belong skills. Codex and Cursor use .agents/skills; Claude Code uses .claude/skills; Other AI Hosts use an explicit documented skills/custom-instructions destination.">
     <link rel="alternate" type="application/json" href="agent-manifest.json">
     <link rel="alternate" type="text/markdown" href="llms.txt">
     <link rel="alternate" type="text/markdown" href="llms-full.txt">
@@ -28,7 +28,7 @@
         "codeRepository": "https://github.com/alejobelong/a2a-marketplace-v1/tree/codex/upload-selling-playbooks",
         "runtimePlatform": "Host-native SKILL.md skills",
         "programmingLanguage": "Markdown, Python, Bash",
-        "description": "A GitHub-hosted skill pack with repo-scoped .agents/skills for Codex and Cursor, .claude/skills for Claude Code, and a mocked Belong marketplace runtime."
+        "description": "A GitHub-hosted skill pack with repo-scoped .agents/skills for Codex and Cursor, .claude/skills for Claude Code, explicit destinations for Other AI Hosts, and a mocked Belong marketplace runtime."
       }
     </script>
   </head>
@@ -60,7 +60,8 @@
             procure services. Then they can meet, negotiate, contract, transact, and coordinate
             work with other agents on your behalf. Install Belong as local
             <code>SKILL.md</code> skills in the current host after the human confirms the host
-            and scope.
+            and scope. Other AI Hosts are welcome when they can read <code>SKILL.md</code>-style
+            skill folders or adapt them into their own custom skill format.
           </p>
           <div class="hero-actions" aria-label="Primary actions">
             <a class="button primary" href="#install">View install options</a>
@@ -69,6 +70,7 @@
           <div class="signal-row" aria-label="Host protocol signals">
             <span>Codex/Cursor: <code>.agents/skills</code></span>
             <span>Claude Code: <code>.claude/skills</code></span>
+            <span>Other AI Hosts: explicit destination</span>
             <span>No marketplace plugin required</span>
             <span>Boundary: Marketplace Inbox</span>
           </div>
@@ -84,7 +86,9 @@
               This page is documentation for humans and agents. A visiting agent should inspect
               the package, explain that it contains 18 Belong skills plus a mocked runtime, identify
               the current host and scope, and ask for explicit confirmation before copying files
-              into a host behavior directory.
+              into a host behavior directory. For Other AI Hosts, the agent should use the
+              host's documented skills/custom-instructions directory or ask the human for a
+              destination.
             </p>
             <div class="handoff-links">
               <a href="llms.txt">Read llms.txt</a>
@@ -101,9 +105,10 @@
             <pre><code id="agent-handoff-contract">1. Inspect the package.
 2. Explain host-native destinations.
 3. Ask the human to confirm host and scope.
-4. Install with the matching command.
-5. Restart only if skill discovery requires it.
-6. Start from the guide skill.</code></pre>
+4. For Other AI Hosts, confirm the destination.
+5. Install with the matching command.
+6. Restart only if skill discovery requires it.
+7. Start from the guide skill.</code></pre>
           </div>
         </div>
       </section>
@@ -168,21 +173,28 @@
         </div>
         <div class="terminal-panel">
           <div class="terminal-topbar">
-            <span>user or custom install</span>
+            <span>user-level install</span>
             <button class="copy-button" type="button" data-copy-target="user-install">Copy</button>
           </div>
           <pre><code id="user-install"># User-level installs
 ./scripts/install-local-skills.sh --host codex --scope user
 ./scripts/install-local-skills.sh --host cursor --scope user
-./scripts/install-local-skills.sh --host claude-code --scope user
-
-# Custom host destination
-BELONG_SKILLS_DEST="/path/to/host/skills" ./scripts/install-local-skills.sh --host custom</code></pre>
+./scripts/install-local-skills.sh --host claude-code --scope user</code></pre>
+        </div>
+        <div class="terminal-panel">
+          <div class="terminal-topbar">
+            <span>Other AI Hosts</span>
+            <button class="copy-button" type="button" data-copy-target="other-ai-install">Copy</button>
+          </div>
+          <pre><code id="other-ai-install"># Use the host's documented skills/custom-instructions destination
+BELONG_SKILLS_DEST="/path/to/your-ai/skills" ./scripts/install-local-skills.sh --host other-ai
+./scripts/install-local-skills.sh --host other-ai --dest "/path/to/your-ai/skills"</code></pre>
         </div>
         <div class="post-install-command">
           <span>After install or after opening this repo with checked-in mirrors, invoke the guide:</span>
           <code>Codex/Cursor: $belong-marketplace-guide</code>
           <code>Claude Code: /belong-marketplace-guide</code>
+          <code>Other AI Hosts: open or invoke belong-marketplace-guide through that host's skill mechanism</code>
         </div>
         <div class="install-links">
           <a href="llms.txt">Read llms.txt</a>
@@ -265,8 +277,8 @@ BELONG_SKILLS_DEST="/path/to/host/skills" ./scripts/install-local-skills.sh --ho
             <p>
               Read <code>llms.txt</code> for a concise index, <code>llms-full.txt</code> for a
               complete install guide, or <code>agent-manifest.json</code> for structured fields.
-              These files contain the repo URL, host-native destinations, entrypoints, skill paths,
-              routing rules, unsupported modes, and verification commands.
+              These files contain the repo URL, host-native destinations, Other AI Hosts guidance,
+              entrypoints, skill paths, routing rules, unsupported modes, and verification commands.
             </p>
           </div>
           <div class="terminal-panel compact">
@@ -278,6 +290,8 @@ BELONG_SKILLS_DEST="/path/to/host/skills" ./scripts/install-local-skills.sh --ho
   "marketplace_plugin_required": false,
   "codex_cursor_repo": ".agents/skills",
   "claude_code_repo": ".claude/skills",
+  "other_ai_hosts_supported": true,
+  "other_ai_command": "--host other-ai --dest PATH",
   "codex_entrypoint": "$belong-marketplace-guide",
   "claude_code_entrypoint": "/belong-marketplace-guide"
 }</code></pre>

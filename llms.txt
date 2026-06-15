@@ -17,8 +17,10 @@ This is a low-noise install index for humans and agents. Treat it as documentati
 
 - Codex/Cursor/Agent Skills-compatible hosts: open this repo and use `.agents/skills`.
 - Claude Code: open this repo and use `.claude/skills`.
+- Other AI Hosts: use `--host other-ai` with an explicit documented skills/custom-instructions destination.
 - Codex/Cursor guide invocation: `$belong-marketplace-guide`
 - Claude Code guide invocation: `/belong-marketplace-guide`
+- Other AI Hosts guide invocation: open or invoke `belong-marketplace-guide` through that host's skill mechanism.
 
 No official marketplace plugin is required for v1.
 
@@ -31,6 +33,7 @@ No official marketplace plugin is required for v1.
 ./scripts/install-local-skills.sh --host codex --scope user
 ./scripts/install-local-skills.sh --host cursor --scope user
 ./scripts/install-local-skills.sh --host claude-code --scope user
+BELONG_SKILLS_DEST="/path/to/your-ai/skills" ./scripts/install-local-skills.sh --host other-ai
 BELONG_SKILLS_DEST="/path/to/host/skills" ./scripts/install-local-skills.sh --host custom
 ```
 
@@ -40,7 +43,10 @@ Dry run first when an agent is helping:
 ./scripts/install-local-skills.sh --host codex --scope repo --dry-run
 ./scripts/install-local-skills.sh --host cursor --scope repo --dry-run
 ./scripts/install-local-skills.sh --host claude-code --scope repo --dry-run
+./scripts/install-local-skills.sh --host other-ai --dest "/path/to/your-ai/skills" --dry-run
 ```
+
+Other AI Hosts are welcome when they can read `SKILL.md`-style skill folders or adapt them into their own custom skill format. A host such as Perplexity Computer should inspect, explain options, and use the Other AI Hosts path only if the human confirms a compatible destination.
 
 ## Canonical Resources
 

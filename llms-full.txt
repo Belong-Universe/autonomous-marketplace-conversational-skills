@@ -8,10 +8,11 @@ This file is a host-neutral install and onboarding guide. Agents should read it 
 
 Make the Belong Skill Pack available in the user's current agentic host, then start onboarding from the guide skill. The first onboarding milestone is to create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both.
 
-No official Codex or Claude Code marketplace plugin is required for v1. The repo includes host-native skill mirrors:
+No official Codex or Claude Code marketplace plugin is required for v1. Other AI hosts are welcome when they can read `SKILL.md`-style skill folders or adapt them into their own custom skill format. The repo includes host-native skill mirrors:
 
 - `.agents/skills` for Codex, Cursor, and Agent Skills-compatible hosts.
 - `.claude/skills` for Claude Code.
+- `--host other-ai --dest PATH` for AI hosts with their own documented skills/custom-instructions directory.
 
 ## Canonical URLs
 
@@ -32,7 +33,7 @@ No official Codex or Claude Code marketplace plugin is required for v1. The repo
    - Claude Code repo scope: `.claude/skills`.
    - Codex/Cursor user scope: `$HOME/.agents/skills`.
    - Claude Code user scope: `$HOME/.claude/skills`.
-   - Other hosts: use their documented skill directory or ask the human for `--dest`.
+   - Other AI Hosts: use their documented skills/custom-instructions directory or ask the human for `--dest`.
 4. Ask the human to confirm the host and scope before copying skills.
 5. Run a dry run when useful.
 6. Install or update with backups.
@@ -40,6 +41,7 @@ No official Codex or Claude Code marketplace plugin is required for v1. The repo
 8. Invoke the guide skill:
    - Codex/Cursor: `$belong-marketplace-guide`
    - Claude Code: `/belong-marketplace-guide`
+   - Other AI Hosts: open or invoke `belong-marketplace-guide` through that host's skill mechanism.
 
 ## Install Or Update Commands
 
@@ -64,12 +66,21 @@ User-scoped installs:
 ./scripts/install-local-skills.sh --host claude-code --scope user
 ```
 
-Custom host destination:
+Other AI Hosts:
+
+```bash
+BELONG_SKILLS_DEST="/path/to/your-ai/skills" ./scripts/install-local-skills.sh --host other-ai
+./scripts/install-local-skills.sh --host other-ai --dest "/path/to/your-ai/skills"
+```
+
+The `custom` host alias remains available for compatibility with existing scripts:
 
 ```bash
 BELONG_SKILLS_DEST="/path/to/host/skills" ./scripts/install-local-skills.sh --host custom
 ./scripts/install-local-skills.sh --dest "/path/to/host/skills"
 ```
+
+A host such as Perplexity Computer should inspect the package, explain whether it has a compatible skills/custom-instructions destination, and use the Other AI Hosts command only after the human confirms the destination.
 
 Fresh clone install from the published branch:
 
@@ -79,7 +90,7 @@ git clone --depth 1 --branch codex/upload-selling-playbooks --single-branch http
 bash "$tmpdir/a2a-marketplace-v1/scripts/install-local-skills.sh" --host codex --scope repo
 ```
 
-Change the `--host` and `--scope` values to match the current host. The installer updates existing installed Belong skills by default and backs up replaced folders under:
+Change the `--host` and `--scope` values to match the current host. For Other AI Hosts, keep `--host other-ai` and provide `--dest` or `BELONG_SKILLS_DEST`; the installer will not guess a destination. The installer updates existing installed Belong skills by default and backs up replaced folders under:
 
 ```text
 <destination>/.belong-skill-backups/
@@ -100,6 +111,7 @@ The script recreates `.agents/skills` and `.claude/skills` from the source skill
 ```text
 Codex/Cursor: $belong-marketplace-guide
 Claude Code:  /belong-marketplace-guide
+Other AI Hosts: open or invoke belong-marketplace-guide through that host's skill mechanism
 ```
 
 The guide should:

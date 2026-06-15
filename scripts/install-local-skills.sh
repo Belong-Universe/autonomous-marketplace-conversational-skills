@@ -33,12 +33,12 @@ SKILL_PATHS=(
 )
 
 usage() {
-  printf '%s\n' "Usage: $0 [--repo-root PATH] [--host codex|cursor|claude-code|custom] [--scope repo|user] [--dest PATH] [--skip-existing] [--no-backup] [--dry-run] [--list]"
+  printf '%s\n' "Usage: $0 [--repo-root PATH] [--host codex|cursor|claude-code|other-ai|custom] [--scope repo|user] [--dest PATH] [--skip-existing] [--no-backup] [--dry-run] [--list]"
   printf '%s\n' ""
   printf '%s\n' "Installs or updates this repo's Belong skills into a host-native SKILL.md directory."
-  printf '%s\n' "Repo defaults require --host: Codex/Cursor -> .agents/skills; Claude Code -> .claude/skills."
-  printf '%s\n' "User defaults require --host: Codex/Cursor -> \$HOME/.agents/skills; Claude Code -> \$HOME/.claude/skills."
-  printf '%s\n' "For any custom destination, pass --dest PATH or set BELONG_SKILLS_DEST."
+  printf '%s\n' "Known hosts have safe defaults: Codex/Cursor -> .agents/skills; Claude Code -> .claude/skills for repo scope."
+  printf '%s\n' "Known hosts have user defaults: Codex/Cursor -> \$HOME/.agents/skills; Claude Code -> \$HOME/.claude/skills."
+  printf '%s\n' "Other AI hosts are welcome; use the host's documented skills/custom-instructions directory with --dest PATH or BELONG_SKILLS_DEST."
   printf '%s\n' "Existing skill folders are backed up before replacement unless --no-backup is used."
 }
 
@@ -56,7 +56,7 @@ resolve_default_dest() {
     claude-code:user)
       DEST_DIR="$HOME/.claude/skills"
       ;;
-    custom:*)
+    other-ai:*|custom:*)
       ;;
     *)
       printf 'Unsupported host/scope combination: host=%s scope=%s\n' "$HOST" "$SCOPE" >&2
@@ -131,7 +131,7 @@ esac
 
 if [[ -n "$HOST" ]]; then
   case "$HOST" in
-    codex|cursor|claude-code|custom) ;;
+    codex|cursor|claude-code|other-ai|custom) ;;
     *)
       printf 'Unsupported host: %s\n' "$HOST" >&2
       usage >&2
@@ -146,7 +146,8 @@ fi
 
 if [[ -z "$DEST_DIR" ]]; then
   printf '%s\n' "Missing skill destination." >&2
-  printf '%s\n' "Pass --host codex|cursor|claude-code with --scope repo|user, or pass --dest PATH / BELONG_SKILLS_DEST for a custom host." >&2
+  printf '%s\n' "Pass --host codex|cursor|claude-code with --scope repo|user, or pass --dest PATH / BELONG_SKILLS_DEST for Other AI Hosts." >&2
+  printf '%s\n' "Other AI hosts are welcome, but their documented skills/custom-instructions directory must be explicit." >&2
   printf '%s\n' "No Codex, Claude Code, or other behavior-changing directory is selected implicitly." >&2
   exit 2
 fi
@@ -220,4 +221,4 @@ printf '\nInstalled: %s, updated: %s, skipped: %s\n' "$installed" "$updated" "$s
 if [[ "$DRY_RUN" != "1" && "$backed_up" -gt 0 ]]; then
   printf 'Backed up replaced skills to %s\n' "$backup_root"
 fi
-printf 'Restart the host agent application if needed, then invoke the guide skill: Codex/Cursor use $belong-marketplace-guide; Claude Code uses /belong-marketplace-guide\n'
+printf 'Restart the host agent application if needed, then invoke the guide skill: Codex/Cursor use $belong-marketplace-guide; Claude Code uses /belong-marketplace-guide; Other AI Hosts open or invoke belong-marketplace-guide through their own skill mechanism\n'
