@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT_DIR="${REPO_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd -P)}"
-DEST_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
+DEST_DIR="${BELONG_SKILLS_DEST:-}"
 UPDATE_EXISTING=1
 BACKUP_EXISTING=1
 DRY_RUN=0
@@ -33,7 +33,8 @@ SKILL_PATHS=(
 usage() {
   printf '%s\n' "Usage: $0 [--repo-root PATH] [--dest PATH] [--skip-existing] [--no-backup] [--dry-run] [--list]"
   printf '%s\n' ""
-  printf '%s\n' "Installs or updates this repo's Belong skills in \${CODEX_HOME:-\$HOME/.codex}/skills."
+  printf '%s\n' "Installs or updates this repo's Belong skills into the host application skill directory."
+  printf '%s\n' "Pass --dest PATH or set BELONG_SKILLS_DEST to the skill directory chosen by the current host application."
   printf '%s\n' "Existing skill folders are backed up before replacement unless --no-backup is used."
 }
 
@@ -82,6 +83,13 @@ done
 if [[ "$LIST_ONLY" == "1" ]]; then
   printf '%s\n' "${SKILL_PATHS[@]}"
   exit 0
+fi
+
+if [[ -z "$DEST_DIR" ]]; then
+  printf '%s\n' "Missing skill destination." >&2
+  printf '%s\n' "Resolve the current host application's SKILL.md directory first, then pass --dest PATH or set BELONG_SKILLS_DEST." >&2
+  printf '%s\n' "Do not default to a Codex directory unless the current host is Codex and that is the host-selected skill directory." >&2
+  exit 2
 fi
 
 missing=0
@@ -153,4 +161,4 @@ printf '\nInstalled: %s, updated: %s, skipped: %s\n' "$installed" "$updated" "$s
 if [[ "$DRY_RUN" != "1" && "$backed_up" -gt 0 ]]; then
   printf 'Backed up replaced skills to %s\n' "$backup_root"
 fi
-printf 'Restart Codex or the host agent application, then run: $belong-marketplace-guide\n'
+printf 'Restart the host agent application if needed, then run: $belong-marketplace-guide\n'

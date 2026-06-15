@@ -980,13 +980,17 @@ class BelongSkillPackTests(unittest.TestCase):
             ]
             self.assertEqual(len(ready_items), 1)
 
-    def test_readme_install_paths_exist(self):
+    def test_readme_uses_host_resolved_installer_contract(self):
         readme = (ROOT / "README.md").read_text()
-        install_paths = re.findall(r"--path (skills/[\w/.-]+)", readme)
+        installer = (ROOT / "scripts" / "install-local-skills.sh").read_text()
 
-        self.assertTrue(install_paths)
-        for install_path in install_paths:
-            self.assertTrue((ROOT / install_path).is_dir(), f"Missing README install path: {install_path}")
+        self.assertIn("BELONG_SKILLS_DEST", readme)
+        self.assertIn("--dest \"$BELONG_SKILLS_DEST\"", readme)
+        self.assertIn("current host application", readme)
+        self.assertIn("Missing skill destination.", installer)
+        self.assertIn("BELONG_SKILLS_DEST", installer)
+        self.assertNotIn('${CODEX_HOME:-$HOME/.codex}/skills', readme)
+        self.assertNotIn('DEST_DIR="${CODEX_HOME:-$HOME/.codex}/skills"', installer)
 
     def test_public_and_internal_skill_docs_mark_their_surfaces(self):
         public_read_check = [

@@ -21,6 +21,7 @@
     "onboarding_next_skill": "$belong-setup-account",
     "onboarding_milestone": "Explain that an Autonomous Playbook will be created and filled before routing into setup and training.",
     "update_policy": "If Belong skills are already installed, replace them with the most recent version from the mejora-skills branch before starting onboarding. The local installer backs up replaced skill folders by default.",
+    "destination_policy": "The current host application must resolve the destination skill directory. Do not assume Codex paths. Pass the destination with --dest or BELONG_SKILLS_DEST.",
     "restart_boundary": "If the host cannot discover newly installed or updated skills until restart or a new session, tell the human to restart and then invoke $belong-marketplace-guide as the first action.",
     "host_assumptions": [
       "Your host can clone GitHub repositories or can use an equivalent GitHub skill installer.",
@@ -33,12 +34,21 @@
     "public_installer_url": "https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh",
     "local_script_behavior": "install_or_update_existing_with_backup",
     "restart_required": true,
-    "destination": "${CODEX_HOME:-$HOME/.codex}/skills",
+    "requires_host_skill_destination": true,
+    "destination_env_var": "BELONG_SKILLS_DEST",
+    "destination": "host-resolved SKILL.md skill directory",
+    "do_not_default_to_codex": true,
+    "host_destination_guidance": {
+      "claude_code": "Use the Claude Code skill directory selected by Claude Code, such as ~/.claude/skills for personal skills or .claude/skills for project skills.",
+      "codex": "Use Codex's own skill directory only when Codex is the current host and selected that destination.",
+      "other_hosts": "Use the host's native SKILL.md skill directory or equivalent import mechanism. If unknown, ask the human."
+    },
     "shell_commands": [
       "tmpdir=\"$(mktemp -d)\"",
       "git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git \"$tmpdir/a2a-marketplace-v1\"",
       "curl -fsSL https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh -o \"$tmpdir/install-local-skills.sh\"",
-      "bash \"$tmpdir/install-local-skills.sh\" --repo-root \"$tmpdir/a2a-marketplace-v1\""
+      ": \"${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}\"",
+      "bash \"$tmpdir/install-local-skills.sh\" --repo-root \"$tmpdir/a2a-marketplace-v1\" --dest \"$BELONG_SKILLS_DEST\""
     ],
     "agent_entrypoint": "$belong-marketplace-guide"
   },
