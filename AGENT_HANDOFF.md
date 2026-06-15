@@ -50,7 +50,7 @@ Use `--dry-run` before installing when the user wants a preview. Existing Belong
 
 ## Host Behavior
 
-- Target branch: `mejora-skills`.
+- Target branch: `codex/upload-selling-playbooks`.
 - Primary Codex/Cursor entrypoint after install: `$belong-marketplace-guide`.
 - Primary Claude Code entrypoint after install: `/belong-marketplace-guide`.
 - First onboarding milestone: create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both.

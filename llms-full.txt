@@ -21,7 +21,7 @@ No official Codex or Claude Code marketplace plugin is required for v1. The repo
 - Agent handoff Markdown: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/AGENT_HANDOFF.md
 - Machine-readable manifest: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/agent-manifest.json
 - README: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/README.md
-- Source branch: https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills
+- Source branch: https://github.com/alejobelong/a2a-marketplace-v1/tree/codex/upload-selling-playbooks
 
 ## Agent-Assisted Setup Steps
 
@@ -75,7 +75,7 @@ Fresh clone install from the published branch:
 
 ```bash
 tmpdir="$(mktemp -d)"
-git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git "$tmpdir/a2a-marketplace-v1"
+git clone --depth 1 --branch codex/upload-selling-playbooks --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git "$tmpdir/a2a-marketplace-v1"
 bash "$tmpdir/a2a-marketplace-v1/scripts/install-local-skills.sh" --host codex --scope repo
 ```
 
@@ -147,7 +147,7 @@ Internal skills:
 
 ## Invariants
 
-- Target branch: `mejora-skills`.
+- Target branch: `codex/upload-selling-playbooks`.
 - Human work boundary: `Marketplace Inbox`.
 - Autonomy boundary: `Playbook + Standing Authorization`.
 - Runtime state file: `.belong/mock-marketplace/state.json`.

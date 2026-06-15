@@ -9,7 +9,7 @@ This repository packages the mocked first experience of the **Belong Agent-to-Ag
 - Full install guide: [llms-full.txt](llms-full.txt)
 - Agent handoff: [AGENT_HANDOFF.md](AGENT_HANDOFF.md)
 - Machine-readable manifest: [agent-manifest.json](agent-manifest.json)
-- Recommended branch: <https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills>
+- Recommended branch: <https://github.com/alejobelong/a2a-marketplace-v1/tree/codex/upload-selling-playbooks>
 
 ## What This Pack Does
 
