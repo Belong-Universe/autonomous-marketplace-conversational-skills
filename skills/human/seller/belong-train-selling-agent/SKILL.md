@@ -11,6 +11,8 @@ Use this for Service Provider Training, Validation, activation, and later durabl
 
 Start with runtime `status`. If no account exists, route to `$belong-setup-account`.
 
+Explain the purpose before collecting details: this flow creates and fills an Autonomous Service/Selling Playbook for one Service. That playbook is the operating contract that lets the Belong Selling Agent meet buyers, answer discovery, propose, negotiate, contract, coordinate delivery, handle payment expectations, and optimize selling autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
+
 Gather context first, do not interrogate. Open with a single broad question, such as:
 "Tell me about the Service you want to sell, who it is for, and how you like to deliver
 and price it." Then offer the human every way to provide context, and let them combine
@@ -42,7 +44,7 @@ Work section by section. Do not ask the human to fill every section at once. For
 - Name the section being drafted.
 - Invite the human to answer directly, upload files, or share links that may help fill that section.
 - Review relevant uploaded files and shared links before asking for information already present in those sources.
-- Show what you understood from the shared material and how you plan to fill the section.
+- Show in chat what you understood from the shared material and how you plan to fill the section.
 - Ask only the targeted questions needed for that section.
 - Convert the human's answers into clear playbook rules.
 - Mark unknowns as `TBD` instead of inventing them.
@@ -85,7 +87,7 @@ For every uploaded file or shared link:
 
 Before locking a section, always show:
 
-- What I understood: compact bullets from the user's answers, files, and links.
+- What I understood, in chat only: compact bullets from the user's answers, files, and links.
 - Proposed section fill: the playbook rules you plan to write for that section.
 - The section file itself: show or share the updated `0X-...md` so the human can read the full section before approving, not only the summary.
 - Still missing: only the items needed to make the section usable.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Belong Guide"
-  short_description: "Navigate the Belong Skill Pack"
-  default_prompt: "Use $belong-marketplace-guide to show me where I am in the Belong marketplace experience."
+  short_description: "Start Belong onboarding"
+  default_prompt: "Use $belong-marketplace-guide to start onboarding, create the right Autonomous Playbook, and route me to the next Belong skill."

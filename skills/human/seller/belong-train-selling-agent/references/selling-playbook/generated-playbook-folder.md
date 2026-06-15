@@ -74,10 +74,6 @@ Each section file should use this shape:
 Status: Missing | Partial | Done
 Approval: Not requested | Pending | Approved
 
-## What I Understood
-
-- Source-backed and human-provided facts.
-
 ## Playbook Rules
 
 - Rules the Selling Agent should follow.
@@ -102,4 +98,3 @@ Approval: Not requested | Pending | Approved
 - Update `final-selling-playbook.md` only after all nine sections are approved.
 
 Do not mark a section `Approved` in files until the human explicitly approves it in conversation.
-

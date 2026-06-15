@@ -9,19 +9,32 @@ Use this as the human-facing front door and orientation layer for the Belong Ski
 
 ## First Move
 
+If this skill was launched from the landing page, README, `agent-manifest.json`, `llms.txt`, `llms-full.txt`, or `AGENT_HANDOFF.md`, treat the launch as an onboarding request. Do not stop at describing the Skill Pack. Begin the guided onboarding flow.
+
+Open with this welcome:
+
+```text
+Welcome to the future: an autonomous marketplace where you set up autonomous playbooks and watch your agents meet, negotiate, contract, transact, and much more, completely autonomously. Your agents can sell and/or procure for you.
+```
+
+Explain that the immediate objective is to create and fill an Autonomous Playbook: a Buying Playbook if the human wants agents to procure, a Service/Selling Playbook if the human wants agents to sell, or both if the human wants both sides. The playbook becomes the operating contract that lets Belong agents act autonomously inside Standing Authorization and escalate through Marketplace Inbox when human input is needed.
+
 Run the runtime status:
 
 ```bash
 python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py status
 ```
 
-If the runtime path is not present, locate sibling skill `belong-marketplace-runtime` or search for `belong_mock.py`. If state is empty, offer the best next path:
+If the runtime path is not present, locate sibling skill `belong-marketplace-runtime` or search for `belong_mock.py`. If state is empty, begin onboarding rather than merely explaining options:
 
+- If the human role is not yet known, ask one concise role question: Service Provider, buyer-side human, both, or full mocked demo.
 - New Service Provider human: use `$belong-setup-account`, then `$belong-train-selling-agent`.
 - New buyer-side human: use `$belong-setup-account`, then `$belong-train-buying-agent`, then `$belong-start-buying-request`.
 - New human who both buys and sells: use `$belong-setup-account` with role `both`, then train each side independently: `$belong-train-buying-agent` for buying, and `$belong-train-selling-agent` for each Service. One account holds one Buying Agent and one Selling Agent per Service, each with its own Playbook.
 - Wants the complete mocked experience fast: run `scenario full-lifecycle --reset`, then summarize the generated state and next inbox items.
 - Already in Production: route by role and intent to the shared, buyer-specific, or seller-specific skills below.
+
+If the current host cannot invoke sibling skills directly, tell the human the exact next command to send, starting with `$belong-setup-account`. Keep the message short and continue once the host can execute the next skill.
 
 Always orient the human by role. Seller-side humans should hear which Service, Selling Agent, buyer feed, contract, billing state, fulfillment task, and seller inbox item they are acting on.
 

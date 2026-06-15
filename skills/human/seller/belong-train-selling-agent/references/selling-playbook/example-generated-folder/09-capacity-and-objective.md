@@ -5,10 +5,6 @@
 Status: Missing
 Approval: Not requested
 
-## What I Understood
-
-- TBD
-
 ## Playbook Rules
 
 - TBD
@@ -21,5 +17,8 @@ Approval: Not requested
 - Optimization objective and key trade-offs
 
 ## Source Notes
+
+Derived from approval chat:
+- TBD
 
 - TBD

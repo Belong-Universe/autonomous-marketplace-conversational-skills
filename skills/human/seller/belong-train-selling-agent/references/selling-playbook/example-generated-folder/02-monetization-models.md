@@ -5,14 +5,6 @@
 Status: Partial
 Approval: Not requested
 
-## What I Understood
-
-- The Service is a managed reconciliation operations offering, not only self-serve software access.
-- Public Simetrik legal materials indicate commercial fees are set in an Order Form and any applicable Statement of Work.
-- Public MSA language says fees are exclusive of applicable taxes unless otherwise required by law, invoices are generally due within 30 calendar days unless the Order Form says otherwise, payment obligations are generally non-cancellable, and fees paid are generally non-refundable except where the agreement expressly says otherwise.
-- Public MSA language also references annual fee adjustments unless the Order Form provides otherwise.
-- Exact pricing, currency, billing cycle, collections process, and exception authority for this Belong Service have not been defined yet.
-
 ## Playbook Rules
 
 - Treat pricing as custom and Order Form/SOW-based until Alejandro defines a standard marketplace starting point.
@@ -33,6 +25,13 @@ Approval: Not requested
 - Billing exceptions requiring human approval
 
 ## Source Notes
+
+Derived from approval chat:
+- The Service is a managed reconciliation operations offering, not only self-serve software access.
+- Public Simetrik legal materials indicate commercial fees are set in an Order Form and any applicable Statement of Work.
+- Public MSA language says fees are exclusive of applicable taxes unless otherwise required by law, invoices are generally due within 30 calendar days unless the Order Form says otherwise, payment obligations are generally non-cancellable, and fees paid are generally non-refundable except where the agreement expressly says otherwise.
+- Public MSA language also references annual fee adjustments unless the Order Form provides otherwise.
+- Exact pricing, currency, billing cycle, collections process, and exception authority for this Belong Service have not been defined yet.
 
 - Human-provided clarification that this is managed reconciliation operations.
 - Simetrik Master Services Agreement page: https://simetrik.com/legal/master-services-agreements/

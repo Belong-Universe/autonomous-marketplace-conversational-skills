@@ -21,6 +21,8 @@ To change rather than add, use `update-account`:
 
 Start with runtime `status`, then explain that this flow represents the one web/OAuth moment. After it completes, all work returns to the user's favorite agentic application.
 
+Also explain the next milestone clearly: after account setup, the user will create and fill an Autonomous Playbook. For procurement, this becomes a Buying Playbook. For selling, this becomes one Service/Selling Playbook per Service. The playbook is the operating contract that lets Belong agents sell and/or procure autonomously inside Standing Authorization while escalating exceptions to Marketplace Inbox.
+
 Collect:
 
 - Human name

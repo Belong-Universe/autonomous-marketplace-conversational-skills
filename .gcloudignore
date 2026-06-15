@@ -1,0 +1,13 @@
+.git/
+.belong/
+__pycache__/
+.pytest_cache/
+.DS_Store
+
+documents/
+skills/
+tests/
+
+*.pyc
+*.pyo
+*.swp

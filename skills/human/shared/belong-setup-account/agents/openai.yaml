@@ -1,4 +1,4 @@
 interface:
   display_name: "Belong Setup Account"
   short_description: "Set up account, org, and notifications"
-  default_prompt: "Use $belong-setup-account to set up my mocked Belong account and organization."
+  default_prompt: "Use $belong-setup-account to set up my Belong account and prepare the Autonomous Playbook training flow."

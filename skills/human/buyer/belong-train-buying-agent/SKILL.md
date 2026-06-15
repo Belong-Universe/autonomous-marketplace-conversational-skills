@@ -11,6 +11,8 @@ Use this for initial Buying Agent Training, Validation, activation, and later du
 
 Start with runtime `status`. If no account exists, route to `$belong-setup-account`.
 
+Explain the purpose before collecting details: this flow creates and fills an Autonomous Buying Playbook. That playbook is the operating contract that lets the Belong Buying Agent procure services, compare proposals, negotiate, contract, manage delivery, and optimize providers autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
+
 Gather context first, do not interrogate. Open with a single broad question, such as:
 "Tell me about your organization, what you want to buy, and how you like to work."
 Then offer the human every way to provide context, and let them combine as many as
@@ -40,13 +42,13 @@ draft as a starting point, not as approved training. Build the playbook in this 
 9. Optimization Objective
 
 Work one section at a time. Do not ask the human to fill every section at once. For
-each section, show what you understood and the proposed fill, ask only the targeted
+each section, show in chat what you understood and the proposed fill, ask only the targeted
 questions that section needs, convert answers into clear playbook rules, and mark
 unknowns as `TBD` instead of inventing them.
 
 Before locking a section, always show:
 
-- What I understood: compact bullets from the human's answers, files, and links.
+- What I understood, in chat only: compact bullets from the human's answers, files, and links.
 - Proposed section fill: the playbook rules you plan to write for that section.
 - The section file itself: show or share the updated `0X-...md` so the human can read
   the full section before approving, not only the summary.

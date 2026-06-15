@@ -5,18 +5,6 @@
 Status: Done
 Approval: Approved
 
-## What I Understood
-
-- Simetrik provides a Service named Transactional Reconciliations.
-- The Service Provider human owner is Alejandro.
-- Simetrik positions its offering as AI-powered reconciliation and reporting for high-volume, complex transaction environments.
-- Public pages describe capabilities for multi-way transaction matching, operational balance reconciliation, exception management, compliant reporting, audit logs, no-code integrations, and AI/agentic workflows.
-- Source-backed buyer audiences include finance operations, accounting teams, platform operations/IT, PSPs, marketplaces, acquirers, issuers, neobanks, banks, and retailers.
-- Public use cases include transaction fee management, regulatory reporting, dispute management, financial close, liquidity monitoring, merchant reporting, fraud/risk mitigation, FX/crypto management, and operational balance reconciliation.
-- Public proof points include case studies where customers reduced reconciliation time sharply, automated reconciliation processes, consolidated millions of transactions, improved traceability, and moved teams from manual reconciliation toward exception analysis.
-- Alejandro clarified that this Belong Service should be positioned as managed reconciliation operations, not merely a software subscription or self-serve implementation.
-- The buyer should understand that Simetrik will take care of the reconciliation operation end to end: preventing money leakage, handling discrepancies, improving close-cycle speed, and reducing the buyer's operational burden.
-
 ## Playbook Rules
 
 - Position Transactional Reconciliations as a managed reconciliation operations service for companies with high-volume, multi-source transaction flows that need automated matching, discrepancy detection, operational balance validation, money-leakage prevention, and audit-ready traceability.
@@ -46,6 +34,17 @@ Approval: Approved
 - Final public Service name can remain `Transactional Reconciliations` unless revised.
 
 ## Source Notes
+
+Derived from approval chat:
+- Simetrik provides a Service named Transactional Reconciliations.
+- The Service Provider human owner is Alejandro.
+- Simetrik positions its offering as AI-powered reconciliation and reporting for high-volume, complex transaction environments.
+- Public pages describe capabilities for multi-way transaction matching, operational balance reconciliation, exception management, compliant reporting, audit logs, no-code integrations, and AI/agentic workflows.
+- Source-backed buyer audiences include finance operations, accounting teams, platform operations/IT, PSPs, marketplaces, acquirers, issuers, neobanks, banks, and retailers.
+- Public use cases include transaction fee management, regulatory reporting, dispute management, financial close, liquidity monitoring, merchant reporting, fraud/risk mitigation, FX/crypto management, and operational balance reconciliation.
+- Public proof points include case studies where customers reduced reconciliation time sharply, automated reconciliation processes, consolidated millions of transactions, improved traceability, and moved teams from manual reconciliation toward exception analysis.
+- Alejandro clarified that this Belong Service should be positioned as managed reconciliation operations, not merely a software subscription or self-serve implementation.
+- The buyer should understand that Simetrik will take care of the reconciliation operation end to end: preventing money leakage, handling discrepancies, improving close-cycle speed, and reducing the buyer's operational burden.
 
 - Human-provided setup details from Alejandro.
 - Simetrik homepage: https://simetrik.com/

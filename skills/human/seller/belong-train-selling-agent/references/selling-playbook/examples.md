@@ -8,7 +8,7 @@ This page contains exactly one example of how to do it and one example of how no
 
 **Section:** Negotiations
 
-**What I understood**
+**Chat checkpoint**
 
 - Source-backed: Standard proposals allow up to 10% discount without approval.
 - Source-backed: Net-30 is standard; net-45 requires finance approval.
@@ -43,4 +43,3 @@ The agent should be flexible and try to close good deals. It can discount when n
 - No escalation owner
 - No objective walk-away condition
 - Forces the Selling Agent to guess what "good deals" and "feels risky" mean
-
