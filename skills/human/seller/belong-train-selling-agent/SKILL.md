@@ -183,7 +183,38 @@ Capture the delivery workflow after buyer signature: kickoff, milestones, Fulfil
 
 ### Human-To-Human Meetings
 
-Capture when meetings should be proposed, required attendees, agenda/prep expectations, follow-up notes, decision capture, meeting-related escalations, and when the Selling Agent can schedule autonomously.
+Capture when meetings should be proposed, required attendees, agenda and prep
+expectations, follow-up notes, decision capture, meeting-related escalations, and the
+scheduling authority: when the Selling Agent can confirm a meeting on its own versus
+when it must check with the human first.
+
+Define both sides of the agent-to-agent handshake:
+
+- Proposing: what triggers the Selling Agent to propose a Human-to-Human Meeting (for
+  example kickoff, scoping, review, or dispute), the meeting types it may offer, the
+  duration and mode (video or in person), and which availability windows it can offer
+  from the human's connected calendar (Google Calendar, and Calendly if connected).
+- Accepting or declining: how the Selling Agent responds when the buyer's agent
+  proposes a meeting, which slots it can confirm autonomously against the connected
+  calendar, when to counter-propose alternatives, and when to escalate to the human
+  through Marketplace Inbox before confirming.
+
+Scheduling mechanics the agent must follow:
+
+- Availability source: Google Calendar is the source of truth for what times are free.
+  Calendly, if connected, is an optional self-serve link the other agent may use to
+  pick a slot. When both are connected, treat Google Calendar as authoritative and
+  reconcile any Calendly booking against it.
+- No calendar connected: the agent does not auto-confirm. It sends a scheduling request
+  to the Marketplace Inbox and to the notification channel captured at setup (which may
+  be the authentication email), asking the human to propose or confirm times, and books
+  only after the human responds.
+- Time and timezone: always offer and confirm specific times with an explicit timezone,
+  and record the agreed time and timezone in the meeting details (the runtime meeting
+  object has no separate time field, so it must live in the purpose/details).
+- Counter-proposals: if the offered windows do not overlap, the agent may counter-
+  propose at most two rounds; if there is still no match, it escalates to the human
+  through the Marketplace Inbox instead of looping.
 
 ### Escalations
 
@@ -245,3 +276,5 @@ Validation must check identity, Selling Playbook completeness, payment/legal beh
 ## Output
 
 End every training or retraining pass with the generated playbook folder path and the Selling Playbook as the primary output, using the nine section headings above. After the playbook, include the structured Selling Agent and Service objects, phase/status, Playbook version, pending inbox items, and the next human-facing action: usually `$belong-inbox`, `$belong-check-selling-pipeline`, `$belong-steer-selling-agent`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
+
+After activation, remind the human that they can always reach this agent through the Marketplace Inbox (`$belong-inbox`): respond to anything it escalates with `resolve-inbox`, or direct it at any time with `override` — pause, resume, give a direct instruction, request a meeting, or intervene.

@@ -1,6 +1,6 @@
 ---
 name: belong-train-buying-agent
-description: Human-facing Buying Agent training and retraining. Use when a buyer-side human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Buying Playbook folder, to define or durably update a Buying Playbook: buying goals and needs, budgets, payment rules, provider preferences, RFP and selection rules, proposal comparison, negotiation limits, disclosure scope, contract/SOW authority, acceptance criteria, escalation thresholds, dispute posture, rating behavior, optimization objective, Provider Optimization behavior, and Standing Authorization.
+description: Human-facing Buying Agent training and retraining. Use when a buyer-side human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Buying Playbook folder, to define or durably update a Buying Playbook: buying goals and needs, budgets, payment rules, provider preferences, RFP and selection rules, proposal comparison, negotiation limits, disclosure scope, contract/SOW authority, acceptance criteria, escalation thresholds, dispute posture, rating behavior, optimization objective, human-to-human meeting scheduling, Provider Optimization behavior, and Standing Authorization.
 ---
 
 # Belong Train Buying Agent
@@ -40,6 +40,7 @@ draft as a starting point, not as approved training. Build the playbook in this 
 7. Escalations
 8. Disputes And Reputation
 9. Optimization Objective
+10. Human-To-Human Meetings
 
 Work one section at a time. Do not ask the human to fill every section at once. For
 each section, show in chat what you understood and the proposed fill, ask only the targeted
@@ -56,7 +57,7 @@ Before locking a section, always show:
 - Approval gate: ask the human to approve or revise this section.
 
 Between sections, show a compact checkpoint with progress percentage and missing
-pieces. Compute progress from the nine playbook sections: `Done` = 1, `Partial` = 0.5,
+pieces. Compute progress from the ten playbook sections: `Done` = 1, `Partial` = 0.5,
 `Missing` = 0. Round to the nearest whole percent. Use a short line like "Checkpoint:
 you're 33% through the Buying Playbook" plus a compact table of Section / Status /
 Missing. Do not ask the first question for the next section until the human approves the
@@ -95,12 +96,13 @@ Required files:
 - `07-escalations.md`
 - `08-disputes-and-reputation.md`
 - `09-optimization-objective.md`
+- `10-human-to-human-meetings.md`
 - `checkpoints-and-approval.md`
 - `runtime-mapping.md`
 - `approval-log.md`
 - `final-buying-playbook.md`
 
-Create all files once the organization is known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-buying-playbook.md` only after all nine sections are approved.
+Create all files once the organization is known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-buying-playbook.md` only after all ten sections are approved.
 
 ## Buying Playbook Sections
 
@@ -115,12 +117,13 @@ Build the Buying Playbook in this order:
 7. Escalations
 8. Disputes And Reputation
 9. Optimization Objective
+10. Human-To-Human Meetings
 
 ## Section Checkpoints
 
 After drafting each section and before asking for approval to move on, show a checkpoint. Keep it compact and easy to scan. Start with a short line like: "Checkpoint: this is where we're at. You're 38% through the Buying Playbook." The checkpoint and approval gate happen together between sections.
 
-Compute progress from the nine playbook sections: `Done` = 1, `Partial` = 0.5, `Missing` = 0. Round to the nearest whole percent. A section can be `Done` when it has enough detail to become playbook rules, even if some optional details remain `TBD`.
+Compute progress from the ten playbook sections: `Done` = 1, `Partial` = 0.5, `Missing` = 0. Round to the nearest whole percent. A section can be `Done` when it has enough detail to become playbook rules, even if some optional details remain `TBD`.
 
 Use this table shape:
 
@@ -170,6 +173,41 @@ Capture dispute posture, evidence standards, response deadlines, refund and rewo
 
 Capture what the Buying Agent should optimize across providers (for example cost, quality, speed, reliability, or strategic relationships), the key trade-offs between them, and the Provider Optimization goals that steer ranking and repeat-buying decisions.
 
+### Human-To-Human Meetings
+
+Capture when the Buying Agent should propose or accept a Human-to-Human Meeting with a
+provider, the meeting types and triggers (for example scoping, kickoff, review, or
+dispute), required attendees, agenda and prep expectations, and the scheduling
+authority: when the agent can confirm a meeting on its own versus when it must check
+with the human first.
+
+Define both sides of the agent-to-agent handshake:
+
+- Proposing: what triggers the Buying Agent to propose a meeting, the duration and mode
+  (video or in person), and which availability windows it can offer from the human's
+  connected calendar (Google Calendar, and Calendly if connected).
+- Accepting or declining: how the Buying Agent responds when the seller's agent
+  proposes a meeting, which slots it can confirm autonomously against the connected
+  calendar, when to counter-propose alternatives, and when to escalate to the human
+  through Marketplace Inbox before confirming.
+
+Scheduling mechanics the agent must follow:
+
+- Availability source: Google Calendar is the source of truth for what times are free.
+  Calendly, if connected, is an optional self-serve link the other agent may use to
+  pick a slot. When both are connected, treat Google Calendar as authoritative and
+  reconcile any Calendly booking against it.
+- No calendar connected: the agent does not auto-confirm. It sends a scheduling request
+  to the Marketplace Inbox and to the notification channel captured at setup (which may
+  be the authentication email), asking the human to propose or confirm times, and books
+  only after the human responds.
+- Time and timezone: always offer and confirm specific times with an explicit timezone,
+  and record the agreed time and timezone in the meeting details (the runtime meeting
+  object has no separate time field, so it must live in the purpose/details).
+- Counter-proposals: if the offered windows do not overlap, the agent may counter-
+  propose at most two rounds; if there is still no match, it escalates to the human
+  through the Marketplace Inbox instead of looping.
+
 ## Durable Retraining
 
 Use this same skill when the buyer-side human wants durable changes to budget rules, provider preferences, selection rules, RFP behavior, proposal comparison, contract authority, payment rules, acceptance criteria, dispute posture, rating rules, escalation thresholds, or optimization behavior.
@@ -191,6 +229,7 @@ When the playbook is complete, map the sections into the runtime:
 - Escalations -> `--escalation-rules`
 - Disputes And Reputation -> `--dispute-posture`, `--rating-rules`
 - Optimization Objective -> `--optimization-goals`
+- Human-To-Human Meetings -> no dedicated buyer runtime flag (the seller playbook has `--meeting-rules`); keep it in the playbook and reflect scheduling escalations through `--escalation-rules`
 
 Identity and channel fields come from setup and context: `--human-name`, `--org-name`, `--org-kind`, `--notifications`.
 
@@ -209,6 +248,8 @@ contradictions between sections. Review at least these cross-section pairs:
   as accepted delivery.
 - Optimization objective vs negotiation and selection: the stated objective (cost,
   quality, speed, relationships) must match how the agent ranks and concedes.
+- Meeting authority vs escalation thresholds: confirming a meeting beyond the agent's
+  scheduling authority must escalate, not auto-confirm.
 
 When two statements conflict, show them side by side, ask the human which one is
 correct, and update the affected section(s). Do not run `train-buying --activate` until
@@ -223,4 +264,6 @@ Validation must check identity, Buying Playbook completeness, payment readiness,
 
 ## Output
 
-End every training or retraining pass with the generated playbook folder path and the Buying Playbook as the primary output, using the nine section headings above. After the playbook, include the structured Buying Agent object, phase/status, Playbook version, authority envelope, what it can do autonomously, what escalates to the buyer-side human, pending inbox items, and the next human-facing action: usually `$belong-start-buying-request`, `$belong-inbox`, `$belong-steer-buying-agent`, `$belong-check-buying-requests`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
+End every training or retraining pass with the generated playbook folder path and the Buying Playbook as the primary output, using the ten section headings above. After the playbook, include the structured Buying Agent object, phase/status, Playbook version, authority envelope, what it can do autonomously, what escalates to the buyer-side human, pending inbox items, and the next human-facing action: usually `$belong-start-buying-request`, `$belong-inbox`, `$belong-steer-buying-agent`, `$belong-check-buying-requests`, `$belong-check-active-services`, `$belong-check-payments`, or `$belong-check-reputation`.
+
+After activation, remind the human that they can always reach this agent through the Marketplace Inbox (`$belong-inbox`): respond to anything it escalates with `resolve-inbox`, or direct it at any time with `override` — pause, resume, give a direct instruction, request a meeting, or intervene.
