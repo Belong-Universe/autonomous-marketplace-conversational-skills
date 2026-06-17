@@ -17,6 +17,7 @@ Look for delivery SOPs, onboarding checklists, kickoff decks, project plans, sta
 - Buyer information needed during delivery
 - Deliverable Evidence Package contents
 - Evidence mapping to acceptance criteria
+- Evidence approach per deliverable type: when the deliverable is sufficient on its own and when to attach optional supporting evidence (for example transcript, recording, or photo for a live session)
 - Revision, rejection, and acceptance workflow
 - Payment ledger expectations tied to delivery and acceptance
 - Audit requirements
@@ -31,4 +32,5 @@ The section is `Done` when the Selling Agent can coordinate ordinary delivery, r
 - Do not let the Selling Agent fabricate evidence.
 - Do not release or collect payment without the required contract, evidence, acceptance, or approved exception.
 - Do not treat provider human tasks as completed until the provider confirms or evidence proves completion.
+- Keep every file and any submitted evidence retained with the Active Service for dispute readiness.
 

@@ -1,6 +1,6 @@
 ---
 name: belong-setup-account
-description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, payment readiness, legal/signing readiness, calendar connection (Google Calendar and Calendly) for scheduling Human-to-Human Meetings, and routing into Buying Agent or Selling Agent training.
+description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, payment readiness, legal/signing readiness, required Calendly connection (plus optional Google Calendar) for scheduling Human-to-Human Meetings, and routing into Buying Agent or Selling Agent training.
 ---
 
 # Belong Setup Account
@@ -23,13 +23,13 @@ Start with runtime `status`, then explain that this flow represents the one web/
 
 Also explain the next milestone clearly: after account setup, the user will create and fill an Autonomous Playbook. For procurement, this becomes a Buying Playbook. For selling, this becomes one Service/Selling Playbook per Service. The playbook is the operating contract that lets Belong agents sell and/or procure autonomously inside Standing Authorization while escalating exceptions to Marketplace Inbox.
 
-As part of this one connection moment, also offer to connect the human's calendar:
-Google Calendar, and Calendly if they use it. This is mocked as ready, like payment
-and legal. The connected calendar is what lets Belong agents read availability to
-propose and confirm Human-to-Human Meetings with the other side, so the human does
-not have to chase scheduling. If the human skips calendar connection, agents will
-request availability through the Marketplace Inbox and this notification channel
-before booking any meeting.
+As part of this one connection moment, require the human to connect a Calendly account
+(and optionally Google Calendar). This is mocked as ready, like payment and legal.
+Calendly is how Belong agents expose their human's real-time availability to the other
+side and how a booking auto-creates the video join link, so the human does not have to
+chase scheduling or paste links by hand. If the human has not connected Calendly, agents
+cannot auto-schedule and will escalate to the Marketplace Inbox and this notification
+channel before booking any meeting.
 
 Collect:
 
@@ -38,7 +38,7 @@ Collect:
 - Organization Profile name
 - Organization kind: company or individual
 - Notification channels: email, Slack, WhatsApp, or similar
-- Calendar connection: Google Calendar, and Calendly if the human uses it
+- Calendly connection (required), plus Google Calendar if used
 
 Then run:
 
@@ -55,7 +55,7 @@ Summarize:
 - Organization Profile
 - Notification channels and the "return to your agentic application and open the inbox" pattern
 - Payment/legal readiness
-- Calendar readiness: Google Calendar, and Calendly if connected
+- Calendar readiness: Calendly (required) and Google Calendar if connected
 - Which training skill comes next: `$belong-train-buying-agent`, `$belong-train-selling-agent`, or both
 
 If the human is a Service Provider, route to `$belong-train-selling-agent`. If the human is a buyer-side human, route to `$belong-train-buying-agent`. If both, tell them to train both agents but keep one Selling Agent per Service.

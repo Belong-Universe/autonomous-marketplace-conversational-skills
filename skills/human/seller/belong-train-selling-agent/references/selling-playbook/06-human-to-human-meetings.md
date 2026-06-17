@@ -14,9 +14,10 @@ Look for sales call notes, kickoff agendas, workshop templates, delivery meeting
 - Meeting triggers
 - Required attendees and roles
 - Scheduling authority and constraints
-- Availability source (connected Google Calendar or Calendly)
+- Availability source: each human's required Calendly link (Google Calendar optional)
 - Rules for proposing a meeting to the buyer's agent
 - Rules for accepting, counter-proposing, or declining a meeting from the buyer's agent
+- How acceptance shares the Calendly link and how the proposing agent books the slot
 - What the agent can confirm autonomously versus what needs human confirmation
 - Agenda and preparation expectations
 - Materials to send before the meeting

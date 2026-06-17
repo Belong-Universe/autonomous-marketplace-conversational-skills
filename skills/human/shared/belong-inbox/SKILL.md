@@ -38,6 +38,21 @@ Handle all Marketplace Request types:
 
 Notifications are mocked as channel messages that send the human back to the agentic application and this inbox.
 
+## Notes On Specific Request Types
+
+- Meeting: to set up a meeting on demand, use `override` "Request a meeting"; to answer
+  one the other side proposed, use `resolve-inbox`. Meetings run on Calendly: accepting a
+  meeting always shares the human's Calendly link, the proposing side then picks a slot
+  that works on both its own human's calendar and the shared link, and the booking
+  auto-creates the video join link. The agent stays within the playbook's scheduling
+  authority and escalates here when it would exceed it (for example executive attendance
+  or travel).
+- Review Deliverable Evidence Package (file reception): when the seller submits a
+  deliverable, the buyer gets this item with the package files, links, and notes. Resolve
+  it by checking the files and links against the SOW acceptance criteria, then accept,
+  request a revision, or reject. Do not release final payment before the evidence meets
+  acceptance.
+
 ## Resolve Or Override
 
 Use `resolve-inbox` when the human provides information, approves/rejects authorization, executes an instruction, completes fulfillment, responds to a meeting, handles a dispute, approves a payment exception, signs or rejects a Change Order, pauses/resumes an agent, or intervenes in an Active Service.

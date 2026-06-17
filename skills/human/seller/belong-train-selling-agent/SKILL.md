@@ -181,6 +181,8 @@ This disclosure discipline is cross-cutting: it applies to every section, not on
 
 Capture the delivery workflow after buyer signature: kickoff, milestones, Fulfillment Tasks, owner responsibilities, deliverable evidence packages, acceptance/revision flow, payment ledger expectations, audit trail, and how the Selling Agent coordinates ordinary provider work.
 
+For each deliverable, define what counts as sufficient evidence: the deliverable itself may be enough, and it is at the Selling Agent's discretion whether to attach additional supporting evidence (for example a transcript, recording, or photo for a live training call). Any files tied to the Active Service are retained with it so acceptance and any future dispute are backed by the available record.
+
 ### Human-To-Human Meetings
 
 Capture when meetings should be proposed, required attendees, agenda and prep
@@ -191,29 +193,33 @@ when it must check with the human first.
 Define both sides of the agent-to-agent handshake:
 
 - Proposing: what triggers the Selling Agent to propose a Human-to-Human Meeting (for
-  example kickoff, scoping, review, or dispute), the meeting types it may offer, the
-  duration and mode (video or in person), and which availability windows it can offer
-  from the human's connected calendar (Google Calendar, and Calendly if connected).
+  example kickoff, scoping, review, or dispute), the meeting types it may offer, and the
+  duration and mode (video or in person).
 - Accepting or declining: how the Selling Agent responds when the buyer's agent
-  proposes a meeting, which slots it can confirm autonomously against the connected
-  calendar, when to counter-propose alternatives, and when to escalate to the human
-  through Marketplace Inbox before confirming.
+  proposes a meeting, when to accept (always sharing its human's Calendly link so the
+  other agent can book a slot), when to counter-propose alternatives, and when to
+  escalate to the human through Marketplace Inbox before confirming.
 
 Scheduling mechanics the agent must follow:
 
-- Availability source: Google Calendar is the source of truth for what times are free.
-  Calendly, if connected, is an optional self-serve link the other agent may use to
-  pick a slot. When both are connected, treat Google Calendar as authoritative and
-  reconcile any Calendly booking against it.
-- No calendar connected: the agent does not auto-confirm. It sends a scheduling request
-  to the Marketplace Inbox and to the notification channel captured at setup (which may
-  be the authentication email), asking the human to propose or confirm times, and books
-  only after the human responds.
-- Time and timezone: always offer and confirm specific times with an explicit timezone,
-  and record the agreed time and timezone in the meeting details (the runtime meeting
-  object has no separate time field, so it must live in the purpose/details).
-- Counter-proposals: if the offered windows do not overlap, the agent may counter-
-  propose at most two rounds; if there is still no match, it escalates to the human
+- Calendly is required: every Belong human connects a Calendly account at setup, and
+  each agent owns its own human's Calendly. That link is how an agent exposes its
+  human's real-time availability to the other side.
+- Acceptance always carries availability: whenever the Selling Agent accepts a meeting,
+  its acceptance always includes its human's Calendly link. The proposing agent then
+  books a slot through that link, and the Calendly booking auto-creates the video join
+  link (Google Meet, Zoom, or Teams), so neither agent has to generate or paste a link
+  by hand.
+- Proposing direction: when the Selling Agent proposes the meeting, it waits for the
+  buyer's agent to accept and share its Calendly link, then picks a slot that works on
+  both its own human's calendar and the shared link, within the scheduling authority
+  defined above.
+- Time, timezone, and link: record the agreed time, an explicit timezone, and the join
+  link in the meeting details (the runtime meeting object has no separate time or link
+  field, so they must live in the purpose/details).
+- Counter-proposals and escalation: if no slot on the shared Calendly works within the
+  agent's authority, it may counter-propose at most two rounds; if there is still no
+  match, or executive attendance or travel is required, it escalates to the human
   through the Marketplace Inbox instead of looping.
 
 ### Escalations
