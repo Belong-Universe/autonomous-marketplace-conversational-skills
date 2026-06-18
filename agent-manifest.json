@@ -1,9 +1,9 @@
 {
   "name": "Belong Agent-to-Agent Marketplace Skill Pack",
   "version": "0.1.0",
-  "repo": "https://github.com/alejobelong/a2a-marketplace-v1",
+  "repo": "https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills",
   "branch": "mejora-skills",
-  "recommended_source": "https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills",
+  "recommended_source": "https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills",
   "landing_page": "index.html",
   "agent_handoff": "AGENT_HANDOFF.md",
   "readme": "README.md",
@@ -31,7 +31,7 @@
   },
   "install": {
     "local_script": "./scripts/install-local-skills.sh",
-    "public_installer_url": "https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh",
+    "public_installer_url": "https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh",
     "local_script_behavior": "install_or_update_existing_with_backup",
     "restart_required": true,
     "requires_host_skill_destination": true,
@@ -45,8 +45,8 @@
     },
     "shell_commands": [
       "tmpdir=\"$(mktemp -d)\"",
-      "git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git \"$tmpdir/a2a-marketplace-v1\"",
-      "curl -fsSL https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh -o \"$tmpdir/install-local-skills.sh\"",
+      "git clone --depth 1 --branch mejora-skills --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git \"$tmpdir/a2a-marketplace-v1\"",
+      "curl -fsSL https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh -o \"$tmpdir/install-local-skills.sh\"",
       ": \"${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}\"",
       "bash \"$tmpdir/install-local-skills.sh\" --repo-root \"$tmpdir/a2a-marketplace-v1\" --dest \"$BELONG_SKILLS_DEST\""
     ],

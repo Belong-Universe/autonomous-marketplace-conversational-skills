@@ -12,19 +12,19 @@ The current host application decides the skill destination. Do not assume Codex 
 
 ## Canonical Resources
 
-- Landing page: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/
-- Full agent contract: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/llms-full.txt
-- Agent handoff Markdown: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/AGENT_HANDOFF.md
-- Machine-readable manifest: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/agent-manifest.json
-- README: https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/README.md
-- Source branch: https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills
+- Landing page: https://belong-universe.github.io/autonomous-marketplace-conversational-skills/
+- Full agent contract: https://belong-universe.github.io/autonomous-marketplace-conversational-skills/llms-full.txt
+- Agent handoff Markdown: https://belong-universe.github.io/autonomous-marketplace-conversational-skills/AGENT_HANDOFF.md
+- Machine-readable manifest: https://belong-universe.github.io/autonomous-marketplace-conversational-skills/agent-manifest.json
+- README: https://belong-universe.github.io/autonomous-marketplace-conversational-skills/README.md
+- Source branch: https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills
 
 ## Install Or Update
 
 ```bash
 tmpdir="$(mktemp -d)"
-git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git "$tmpdir/a2a-marketplace-v1"
-curl -fsSL https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
+git clone --depth 1 --branch mejora-skills --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git "$tmpdir/a2a-marketplace-v1"
+curl -fsSL https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
 
 # Resolve this from the current host application before running.
 : "${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}"

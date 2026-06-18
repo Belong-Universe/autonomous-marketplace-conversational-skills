@@ -9,7 +9,7 @@ Welcome, agent. You are reading the installable Skill Pack for the mocked first 
 - Full agent contract: [llms-full.txt](llms-full.txt)
 - Agent manifest: [agent-manifest.json](agent-manifest.json)
 - Agent handoff: [AGENT_HANDOFF.md](AGENT_HANDOFF.md)
-- Recommended branch: <https://github.com/alejobelong/a2a-marketplace-v1/tree/mejora-skills>
+- Recommended branch: <https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills>
 
 ## What This Pack Does
 
@@ -37,8 +37,8 @@ Fetch a fresh copy of the recommended `mejora-skills` branch and install or upda
 
 ```bash
 tmpdir="$(mktemp -d)"
-git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git "$tmpdir/a2a-marketplace-v1"
-curl -fsSL https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
+git clone --depth 1 --branch mejora-skills --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git "$tmpdir/a2a-marketplace-v1"
+curl -fsSL https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
 
 # Resolve this from the current host application before running.
 : "${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}"

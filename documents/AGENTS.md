@@ -4,7 +4,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <alejo_repo name="A2A Marketplace v1" stack="v2">
   <setup>
-    <github>https://github.com/alejobelong/a2a-marketplace-v1</github>
+    <github>https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills</github>
     <linear_project name="A2A Marketplace v1" url="https://linear.app/alejobelonguniverse/project/a2a-marketplace-v1-99f423f95889" />
     <linear_team name="Belonguniverse" key="BEL" />
     <source_of_truth>Linear Project Documents own Alejo setup docs and planning artifacts. Repo WORKFLOW.md owns the Symphony runtime contract and is mirrored to Linear.</source_of_truth>

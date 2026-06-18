@@ -25,8 +25,8 @@ $belong-marketplace-guide
 
 ```bash
 tmpdir="$(mktemp -d)"
-git clone --depth 1 --branch mejora-skills --single-branch https://github.com/alejobelong/a2a-marketplace-v1.git "$tmpdir/a2a-marketplace-v1"
-curl -fsSL https://belong-a2a-landing-bqbte6zstq-uc.a.run.app/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
+git clone --depth 1 --branch mejora-skills --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git "$tmpdir/a2a-marketplace-v1"
+curl -fsSL https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh -o "$tmpdir/install-local-skills.sh"
 
 # Resolve this from the current host application before running.
 : "${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}"
