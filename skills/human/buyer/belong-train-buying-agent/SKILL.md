@@ -14,12 +14,24 @@ Start with runtime `status`. If no account exists, route to `$belong-setup-accou
 Explain the purpose before collecting details: this flow creates and fills an Autonomous Buying Playbook. That playbook is the operating contract that lets the Belong Buying Agent procure services, compare proposals, negotiate, contract, manage delivery, and optimize providers autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
 
 Gather context first, do not interrogate. Open with a single broad question, such as:
-"Tell me about your organization, what you want to buy, and how you like to work."
-Then offer the human every way to provide context, and let them combine as many as
+"Tell me about yourself or your organization, what you want to buy, and how you like to
+work." Then offer the human every way to provide context, and let them combine as many as
 they have: answer in chat, share one or more websites or links, upload one or more
 files, or point to existing sources of truth or knowledge bases (Drive folder, data
 lake, ERP/procurement export, policy documents, budget sheets, vendor lists, past
 RFPs, contract templates, or spreadsheets). Make clear they can share several at once.
+
+Early on, read the buyer profile along three axes, mostly from what the human already
+told you plus the account's org-kind: company or individual, single or multiple
+decision-makers, and one-off or recurring buying. Use the profile to adapt tone and the
+defaults you propose, never to drop sections. For a company, speak about "your
+organization"; for an individual, speak about "you". Where a deterministic field does not
+apply to this profile, fill it explicitly as "Not applicable — <reason>" (for example
+"Not applicable — single decision-maker" or "Direct purchase, no RFP") rather than leaving
+it blank, so the agent still has a clear operating rule. Never apply a profile-based
+assumption silently: surface it at the section's approval gate and have the human confirm
+it, for example "Since you're buying as an individual and not a company, I'm assuming an
+RFP rule does not apply — do you agree?"
 
 You can read shared URLs and documents directly to prefill the playbook: the mock
 runtime does not fetch the web, but the agent running this skill can. Inspect whatever
@@ -53,6 +65,9 @@ Before locking a section, always show:
 - Proposed section fill: the playbook rules you plan to write for that section.
 - The section file itself: show or share the updated `0X-...md` so the human can read
   the full section before approving, not only the summary.
+- Profile-based assumptions: any field you marked Not applicable or collapsed because of
+  the buyer profile, stated plainly so the human can confirm the inference rather than
+  having it applied silently.
 - Still missing: only the items needed to make the section usable.
 - Approval gate: ask the human to approve or revise this section.
 
@@ -65,9 +80,11 @@ current one.
 
 Always re-confirm the authority-critical fields live before activation, never accept
 them silently from an edited file: Contract/SOW authority, escalation thresholds, and
-budget/max spend.
+budget/max spend. For an individual or single decision-maker, contract authority usually
+collapses to "this human signs up to their own budget"; still confirm it live rather than
+skipping it.
 
-Once the organization is known, create the markdown playbook folder for this buyer.
+Once the buyer is known, create the markdown playbook folder for this buyer.
 Create the full file set immediately with `TBD` placeholders for missing sections, then
 update each file as its section is drafted, revised, approved, and mapped to runtime.
 
@@ -77,10 +94,11 @@ Run `train-buying` with `--activate` once the human confirms and the Playbook is
 
 Create and maintain a local markdown playbook folder during the conversation.
 
-Default path:
+Default path (use the organization slug for a company, or the buyer's name slug for an
+individual):
 
 ```text
-.belong/buying-playbooks/<org-slug>/
+.belong/buying-playbooks/<org-or-buyer-slug>/
 ```
 
 Required files:
@@ -102,7 +120,7 @@ Required files:
 - `approval-log.md`
 - `final-buying-playbook.md`
 
-Create all files once the organization is known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-buying-playbook.md` only after all ten sections are approved.
+Create all files once the buyer is known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-buying-playbook.md` only after all ten sections are approved.
 
 ## Buying Playbook Sections
 
@@ -149,7 +167,7 @@ Capture preferred providers or attributes, blocked providers, required certifica
 
 ### Selection And RFP Rules
 
-Capture when to go direct versus competitive, how to structure a Buying Request and RFP, the questions sellers must answer, ranking and weighting criteria, and proposal comparison rules for scoring seller-signed Service Contract/SOW proposals.
+Capture when to go direct versus competitive, how to structure a Buying Request and RFP, the questions sellers must answer, ranking and weighting criteria, and proposal comparison rules for scoring seller-signed Service Contract/SOW proposals. For an individual or simple purchase this often collapses to direct buying; mark RFP and competitive selection as Not applicable with the reason, and confirm that assumption with the human.
 
 ### Negotiations
 
@@ -159,11 +177,11 @@ This disclosure discipline is cross-cutting: it applies to every section, not on
 
 ### Legal And Contracts
 
-Capture contract/SOW authority, who can sign at what value, required terms and protections, Delivery Acceptance criteria, Change Order triggers, and terms the agent must never accept without approval.
+Capture contract/SOW authority, who can sign at what value, required terms and protections, Delivery Acceptance criteria, Change Order triggers, and terms the agent must never accept without approval. For a single decision-maker, the signing-authority hierarchy collapses to "this human signs up to their own budget"; record that explicitly instead of a value hierarchy.
 
 ### Escalations
 
-Capture escalation thresholds, information and authorization requests, payment exceptions, Change Order approvals, agent pause/resume rules, notification channels, and who on the buyer side owns each escalation path.
+Capture escalation thresholds, information and authorization requests, payment exceptions, Change Order approvals, agent pause/resume rules, notification channels, and who on the buyer side owns each escalation path. For a single decision-maker, escalations route back to the same human; for multiple decision-makers, route them to the relevant invited roles (for example finance or approver).
 
 ### Disputes And Reputation
 
@@ -171,7 +189,7 @@ Capture dispute posture, evidence standards, response deadlines, refund and rewo
 
 ### Optimization Objective
 
-Capture what the Buying Agent should optimize across providers (for example cost, quality, speed, reliability, or strategic relationships), the key trade-offs between them, and the Provider Optimization goals that steer ranking and repeat-buying decisions.
+Capture what the Buying Agent should optimize across providers (for example cost, quality, speed, reliability, or strategic relationships), the key trade-offs between them, and the Provider Optimization goals that steer ranking and repeat-buying decisions. For a one-off purchase keep this light; weight it heavily only for recurring buying.
 
 ### Human-To-Human Meetings
 
