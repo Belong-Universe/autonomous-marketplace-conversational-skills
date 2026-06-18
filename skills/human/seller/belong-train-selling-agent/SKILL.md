@@ -221,6 +221,13 @@ Scheduling mechanics the agent must follow:
   agent's authority, it may counter-propose at most two rounds; if there is still no
   match, or executive attendance or travel is required, it escalates to the human
   through the Marketplace Inbox instead of looping.
+- Urgency and scheduling SLA: classify each meeting as normal or high urgency and act on
+  it. A high-urgency meeting (for example a blocking delivery issue, a time-boxed
+  decision, or a dispute risk) means the agent offers and books the nearest available
+  slots, compresses to a single counter-proposal round, and escalates to the human
+  through the Marketplace Inbox right away if nothing fits soon. A normal-urgency meeting
+  uses a flexible window and the full two rounds. The urgency travels with the meeting so
+  the other agent and both humans see the same priority in the Inbox.
 
 ### Escalations
 

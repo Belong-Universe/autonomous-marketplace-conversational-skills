@@ -2427,11 +2427,12 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
             "prep": "Agent prep: summarize context, goals, risks, open decisions, and recommended asks before the meeting.",
             "follow_up": "Agent follow-up: capture outcomes, update tasks, send contract/change-order/dispute actions if needed.",
             "status": "scheduled",
+            "urgency": getattr(args, "urgency", None) or "normal",
             "created_at": now(),
         }
         active["meetings"].append(meeting)
         created["human_to_human_meeting"] = meeting
-        add_inbox(state, "both", "meeting", "Prepare for Human-to-Human Meeting", meeting["purpose"], "Active Service", active["id"])
+        add_inbox(state, "both", "meeting", "Prepare for Human-to-Human Meeting", meeting["purpose"], "Active Service", active["id"], urgency=getattr(args, "urgency", None) or "normal")
         audit(state, actor, "meeting.scheduled", "Active Service", active["id"], meeting["purpose"], meeting)
     elif action == "message":
         message = {"id": next_id(state, "msg"), "from": actor, "body": details, "timestamp": now()}
@@ -2465,10 +2466,11 @@ def command_propose_meeting(args: argparse.Namespace, state: dict[str, Any]) -> 
         "prep": "Agent prep: summarize context, goals, risks, open decisions, and recommended asks before the meeting.",
         "follow_up": "Agent follow-up: capture outcomes, update the proposal/negotiation, and send next steps if needed.",
         "status": "scheduled",
+        "urgency": getattr(args, "urgency", None) or "normal",
         "created_at": now(),
     }
     proposal.setdefault("meetings", []).append(meeting)
-    add_inbox(state, "both", "meeting", "Prepare for Human-to-Human Meeting", meeting["purpose"], "Proposal", args.proposal_id)
+    add_inbox(state, "both", "meeting", "Prepare for Human-to-Human Meeting", meeting["purpose"], "Proposal", args.proposal_id, urgency=getattr(args, "urgency", None) or "normal")
     audit(state, actor, "meeting.scheduled", "Proposal", args.proposal_id, meeting["purpose"], meeting)
     return output(
         f"Scheduled pre-contract Human-to-Human Meeting on proposal {args.proposal_id}.",
@@ -4137,12 +4139,14 @@ def build_parser() -> argparse.ArgumentParser:
     active.add_argument("--signed", action="store_true")
     active.add_argument("--human-approved", action="store_true")
     active.add_argument("--meeting-mode", default=None)
+    active.add_argument("--urgency", choices=["normal", "high"], default="normal")
 
     pmeeting = sub.add_parser("propose-meeting")
     pmeeting.add_argument("--proposal-id", required=True)
     pmeeting.add_argument("--actor", default=None)
     pmeeting.add_argument("--details", default="")
     pmeeting.add_argument("--meeting-mode", default=None)
+    pmeeting.add_argument("--urgency", choices=["normal", "high"], default="normal")
 
     inbox = sub.add_parser("inbox")
     inbox.add_argument("--owner-role", choices=["buyer", "seller", "both", "all"], default="all")

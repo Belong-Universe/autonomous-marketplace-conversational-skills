@@ -46,7 +46,8 @@ Notifications are mocked as channel messages that send the human back to the age
   that works on both its own human's calendar and the shared link, and the booking
   auto-creates the video join link. The agent stays within the playbook's scheduling
   authority and escalates here when it would exceed it (for example executive attendance
-  or travel).
+  or travel). A high-urgency meeting surfaces as a high-priority Inbox item for both
+  humans.
 - Review Deliverable Evidence Package (file reception): when the seller submits a
   deliverable, the buyer gets this item with the package files, links, and notes. Resolve
   it by checking the files and links against the SOW acceptance criteria, then accept,
