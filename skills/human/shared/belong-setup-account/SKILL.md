@@ -1,11 +1,27 @@
 ---
 name: belong-setup-account
-description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, payment readiness, legal/signing readiness, required Calendly connection (plus optional Google Calendar) for scheduling Human-to-Human Meetings, and routing into Buying Agent or Selling Agent training.
+description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, required Stripe connection for payment readiness, legal/signing readiness, required Calendly connection (plus optional Google Calendar) for scheduling Human-to-Human Meetings, and routing into Buying Agent or Selling Agent training.
 ---
 
 # Belong Setup Account
 
 Use this for the Setup phase before any Buying Agent or Selling Agent training, and to manage an existing Belong Account.
+
+## Prerequisites
+
+Before setup, the human needs two external accounts ready, since both are connected
+during onboarding:
+
+- Stripe — for payment readiness (charges, holds, releases, payouts). Sign up at
+  https://dashboard.stripe.com/register
+- Calendly — required for scheduling Human-to-Human Meetings, so agents can expose
+  real-time availability and auto-create the video join link. Sign up at
+  https://calendly.com/signup
+
+If the human does not have one of these yet, share the matching link first: "To set up
+your Belong account, you need a Stripe account and a Calendly account. If you don't have
+one yet, here is where you can register: <link>." Confirm both are ready before running
+`setup-account`.
 
 ## Returning Human
 
