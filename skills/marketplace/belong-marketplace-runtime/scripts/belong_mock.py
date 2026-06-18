@@ -2451,6 +2451,36 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
     )
 
 
+def command_propose_meeting(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+    proposal = state["proposals"].get(args.proposal_id)
+    if not proposal:
+        raise ValueError(f"Unknown Proposal: {args.proposal_id}")
+    actor = args.actor or "Belong Agent"
+    meeting = {
+        "id": next_id(state, "meeting"),
+        "mode": args.meeting_mode or "video",
+        "purpose": args.details or "Pre-contract Human-to-Human Meeting",
+        "requested_by": actor,
+        "stage": "pre_contract",
+        "prep": "Agent prep: summarize context, goals, risks, open decisions, and recommended asks before the meeting.",
+        "follow_up": "Agent follow-up: capture outcomes, update the proposal/negotiation, and send next steps if needed.",
+        "status": "scheduled",
+        "created_at": now(),
+    }
+    proposal.setdefault("meetings", []).append(meeting)
+    add_inbox(state, "both", "meeting", "Prepare for Human-to-Human Meeting", meeting["purpose"], "Proposal", args.proposal_id)
+    audit(state, actor, "meeting.scheduled", "Proposal", args.proposal_id, meeting["purpose"], meeting)
+    return output(
+        f"Scheduled pre-contract Human-to-Human Meeting on proposal {args.proposal_id}.",
+        {"human_to_human_meeting": meeting, "proposal": proposal},
+        [
+            "Acceptance always shares the human's Calendly link; the proposing agent books a slot that fits both humans' calendars.",
+            "Booking auto-creates the video join link; record time, timezone, and link in the meeting purpose/details.",
+            "Escalate through belong-inbox if scheduling would exceed the playbook's meeting authority.",
+        ],
+    )
+
+
 def payment_for_active(
     state: dict[str, Any],
     active_service_id: str,
@@ -4108,6 +4138,12 @@ def build_parser() -> argparse.ArgumentParser:
     active.add_argument("--human-approved", action="store_true")
     active.add_argument("--meeting-mode", default=None)
 
+    pmeeting = sub.add_parser("propose-meeting")
+    pmeeting.add_argument("--proposal-id", required=True)
+    pmeeting.add_argument("--actor", default=None)
+    pmeeting.add_argument("--details", default="")
+    pmeeting.add_argument("--meeting-mode", default=None)
+
     inbox = sub.add_parser("inbox")
     inbox.add_argument("--owner-role", choices=["buyer", "seller", "both", "all"], default="all")
     inbox.add_argument("--status", choices=["pending", "resolved", "all"], default="pending")
@@ -4293,6 +4329,7 @@ COMMANDS = {
     "negotiate": command_negotiate,
     "sign": command_sign,
     "active-action": command_active_action,
+    "propose-meeting": command_propose_meeting,
     "inbox": command_inbox,
     "payments": command_payments,
     "active-services": command_active_services,
