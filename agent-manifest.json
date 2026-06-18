@@ -2,7 +2,7 @@
   "name": "Belong Agent-to-Agent Marketplace Skill Pack",
   "version": "0.1.0",
   "repo": "https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills",
-  "branch": "mejora-skills",
+  "branch": "main",
   "recommended_source": "https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills",
   "landing_page": "index.html",
   "agent_handoff": "AGENT_HANDOFF.md",
@@ -11,7 +11,7 @@
   "llms_txt": "llms.txt",
   "llms_full": "llms-full.txt",
   "welcome": "Welcome to the Autonomous Marketplace. Define how your agents should sell and/or procure services. Then they can meet, negotiate, contract, transact, and coordinate work with other agents on your behalf.",
-  "desired_agent_experience": "You should install or update the Belong Skill Pack from the mejora-skills branch, make the latest skills available in your host, and immediately start onboarding by invoking $belong-marketplace-guide. The first onboarding milestone is to create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both. Do not stop at summary.",
+  "desired_agent_experience": "You should install or update the Belong Skill Pack from the main branch, make the latest skills available in your host, and immediately start onboarding by invoking $belong-marketplace-guide. The first onboarding milestone is to create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both. Do not stop at summary.",
   "first_onboarding_milestone": "Create and fill an Autonomous Buying Playbook, Autonomous Service Playbook, or both.",
   "handoff_contract": {
     "do_not_only_summarize": true,
@@ -20,7 +20,7 @@
     "start_onboarding_skill": "$belong-marketplace-guide",
     "onboarding_next_skill": "$belong-setup-account",
     "onboarding_milestone": "Explain that an Autonomous Playbook will be created and filled before routing into setup and training.",
-    "update_policy": "If Belong skills are already installed, replace them with the most recent version from the mejora-skills branch before starting onboarding. The local installer backs up replaced skill folders by default.",
+    "update_policy": "If Belong skills are already installed, replace them with the most recent version from the main branch before starting onboarding. The local installer backs up replaced skill folders by default.",
     "destination_policy": "The current host application must resolve the destination skill directory. Do not assume Codex paths. Pass the destination with --dest or BELONG_SKILLS_DEST.",
     "restart_boundary": "If the host cannot discover newly installed or updated skills until restart or a new session, tell the human to restart and then invoke $belong-marketplace-guide as the first action.",
     "host_assumptions": [
@@ -45,7 +45,7 @@
     },
     "shell_commands": [
       "tmpdir=\"$(mktemp -d)\"",
-      "git clone --depth 1 --branch mejora-skills --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git \"$tmpdir/a2a-marketplace-v1\"",
+      "git clone --depth 1 --branch main --single-branch https://github.com/Belong-Universe/autonomous-marketplace-conversational-skills.git \"$tmpdir/a2a-marketplace-v1\"",
       "curl -fsSL https://belong-universe.github.io/autonomous-marketplace-conversational-skills/scripts/install-local-skills.sh -o \"$tmpdir/install-local-skills.sh\"",
       ": \"${BELONG_SKILLS_DEST:?Set BELONG_SKILLS_DEST to this host application's skills directory.}\"",
       "bash \"$tmpdir/install-local-skills.sh\" --repo-root \"$tmpdir/a2a-marketplace-v1\" --dest \"$BELONG_SKILLS_DEST\""
