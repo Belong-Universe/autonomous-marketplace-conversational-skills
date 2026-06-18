@@ -440,10 +440,47 @@ def ensure_account(state: dict[str, Any], human_name: str, role: str, org_id: st
     return account_id
 
 
+INVITE_ROLES = {"owner", "admin", "developer", "finance", "support", "buyer", "approver"}
+
+
+def parse_invites(raw_invites: list[str] | None) -> list[dict[str, str]]:
+    members: list[dict[str, str]] = []
+    seen_emails: set[str] = set()
+    for raw in raw_invites or []:
+        parts = [p.strip() for p in raw.split("|")]
+        if len(parts) != 3 or not all(parts):
+            raise ValueError(f"Invalid --invite '{raw}'. Use 'Name|email|role'.")
+        name, email, role = parts
+        role = role.lower()
+        if role not in INVITE_ROLES:
+            raise ValueError(
+                f"Invalid invite role '{role}'. Choose one of: {', '.join(sorted(INVITE_ROLES))}."
+            )
+        if email.lower() in seen_emails:
+            continue
+        seen_emails.add(email.lower())
+        members.append({"name": name, "email": email, "role": role, "status": "invited", "invited_at": now()})
+    return members
+
+
 def command_setup_account(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
     notifications = split_list(args.notifications) or ["email"]
     org_id = ensure_org(state, args.org_name, args.org_kind)
     account_id = ensure_account(state, args.human_name, args.role, org_id, notifications)
+    invited = parse_invites(getattr(args, "invite", None))
+    if invited:
+        account = state["accounts"][account_id]
+        account.setdefault("invited_members", []).extend(invited)
+        for m in invited:
+            audit(
+                state,
+                args.human_name,
+                "account.member.invited",
+                "Belong Account",
+                account_id,
+                f"Invitation email sent to {m['name']} <{m['email']}> as {m['role']}.",
+                {"invited_member": m},
+            )
     add_inbox(
         state,
         "both" if args.role == "both" else args.role,
@@ -454,10 +491,12 @@ def command_setup_account(args: argparse.Namespace, state: dict[str, Any]) -> di
         account_id,
     )
     return output(
-        f"Mock OAuth and account setup are ready for {args.human_name}.",
+        f"Mock OAuth and account setup are ready for {args.human_name}."
+        + (f" Invitation emails sent to {len(invited)} teammate(s)." if invited else ""),
         {
             "account": state["accounts"][account_id],
             "organization": state["organizations"][org_id],
+            "invited_members": invited,
         },
         [
             "Train a Buying Agent with belong-train-buying-agent if this human buys services.",
@@ -4004,6 +4043,13 @@ def build_parser() -> argparse.ArgumentParser:
     setup.add_argument("--org-name", required=True)
     setup.add_argument("--org-kind", choices=["individual", "company"], default="company")
     setup.add_argument("--notifications", default="email")
+    setup.add_argument(
+        "--invite",
+        action="append",
+        default=None,
+        metavar="NAME|EMAIL|ROLE",
+        help="Invite another human to this account. Repeatable. ROLE one of owner, admin, developer, finance, support, buyer, approver.",
+    )
 
     update_account = sub.add_parser("update-account")
     update_account.add_argument("--account-id")

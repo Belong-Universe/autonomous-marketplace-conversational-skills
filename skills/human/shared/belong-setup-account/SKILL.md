@@ -47,6 +47,13 @@ chase scheduling or paste links by hand. If the human has not connected Calendly
 cannot auto-schedule and will escalate to the Marketplace Inbox and this notification
 channel before booking any meeting.
 
+A company account can have more than one human user. Then ask whether the human wants to
+add teammates to this company account: "Would you like to add more users to engage with
+the agents from this account?" If yes, collect for each person their name, email, and one
+role from: owner, admin, developer, finance, support, buyer, or approver. Each invited
+person gets an invitation email to join the company's Belong account and help manage its
+agents' playbooks.
+
 Collect:
 
 - Human name
@@ -55,11 +62,12 @@ Collect:
 - Organization kind: company or individual
 - Notification channels: email, Slack, WhatsApp, or similar
 - Calendly connection (required), plus Google Calendar if used
+- Optional teammates to invite: name, email, and role (owner, admin, developer, finance, support, buyer, approver)
 
 Then run:
 
 ```bash
-python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py setup-account --human-name "<name>" --role buyer|seller|both --org-name "<org>" --org-kind company --notifications "email,Slack"
+python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py setup-account --human-name "<name>" --role buyer|seller|both --org-name "<org>" --org-kind company --notifications "email,Slack" --invite "Ana Gomez|ana@acme.com|admin" --invite "Luis Paz|luis@acme.com|finance"
 ```
 
 ## Output
@@ -72,6 +80,7 @@ Summarize:
 - Notification channels and the "return to your agentic application and open the inbox" pattern
 - Payment/legal readiness
 - Calendar readiness: Calendly (required) and Google Calendar if connected
+- Invited teammates and that invitation emails were sent
 - Which training skill comes next: `$belong-train-buying-agent`, `$belong-train-selling-agent`, or both
 
 If the human is a Service Provider, route to `$belong-train-selling-agent`. If the human is a buyer-side human, route to `$belong-train-buying-agent`. If both, tell them to train both agents but keep one Selling Agent per Service.
