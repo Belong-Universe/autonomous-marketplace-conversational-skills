@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Belong Buying Agent &mdash; Buyer Archetype Coverage</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --ink: #17202a;
+        --muted: #5d6878;
+        --line: #d9dee7;
+        --accent: #0f766e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+      }
+      h1 { margin: 0; font-size: 18px; line-height: 1.2; }
+      .subtitle { margin-top: 4px; color: var(--muted); font-size: 13px; }
+      main { padding: 24px; display: grid; gap: 24px; }
+      .diagram {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+        overflow: auto;
+      }
+      h2 { margin: 0 0 14px; font-size: 15px; color: var(--ink); }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      caption { caption-side: top; text-align: left; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+      th, td {
+        border: 1px solid var(--line);
+        padding: 9px 11px;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        background: #eef4f3;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      tbody th {
+        background: #fafbfc;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .na { color: var(--muted); font-style: italic; }
+      .note {
+        background: #eef4f3;
+        border: 1px solid #cfe3df;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Belong Buying Agent &mdash; Buyer Archetype Coverage</h1>
+      <div class="subtitle">How one adaptive belong-train-buying-agent skill covers every buyer, by reading a 3-axis Buyer Profile</div>
+    </header>
+    <main>
+      <div class="diagram">
+        <h2>How the profile is read and applied</h2>
+        <pre class="mermaid">
+flowchart TD
+    Start([Open with a single broad question<br/>+ account org-kind]) --> Read[Read the Buyer Profile<br/>along 3 axes]
+    Read --> A1[Axis 1: Company / Individual]
+    Read --> A2[Axis 2: Single / Multiple<br/>decision-makers]
+    Read --> A3[Axis 3: One-off / Recurring]
+    A1 --> Build
+    A2 --> Build
+    A3 --> Build
+    Build[[The 10 sections ALWAYS exist.<br/>Profile adapts tone and defaults,<br/>it never drops a section.]] --> Collapse{Field applies<br/>to this profile?}
+    Collapse -->|yes| Fill[Fill with a concrete rule]
+    Collapse -->|no| NA["Not applicable &mdash; reason<br/>never left blank"]
+    Fill --> Gate
+    NA --> Gate[Approval gate:<br/>surface every inference,<br/>human confirms it]
+    Gate --> Done([Activate Buying Playbook])
+        </pre>
+      </div>
+
+      <div class="diagram">
+        <h2>What each axis changes</h2>
+        <table>
+          <thead>
+            <tr><th>Axis</th><th>Value A</th><th>Value B</th><th>What it changes in the playbook</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>1. Type</th>
+              <td>Company</td>
+              <td>Individual</td>
+              <td>Tone (&ldquo;your organization&rdquo; vs &ldquo;you&rdquo;); heavy due diligence vs N/A; corporate signing vs &ldquo;you sign up to your own budget&rdquo;</td>
+            </tr>
+            <tr>
+              <th>2. Decision-makers</th>
+              <td>Multiple</td>
+              <td>Single</td>
+              <td>&sect;6 signing hierarchy vs &ldquo;this human signs&rdquo;; &sect;7 escalations to roles (finance/approver) vs back to the same human</td>
+            </tr>
+            <tr>
+              <th>3. Frequency</th>
+              <td>Recurring</td>
+              <td>One-off</td>
+              <td>&sect;9 heavy optimization (ranking, repeat-buying) vs light; due diligence with a threshold vs per single purchase</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="diagram">
+        <h2>All 8 combinations covered (the 3 axes are independent)</h2>
+        <table>
+          <caption>The axes do not move together: any type can be one-off or recurring, single or multiple decision-makers. Each section keys off its own axis, so every combination has a clear rule; non-applicable fields become an explicit, confirmed &ldquo;Not applicable&rdquo;. Color shows which axis drives each column: <span style="color:#0f766e">type</span>, <span style="color:#b45309">decision-makers</span>, <span style="color:#6d28d9">frequency</span>.</caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Profile (3 axes)</th>
+              <th>Example</th>
+              <th style="color:#0f766e">&sect;4 RFP / Due diligence<br/>(driven by Type)</th>
+              <th style="color:#b45309">&sect;6 Signing authority<br/>(driven by Decision-makers)</th>
+              <th style="color:#b45309">&sect;7 Escalations<br/>(driven by Decision-makers)</th>
+              <th style="color:#6d28d9">&sect;9 Optimization<br/>(driven by Frequency)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>1</th>
+              <td>Company &middot; Multiple &middot; Recurring</td>
+              <td>Enterprise procurement team, ongoing vendor spend</td>
+              <td>Full competitive RFP + due diligence with threshold</td>
+              <td>Hierarchy by value</td>
+              <td>To roles (finance, approver)</td>
+              <td>Heavy (ranking, repeat-buying)</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>Company &middot; Multiple &middot; One-off</td>
+              <td>Company buying a single office renovation or one consulting engagement</td>
+              <td>RFP by amount + due diligence by threshold</td>
+              <td>Hierarchy by value</td>
+              <td>To roles (finance, approver)</td>
+              <td>Light</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>Company &middot; Single &middot; Recurring</td>
+              <td>Startup where one founder buys the same services every month</td>
+              <td>Direct or light RFP + basic due diligence</td>
+              <td>&ldquo;This human signs up to their budget&rdquo;</td>
+              <td>Back to the same human</td>
+              <td>Heavy (repeat providers)</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>Company &middot; Single &middot; One-off</td>
+              <td>Small company making a single purchase, one decision-maker</td>
+              <td>Direct or light RFP + basic due diligence</td>
+              <td>&ldquo;This human signs up to their budget&rdquo;</td>
+              <td>Back to the same human</td>
+              <td>Light</td>
+            </tr>
+            <tr>
+              <th>5</th>
+              <td>Individual &middot; Multiple &middot; Recurring</td>
+              <td>Household or partners buying a recurring service together</td>
+              <td>Direct; <span class="na">RFP &amp; due diligence = N/A (confirmed)</span></td>
+              <td>Shared between the people, each up to their budget</td>
+              <td>To the other decision-maker(s)</td>
+              <td>Medium&ndash;heavy (repeat providers)</td>
+            </tr>
+            <tr>
+              <th>6</th>
+              <td>Individual &middot; Multiple &middot; One-off</td>
+              <td>Two people splitting a one-time purchase (e.g. a shared event)</td>
+              <td>Direct; <span class="na">RFP &amp; due diligence = N/A (confirmed)</span></td>
+              <td>Shared between the people, each up to their budget</td>
+              <td>To the other decision-maker(s)</td>
+              <td>Light</td>
+            </tr>
+            <tr>
+              <th>7</th>
+              <td>Individual &middot; Single &middot; Recurring</td>
+              <td>Freelancer re-hiring design or accounting every month</td>
+              <td>Direct; <span class="na">RFP &amp; due diligence = N/A (confirmed)</span></td>
+              <td>&ldquo;You sign up to your own budget&rdquo;</td>
+              <td>Back to you</td>
+              <td>Light&ndash;medium (repeat providers)</td>
+            </tr>
+            <tr>
+              <th>8</th>
+              <td>Individual &middot; Single &middot; One-off</td>
+              <td>A person making a single one-time buy</td>
+              <td>Direct; <span class="na">RFP &amp; due diligence = N/A (confirmed)</span></td>
+              <td>&ldquo;You sign up to your own budget&rdquo;</td>
+              <td>Back to you</td>
+              <td>Minimal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="diagram">
+        <div class="note">
+          <strong>Why one skill covers all 8 combinations (2&times;2&times;2):</strong>
+          the three axes are <em>independent</em> &mdash; an individual can buy recurrently, a company
+          can make a one-off purchase, and so on. Coverage works because each section keys off its
+          own axis (type &rarr; due diligence, decision-makers &rarr; signing and escalations,
+          frequency &rarr; optimization), not off a packaged &ldquo;archetype&rdquo;. The variation
+          between buyers is one of <em>degree</em> &mdash; scale, formality, number of people,
+          frequency &mdash; not of <em>kind</em>. Where a field does not apply it becomes an explicit,
+          human-confirmed &ldquo;Not applicable &mdash; reason&rdquo; instead of a blank, so the agent
+          always has a clear operating rule. Inferences are never applied silently: each is surfaced
+          at the section approval gate for the human to confirm.
+        </div>
+      </div>
+    </main>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "base",
+        themeVariables: {
+          primaryColor: "#ffffff",
+          primaryBorderColor: "#0f766e",
+          primaryTextColor: "#17202a",
+          lineColor: "#5d6878",
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+        },
+      });
+    </script>
+  </body>
+</html>
