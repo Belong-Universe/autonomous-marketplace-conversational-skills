@@ -12,8 +12,10 @@ Use this for the Setup phase before any Buying Agent or Selling Agent training, 
 Before setup, the human needs two external accounts ready, since both are connected
 during onboarding:
 
-- Stripe — for payment readiness (charges, holds, releases, payouts). Sign up at
-  https://dashboard.stripe.com/register
+- Stripe — for payment readiness (charges, holds, releases, payouts) and KYC:
+  connecting Stripe verifies the organization's legal identity and runs sanctions/AML
+  and baseline financial screening, so provider verification (KYC) happens here. Sign up
+  at https://dashboard.stripe.com/register
 - Calendly — required for scheduling Human-to-Human Meetings, so agents can expose
   real-time availability and auto-create the video join link. Sign up at
   https://calendly.com/signup
@@ -40,8 +42,8 @@ Start with runtime `status`, then explain that this flow represents the one web/
 Also explain the next milestone clearly: after account setup, the user will create and fill an Autonomous Playbook. For procurement, this becomes a Buying Playbook. For selling, this becomes one Service/Selling Playbook per Service. The playbook is the operating contract that lets Belong agents sell and/or procure autonomously inside Standing Authorization while escalating exceptions to Marketplace Inbox.
 
 As part of this one connection moment, require the human to connect a Calendly account
-(and optionally Google Calendar). This is mocked as ready, like payment and legal.
-Calendly is how Belong agents expose their human's real-time availability to the other
+(and optionally Google Calendar). Calendly is connected here alongside payment and legal
+readiness. Calendly is how Belong agents expose their human's real-time availability to the other
 side and how a booking auto-creates the video join link, so the human does not have to
 chase scheduling or paste links by hand. If the human has not connected Calendly, agents
 cannot auto-schedule and will escalate to the Marketplace Inbox and this notification
