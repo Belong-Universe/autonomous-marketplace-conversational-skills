@@ -21,6 +21,14 @@ files, or point to existing sources of truth or knowledge bases (Drive folder, d
 lake, ERP/procurement export, policy documents, budget sheets, vendor lists, past
 RFPs, contract templates, or spreadsheets). Make clear they can share several at once.
 
+If the buyer's organization already runs a procurement system or ERP (for example SAP
+Ariba, Coupa, or Oracle), Belong can connect to it to prefill this playbook: read the
+already-approved budgets by category, approved and blocked vendors, payment policies,
+contract templates, and approval thresholds, and propose them as starting values the
+human still reviews section by section. Today this works through an export from that
+system; a direct connector is on the roadmap. Belong acts as the autonomous execution
+layer on top of the system of record, not a replacement for it.
+
 Early on, read the buyer profile along three axes, mostly from what the human already
 told you plus the account's org-kind: company or individual, single or multiple
 decision-makers, and one-off or recurring buying. Use the profile to adapt tone and the
@@ -33,8 +41,8 @@ assumption silently: surface it at the section's approval gate and have the huma
 it, for example "Since you're buying as an individual and not a company, I'm assuming an
 RFP rule does not apply — do you agree?"
 
-You can read shared URLs and documents directly to prefill the playbook: the mock
-runtime does not fetch the web, but the agent running this skill can. Inspect whatever
+You can read shared URLs and documents directly to prefill the playbook: the runtime
+does not fetch the web, but the agent running this skill can. Inspect whatever
 the human shares and prefill as much of the full Buying Playbook as possible. If a
 source cannot be accessed, say so and ask the human to paste the relevant excerpt or
 provide another.
@@ -165,9 +173,35 @@ Capture total budget, max spend per Service and overall, currency, payment rules
 
 Capture preferred providers or attributes, blocked providers, required certifications or constraints, and how much weight to give existing relationships versus new providers.
 
+Also capture the due diligence documents a provider must supply before being awarded
+work, so §4 can enforce them as a gate. Let the human mark which apply: legal identity
+(company registration or tax ID), references or case studies, certifications (for example
+ISO, SOC 2, or security attestations), insurance or liability coverage, compliance checks
+(sanctions or AML where relevant), financial capacity, and, for data services, privacy or
+data-processing terms (DPA). For an individual or a recurring, already-approved provider,
+most of these collapse to Not applicable with the reason; confirm that with the human.
+
 ### Selection And RFP Rules
 
 Capture when to go direct versus competitive, how to structure a Buying Request and RFP, the questions sellers must answer, ranking and weighting criteria, and proposal comparison rules for scoring seller-signed Service Contract/SOW proposals. For an individual or simple purchase this often collapses to direct buying; mark RFP and competitive selection as Not applicable with the reason, and confirm that assumption with the human.
+
+**Provider Due Diligence.** Capture the due diligence gate the Buying Agent runs before
+awarding work, reusing the documents defined in Provider Preferences. Define the journey:
+
+- Trigger: when due diligence applies, for example above a spend threshold or for any new
+  provider. Skip it for an already-approved or recurring provider. The human sets the
+  threshold.
+- Required documents: the subset the human marked in Provider Preferences for this kind
+  of purchase.
+- How the agent collects them: through the seller-led Discovery Questionnaire the provider
+  already answers before contract, so no new step is added; the files are retained with the
+  Active Service for later dispute access.
+- Outcome: if the provider passes, the agent may award; if a document is missing, it
+  escalates to the human through the Marketplace Inbox; if a hard requirement fails (for
+  example a blocked provider or no mandatory insurance), it does not award.
+
+For an individual or simple purchase, due diligence usually collapses to Not applicable
+with the reason; surface that assumption and confirm it with the human.
 
 ### Negotiations
 
