@@ -7,6 +7,16 @@ description: Human-facing Selling Agent training and retraining. Use when a Serv
 
 Use this for Service Provider Training, Validation, activation, and later durable Selling Playbook retraining. The output of this skill is the Selling Playbook for one Service. A Service Provider can offer multiple Services, but each Service gets its own Belong Selling Agent and its own Selling Playbook.
 
+## Preconditions (run first, every time)
+
+Before inviting context, reading any source, or drafting a section, confirm an account exists. This gate is mandatory and cannot be skipped, even if the human pastes materials or asks to jump straight in.
+
+1. Run runtime `status`.
+2. If no account exists, stop. Do not collect context or prefill. Route to `$belong-setup-account`, and resume only after the account exists.
+3. Only once an account is confirmed, continue to the Guided Flow.
+
+Never assume an account exists from conversation, shared files, or prior context. The runtime `status` is the only source of truth for account state, and the runtime will refuse training without an account.
+
 ## Guided Flow
 
 Start with runtime `status`. If no account exists, route to `$belong-setup-account`.
@@ -27,6 +37,16 @@ runtime does not fetch the web, but the agent running this skill can. Inspect wh
 the human shares and prefill as much of the full Selling Playbook as possible. If a
 source cannot be accessed, say so and ask the human to paste the relevant excerpt or
 provide another.
+
+Use only sources the human explicitly shares or names in this conversation. Do not
+prefill from ambient context: other installed skills, unrelated company knowledge bases,
+files the human did not point to, prior conversations, or your own background knowledge
+about the company or Service. What is defined here must come from what the human tells or
+hands you now, never inferred from material that merely happens to be available. Before
+prefilling, list back the exact sources you will use ("I'll prefill from: <source 1>,
+<source 2> — anything to add or remove?") and have the human confirm. If the human has
+not provided any source, ask for one or proceed with section questions directly; never
+fill from anything they did not designate.
 
 Decide the offering structure before drafting. Ask whether this is one integral Service
 or several offerings that can be purchased separately. Separately purchasable offerings

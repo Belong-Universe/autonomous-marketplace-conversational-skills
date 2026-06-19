@@ -9,6 +9,16 @@ Use this when the buyer-side human expresses a new buying intention: "I need X",
 
 This creates a Buying Request, launches semantic Service search with optional tags, and may open an Engagement Feed if the Buying Playbook and Standing Authorization allow it. This is not steering. Steering only nudges behavior on an existing agent/object.
 
+## Preconditions (run first, every time)
+
+Before starting a request, confirm a Buying Agent in Production exists. This gate is mandatory and cannot be skipped, even if the human is in a hurry.
+
+1. Run runtime `status`.
+2. If no account exists, route to `$belong-setup-account`. If an account exists but no Buying Agent is in Production, route to `$belong-train-buying-agent`. Resume only once a Buying Agent is in Production.
+3. Only once a Production Buying Agent is confirmed, continue to the Guided Flow.
+
+Never assume the agent exists from conversation or prior context. The runtime `status` is the only source of truth, and the runtime will refuse to start a request without a Buying Agent.
+
 ## Guided Flow
 
 Start with runtime `status`. If no Buying Agent is in Production, route to `$belong-train-buying-agent`.

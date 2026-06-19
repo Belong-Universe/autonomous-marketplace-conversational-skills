@@ -440,6 +440,23 @@ def ensure_account(state: dict[str, Any], human_name: str, role: str, org_id: st
     return account_id
 
 
+def require_account(state: dict[str, Any], human_name: str, role: str, org_id: str, notifications: list[str]) -> str:
+    existing = find_by_name(state["accounts"], human_name)
+    if not existing:
+        raise ValueError(
+            f"No Belong account found for '{human_name}'. Run belong-setup-account first to create the account, "
+            "then return to training. Training cannot create an account."
+        )
+    account = state["accounts"][existing]
+    account.setdefault("roles", [])
+    if role not in account["roles"]:
+        account["roles"].append(role)
+    if org_id not in account.setdefault("organizations", []):
+        account["organizations"].append(org_id)
+    account["notifications"] = sorted(set(account.get("notifications", []) + notifications))
+    return existing
+
+
 INVITE_ROLES = {"owner", "admin", "developer", "finance", "support", "buyer", "approver"}
 
 
@@ -695,7 +712,7 @@ def validation_status(required: list[str], values: dict[str, Any]) -> dict[str, 
 
 def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
     org_id = ensure_org(state, args.org_name, "company")
-    account_id = ensure_account(state, args.human_name, "seller", org_id, split_list(args.notifications) or ["email"])
+    account_id = require_account(state, args.human_name, "seller", org_id, split_list(args.notifications) or ["email"])
     playbook = {
         "service_description": args.description,
         "buyer_personas": split_list(args.buyer_personas),
@@ -854,7 +871,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
 
 def command_train_buying(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
     org_id = ensure_org(state, args.org_name, args.org_kind)
-    account_id = ensure_account(state, args.human_name, "buyer", org_id, split_list(args.notifications) or ["email"])
+    account_id = require_account(state, args.human_name, "buyer", org_id, split_list(args.notifications) or ["email"])
     playbook = {
         "buying_goals": split_list(args.goals),
         "needed_services": split_list(args.needed_services),
