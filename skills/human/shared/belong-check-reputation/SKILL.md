@@ -5,6 +5,8 @@ description: Human-facing read/check trust layer for the mocked Belong marketpla
 
 # Belong Check Reputation
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a human asks what happened, why an agent acted, how trust changed, how reputation affects search, or how Belong learns without exposing private data.
 
 This is a read/check skill. If the human wants to act, route to `$belong-inbox` for operational work, `$belong-steer-buying-agent` or `$belong-steer-selling-agent` for temporary guidance, or `$belong-train-buying-agent`/`$belong-train-selling-agent` for durable retraining.

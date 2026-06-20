@@ -5,6 +5,8 @@ description: Human-facing read/check Active Service view for the mocked Belong m
 
 # Belong Check Active Services
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a Service Provider human or buyer-side human asks what is happening with Active Services.
 
 This is a read/check skill. It must not directly accept delivery, reject delivery, request revisions, open disputes, move money, create Change Orders, sign contracts, submit evidence, or complete Fulfillment Tasks.

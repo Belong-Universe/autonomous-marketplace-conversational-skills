@@ -5,6 +5,8 @@ description: Buyer-specific human-facing guided work for starting a Belong Buyin
 
 # Belong Start Buying Request
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when the buyer-side human expresses a new buying intention: "I need X", "find me a provider", "run an RFP", or "look in the marketplace."
 
 This creates a Buying Request, launches semantic Service search with optional tags, and may open an Engagement Feed if the Buying Playbook and Standing Authorization allow it. This is not steering. Steering only nudges behavior on an existing agent/object.

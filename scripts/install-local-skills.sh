@@ -92,6 +92,8 @@ if [[ -z "$DEST_DIR" ]]; then
   exit 2
 fi
 
+VOICE_SRC="$ROOT_DIR/skills/_shared/voice.md"
+
 missing=0
 for skill_path in "${SKILL_PATHS[@]}"; do
   if [[ ! -f "$ROOT_DIR/$skill_path/SKILL.md" ]]; then
@@ -99,6 +101,11 @@ for skill_path in "${SKILL_PATHS[@]}"; do
     missing=1
   fi
 done
+
+if [[ ! -f "$VOICE_SRC" ]]; then
+  printf 'Missing shared communication standard: %s\n' "skills/_shared/voice.md" >&2
+  missing=1
+fi
 
 if [[ "$missing" == "1" ]]; then
   exit 1
@@ -154,6 +161,12 @@ for skill_path in "${SKILL_PATHS[@]}"; do
     cp -R "$src"/. "$dest"/
     printf 'install %s\n' "$name"
     installed=$((installed + 1))
+  fi
+
+  # Human-facing skills reference the shared Belong Communication Standard; copy it in
+  # so the relative `voice.md` reference resolves inside the installed skill folder.
+  if [[ "$skill_path" == skills/human/* ]]; then
+    cp "$VOICE_SRC" "$dest/voice.md"
   fi
 done
 

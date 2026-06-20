@@ -5,6 +5,8 @@ description: "Human-facing day-to-day Belong Marketplace Inbox. Use for operatio
 
 # Belong Inbox
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this whenever a human asks what needs attention, what was escalated, or how to override an agent in day-to-day operations.
 
 Inbox is not a durable training or Playbook-editing surface. Route durable behavior changes to `$belong-train-buying-agent` or `$belong-train-selling-agent`. Route temporary non-durable guidance to `$belong-steer-buying-agent` or `$belong-steer-selling-agent`.

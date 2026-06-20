@@ -5,6 +5,8 @@ description: Human-facing Selling Agent training and retraining. Use when a Serv
 
 # Belong Train Selling Agent
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this for Service Provider Training, Validation, activation, and later durable Selling Playbook retraining. The output of this skill is the Selling Playbook for one Service. A Service Provider can offer multiple Services, but each Service gets its own Belong Selling Agent and its own Selling Playbook.
 
 ## Preconditions (run first, every time)

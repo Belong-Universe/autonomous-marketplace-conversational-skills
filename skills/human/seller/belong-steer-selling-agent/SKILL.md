@@ -5,6 +5,8 @@ description: Seller-specific human-facing temporary steering for a Belong Sellin
 
 # Belong Steer Selling Agent
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a Service Provider human wants a temporary, auditable nudge such as:
 
 - Push harder on Deliverable Evidence Package quality in this Active Service.

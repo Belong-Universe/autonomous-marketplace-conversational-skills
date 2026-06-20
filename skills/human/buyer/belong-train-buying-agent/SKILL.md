@@ -5,6 +5,8 @@ description: Human-facing Buying Agent training and retraining. Use when a buyer
 
 # Belong Train Buying Agent
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this for initial Buying Agent Training, Validation, activation, and later durable Buying Playbook retraining. Buyers cannot buy directly; every buying flow goes through a Belong Buying Agent. The output of this skill is one Buying Playbook for the buyer.
 
 ## Preconditions (run first, every time)

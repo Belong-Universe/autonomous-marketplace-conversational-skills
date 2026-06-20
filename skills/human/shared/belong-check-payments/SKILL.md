@@ -5,6 +5,8 @@ description: Human-facing read/check payment and bank view for the mocked Belong
 
 # Belong Check Payments
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a Service Provider human or buyer-side human asks about bank setup, transactions, payment status, collections, refunds, holds, platform fees, seller net, or the Stripe Payment Stack mock.
 
 This is a read/check skill. It must not directly move money, authorize payments, charge, release, refund, collect, sign contracts, approve Change Orders, or change payment rules.

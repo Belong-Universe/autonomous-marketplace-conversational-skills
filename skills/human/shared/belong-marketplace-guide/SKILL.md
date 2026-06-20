@@ -5,6 +5,8 @@ description: Human-facing front door for the Belong Agent-to-Agent Marketplace S
 
 # Belong Marketplace Guide
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this as the human-facing front door and orientation layer for the Belong Skill Pack. The user should never feel lost, and should always understand which actions belong to humans versus autonomous Belong agents.
 
 ## First Move

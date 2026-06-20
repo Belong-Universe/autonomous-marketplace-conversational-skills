@@ -5,6 +5,8 @@ description: Buyer-specific human-facing temporary steering for a Belong Buying 
 
 # Belong Steer Buying Agent
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a buyer-side human wants a temporary, auditable nudge such as:
 
 - Be more price-sensitive for this Buying Request.

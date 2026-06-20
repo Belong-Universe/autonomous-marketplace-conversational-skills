@@ -5,6 +5,8 @@ description: Buyer-specific human-facing read/check view for pre-contract Buying
 
 # Belong Check Buying Requests
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a buyer-side human asks what is happening before a contract is signed: open needs, search results, RFPs, competitive feeds, discovery, proposals, negotiation, or pending buyer approvals.
 
 This is a read/check skill. It must not create a new request, answer discovery, negotiate, sign, move money, approve exceptions, or change the Buying Playbook.

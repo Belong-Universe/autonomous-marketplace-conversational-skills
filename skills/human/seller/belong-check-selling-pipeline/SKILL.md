@@ -5,6 +5,8 @@ description: Seller-specific human-facing read/check view for inbound Selling Ag
 
 # Belong Check Selling Pipeline
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this when a Service Provider human asks what is happening before a buyer signs: Service listing state, inbound buyer engagements, discovery, proposals, negotiation, billing readiness, or seller approvals.
 
 This is a read/check skill. It must not create proposals, negotiate, approve discounts, sign Change Orders, submit evidence, move money, or change the Service Playbook.

@@ -5,6 +5,8 @@ description: Guide a Service Provider human or buyer-side human through Belong a
 
 # Belong Setup Account
 
+**Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
+
 Use this for the Setup phase before any Buying Agent or Selling Agent training, and to manage an existing Belong Account.
 
 ## Prerequisites
