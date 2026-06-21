@@ -206,6 +206,108 @@ def ensure_agent_can_act(agent: dict[str, Any], action: str) -> None:
         raise ValueError(f"{agent['id']} is not in Production. Complete validation before {action}.")
 
 
+def ensure_flow_agent_can_act(flow: dict[str, Any], action: str) -> None:
+    ensure_flow_actor_can_act(flow, False, action)
+
+
+def ensure_flow_actor_can_act(flow: dict[str, Any], as_human: bool, action: str) -> None:
+    control_state = flow.get("control_state", "agent_controlled")
+    if control_state == "paused":
+        raise ValueError(
+            f"Flow {flow.get('id')} is paused. No actor can {action} until it is resumed; obligations, deadlines, notices, and disputes remain visible through the Marketplace Inbox."
+        )
+    if control_state == "human_controlled" and not as_human:
+        raise ValueError(
+            f"Flow {flow.get('id')} is under human control. The Belong agent cannot {action}; the human drives this flow directly through the act-directly skills. Release control to return the flow to the agent."
+        )
+    if control_state == "agent_controlled" and as_human:
+        raise ValueError(
+            f"Flow {flow.get('id')} is agent-controlled. Take control first with flow-control --action take before the human can {action}."
+        )
+
+
+# Scenario B: standing Playbook rule reserving high-criticality action types for the human.
+# These are the only action types a Playbook may mark as human-performed; operational actions
+# (negotiate, discovery, meeting, message, fulfillment-task) are not eligible.
+ELIGIBLE_HUMAN_CONTROLLED_ACTIONS = {
+    "buyer": {"sign", "accept", "payment", "change-order", "dispute"},
+    "seller": {"sign", "deliver", "accept-change-order", "payment", "dispute"},
+}
+
+
+def validate_human_controlled_actions(tokens: list[str], role: str) -> list[str]:
+    eligible = ELIGIBLE_HUMAN_CONTROLLED_ACTIONS[role]
+    invalid = [token for token in tokens if token not in eligible]
+    if invalid:
+        raise ValueError(
+            f"Ineligible human-controlled action(s) for {role}: {', '.join(invalid)}. "
+            f"Eligible {role} action types: {', '.join(sorted(eligible))}. "
+            "Operational actions (negotiate, discovery, meeting, message, fulfillment-task) cannot be reserved for the human."
+        )
+    return tokens
+
+
+def playbook_human_actions(playbook: dict[str, Any]) -> set[str]:
+    return set(playbook.get("standing_authorization", {}).get("human_controlled_actions", []))
+
+
+def active_action_human_token(action: str, role: str) -> str | None:
+    if action == "deliver" and role == "seller":
+        return "deliver"
+    if action == "accept" and role == "buyer":
+        return "accept"
+    if action == "payment":
+        return "payment"
+    if action == "change-order":
+        return "change-order" if role == "buyer" else "accept-change-order"
+    if action == "dispute":
+        return "dispute"
+    return None
+
+
+def route_action_to_human(
+    state: dict[str, Any],
+    role: str,
+    action_token: str,
+    link_type: str,
+    link_id: str,
+    playbook_version: Any,
+) -> dict[str, Any]:
+    skill = "belong-operate-buying-flow" if role == "buyer" else "belong-operate-selling-flow"
+    summary = (
+        f"The {role}'s Playbook reserves '{action_token}' as a human-performed action (Scenario B). "
+        "The agent will not execute it and is not asking for approval; the human performs it directly."
+    )
+    inbox = add_inbox(
+        state,
+        role,
+        "human_performed_action",
+        f"Perform {action_token} yourself",
+        summary,
+        link_type,
+        link_id,
+        urgency="high",
+        metadata={"reserved_action": action_token, "role": role},
+    )
+    audit(
+        state,
+        "Belong Agent",
+        "authority.routed_to_human",
+        link_type,
+        link_id,
+        summary,
+        {"reserved_action": action_token, "role": role, "playbook_version": playbook_version},
+    )
+    return output(
+        f"{action_token} was routed to the {role}-side human because the Playbook reserves it as a human-performed action.",
+        {"inbox_item": inbox},
+        [
+            f"Use {skill} to take control of the flow and perform {action_token} with --as-human.",
+            "This is a standing Playbook rule (Scenario B), not an approval request; the human performs the action, not the agent.",
+        ],
+    )
+
+
 def audit(
     state: dict[str, Any],
     actor: str,
@@ -746,6 +848,9 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
             "scope_limits": args.scope_limits,
             "contract_terms": args.contract_terms,
             "must_escalate": split_list(args.escalation_paths),
+            "human_controlled_actions": validate_human_controlled_actions(
+                split_list(getattr(args, "human_controlled_actions", "")), "seller"
+            ),
         },
         "privacy_boundary": state["marketplace_signals"]["privacy_promise"],
     }
@@ -896,6 +1001,9 @@ def command_train_buying(args: argparse.Namespace, state: dict[str, Any]) -> dic
             "contract_authority": args.contract_authority,
             "payment_rules": args.payment_rules,
             "must_escalate": args.escalation_rules,
+            "human_controlled_actions": validate_human_controlled_actions(
+                split_list(getattr(args, "human_controlled_actions", "")), "buyer"
+            ),
         },
         "privacy_boundary": state["marketplace_signals"]["privacy_promise"],
     }
@@ -1113,6 +1221,7 @@ def command_buying_request(args: argparse.Namespace, state: dict[str, Any]) -> d
         "mode": args.mode,
         "is_composite": args.composite,
         "status": "search_ready",
+        "control_state": "agent_controlled",
         "created_at": now(),
         "search_results": [],
         "engagement_feeds": [],
@@ -1249,6 +1358,7 @@ def command_search(args: argparse.Namespace, state: dict[str, Any]) -> dict[str,
         raise ValueError(f"Unknown Buying Request: {args.request_id}")
     buyer_agent = state["agents"][request["buying_agent_id"]]
     ensure_agent_can_act(buyer_agent, "marketplace search")
+    ensure_flow_agent_can_act(request, "run marketplace search")
     if not any(service.get("status") == "listed" for service in state["services"].values()):
         seed_marketplace_catalog(state)
     tags = split_list(args.tags)
@@ -1311,6 +1421,7 @@ def command_engage(args: argparse.Namespace, state: dict[str, Any]) -> dict[str,
         raise ValueError(f"Unknown Buying Request: {args.request_id}")
     buyer_agent = state["agents"][request["buying_agent_id"]]
     ensure_agent_can_act(buyer_agent, "an Engagement Feed")
+    ensure_flow_agent_can_act(request, "open an Engagement Feed")
     service_ids = selected_service_ids(state, request, args.service_ids, args.count)
     feed_id = next_id(state, "feed")
     feed = {
@@ -1386,6 +1497,10 @@ def command_answer_discovery(args: argparse.Namespace, state: dict[str, Any]) ->
     feed = state["engagement_feeds"].get(args.feed_id)
     if not feed:
         raise ValueError(f"Unknown Engagement Feed: {args.feed_id}")
+    as_human = bool(getattr(args, "as_human", False))
+    discovery_flow = state["buying_requests"].get(feed["buying_request_id"])
+    if discovery_flow:
+        ensure_flow_actor_can_act(discovery_flow, as_human, "answer seller-led discovery")
     updated = []
     for questionnaire in state["discovery_questionnaires"].values():
         if questionnaire.get("feed_id") == args.feed_id:
@@ -1467,12 +1582,20 @@ def command_create_proposals(args: argparse.Namespace, state: dict[str, Any]) ->
     unanswered = [q["id"] for q in questionnaires if q.get("status") != "answered"]
     if unanswered:
         raise ValueError(f"Discovery must be answered before seller-signed proposals. Unanswered questionnaires: {', '.join(unanswered)}")
+    as_human = bool(getattr(args, "as_human", False))
     request = state["buying_requests"][feed["buying_request_id"]]
+    ensure_flow_actor_can_act(request, as_human, "create seller-signed proposals")
+    if not as_human:
+        for service_id in feed["service_ids"]:
+            seller_agent = state["agents"][state["services"][service_id]["selling_agent_id"]]
+            if "sign" in playbook_human_actions(seller_agent["playbook"]):
+                return route_action_to_human(state, "seller", "sign", "Engagement Feed", args.feed_id, seller_agent.get("playbook_version"))
     proposals = []
     for service_id in feed["service_ids"]:
         service = state["services"][service_id]
         agent = state["agents"][service["selling_agent_id"]]
-        ensure_agent_can_act(agent, "seller-signed proposal creation")
+        if not as_human:
+            ensure_agent_can_act(agent, "seller-signed proposal creation")
         existing = [
             state["proposals"][proposal_id]
             for proposal_id in feed.get("proposal_ids", [])
@@ -1686,6 +1809,10 @@ def command_negotiate(args: argparse.Namespace, state: dict[str, Any]) -> dict[s
         raise ValueError(f"Unknown Proposal: {args.proposal_id}")
     if proposal.get("status") not in {"seller_signed_waiting_buyer_signature", "seller_signed_revised_waiting_buyer_signature"}:
         raise ValueError(f"Proposal {args.proposal_id} is not negotiable in status {proposal.get('status')}.")
+    as_human = bool(getattr(args, "as_human", False))
+    negotiate_flow = state["buying_requests"].get(proposal["buying_request_id"])
+    if negotiate_flow:
+        ensure_flow_actor_can_act(negotiate_flow, as_human, "negotiate the contract")
     contract = state["contracts"][proposal["contract_id"]]
     previous = deepcopy(contract)
     amount = float(contract["commercial_terms"]["amount"])
@@ -1695,7 +1822,8 @@ def command_negotiate(args: argparse.Namespace, state: dict[str, Any]) -> dict[s
     elif "discount" in args.instruction.lower():
         amount = round(amount * 0.95, 2)
     selling_agent = state["agents"][proposal["selling_agent_id"]]
-    ensure_agent_can_act(selling_agent, "contract negotiation")
+    if not as_human:
+        ensure_agent_can_act(selling_agent, "contract negotiation")
     original_amount = float(contract.get("versions", [{}])[0].get("commercial_terms", {}).get("amount", previous_amount)) if contract.get("versions") else previous_amount
     discount_percent = max(0.0, round((original_amount - amount) / max(1, original_amount) * 100, 2))
     limit = parse_percent(selling_agent["playbook"].get("standing_authorization", {}).get("discount_limit"))
@@ -1703,9 +1831,9 @@ def command_negotiate(args: argparse.Namespace, state: dict[str, Any]) -> dict[s
         "rule": "Selling Agent discount limit",
         "threshold": f"{limit}%",
         "actual": f"{discount_percent}%",
-        "result": "passed" if discount_percent <= limit or args.seller_approved else "blocked_requires_seller_human_authorization",
+        "result": "passed" if discount_percent <= limit or args.seller_approved or as_human else "blocked_requires_seller_human_authorization",
     }
-    if discount_percent > limit and not args.seller_approved:
+    if discount_percent > limit and not (args.seller_approved or as_human):
         inbox = add_inbox(
             state,
             "seller",
@@ -1921,9 +2049,14 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
         raise ValueError(f"Proposal {args.proposal_id} is already executed as Active Service {existing_active['id']}.")
     contract = state["contracts"][proposal["contract_id"]]
     request = state["buying_requests"][proposal["buying_request_id"]]
+    as_human = bool(getattr(args, "as_human", False))
+    ensure_flow_actor_can_act(request, as_human, "sign the contract")
     buyer_agent_id = request["buying_agent_id"]
     buyer_agent = state["agents"][buyer_agent_id]
-    ensure_agent_can_act(buyer_agent, "buyer signature")
+    if not as_human and "sign" in playbook_human_actions(buyer_agent["playbook"]):
+        return route_action_to_human(state, "buyer", "sign", "Proposal", args.proposal_id, buyer_agent.get("playbook_version"))
+    if not as_human:
+        ensure_agent_can_act(buyer_agent, "buyer signature")
     amount = float(contract["commercial_terms"]["amount"])
     max_spend = float(buyer_agent["playbook"]["standing_authorization"].get("max_spend", 0))
     existing_spend = buyer_agent_exposure(state, buyer_agent_id, exclude_buying_request_id=request["id"])
@@ -1934,9 +2067,9 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
         "current_spend": existing_spend,
         "proposal_amount": amount,
         "projected_spend": projected_spend,
-        "result": "passed" if projected_spend <= max_spend or args.human_approved else "blocked_requires_buyer_human_authorization",
+        "result": "passed" if projected_spend <= max_spend or args.human_approved or as_human else "blocked_requires_buyer_human_authorization",
     }
-    if projected_spend > max_spend and not args.human_approved:
+    if projected_spend > max_spend and not (args.human_approved or as_human):
         inbox = add_inbox(
             state,
             "buyer",
@@ -1980,12 +2113,14 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
         "status": "signed",
         "timestamp": now(),
         "agent_id": buyer_agent_id,
-        "human_approved": bool(args.human_approved),
+        "human_approved": bool(args.human_approved) or as_human,
+        "signed_by_human": as_human,
     }
     proposal["status"] = "signed_executed"
     active_service = {
         "id": active_service_id,
         "status": "delivery",
+        "control_state": "agent_controlled",
         "buying_request_id": request["id"],
         "proposal_id": proposal["id"],
         "contract_id": contract["id"],
@@ -2119,12 +2254,14 @@ def active_required_roles(action: str, payment_type: str | None = None) -> tuple
     return {"buyer", "seller"}, set()
 
 
-def ensure_active_actor_can_act(state: dict[str, Any], active: dict[str, Any], actor: str, action: str, payment_type: str | None = None) -> None:
+def ensure_active_actor_can_act(state: dict[str, Any], active: dict[str, Any], actor: str, action: str, payment_type: str | None = None, as_human: bool = False) -> None:
+    ensure_flow_actor_can_act(active, as_human, f"perform Active Service action {action}")
     pause_roles, allowed_roles = active_required_roles(action, payment_type)
-    if "buyer" in pause_roles:
-        ensure_agent_can_act(state["agents"][active["buyer_agent_id"]], f"Active Service action {action}")
-    if "seller" in pause_roles:
-        ensure_agent_can_act(state["agents"][active["selling_agent_id"]], f"Active Service action {action}")
+    if not as_human:
+        if "buyer" in pause_roles:
+            ensure_agent_can_act(state["agents"][active["buyer_agent_id"]], f"Active Service action {action}")
+        if "seller" in pause_roles:
+            ensure_agent_can_act(state["agents"][active["selling_agent_id"]], f"Active Service action {action}")
     actor_roles = active_actor_roles(state, active, actor)
     if allowed_roles and not (actor_roles & allowed_roles):
         role_names = " or ".join(sorted(allowed_roles))
@@ -2164,8 +2301,9 @@ def apply_signed_change_order(
     actor: str,
     human_approved: bool,
     source: str,
+    as_human: bool = False,
 ) -> dict[str, Any]:
-    ensure_active_actor_can_act(state, active, actor, "change-order")
+    ensure_active_actor_can_act(state, active, actor, "change-order", as_human=as_human)
     contract = state["contracts"][active["contract_id"]]
     buyer_agent = state["agents"][active["buyer_agent_id"]]
     old_amount = float(contract["commercial_terms"]["amount"])
@@ -2180,9 +2318,9 @@ def apply_signed_change_order(
         "current_contract_amount": old_amount,
         "change_order_delta": float(change_order.get("price_change", 0)),
         "projected_spend": projected_spend,
-        "result": "passed" if projected_spend <= max_spend else ("human_approved_exception" if human_approved else "blocked_requires_buyer_human_authorization"),
+        "result": "passed" if projected_spend <= max_spend else ("human_approved_exception" if (human_approved or as_human) else "blocked_requires_buyer_human_authorization"),
     }
-    if projected_spend > max_spend and not human_approved:
+    if projected_spend > max_spend and not (human_approved or as_human):
         change_order["status"] = "awaiting_authorization"
         inbox = add_inbox(
             state,
@@ -2269,7 +2407,19 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
     active = get_active(state, args.active_service_id)
     action = args.action
     actor = args.actor or "Belong Agent"
-    ensure_active_actor_can_act(state, active, actor, action, args.payment_type)
+    as_human = bool(getattr(args, "as_human", False))
+    ensure_active_actor_can_act(state, active, actor, action, args.payment_type, as_human=as_human)
+    if not as_human:
+        _, allowed_roles = active_required_roles(action, args.payment_type)
+        for role in ("buyer", "seller"):
+            if role not in allowed_roles:
+                continue
+            token = active_action_human_token(action, role)
+            if not token:
+                continue
+            role_agent = state["agents"][active["buyer_agent_id"] if role == "buyer" else active["selling_agent_id"]]
+            if token in playbook_human_actions(role_agent["playbook"]):
+                return route_action_to_human(state, role, token, "Active Service", active["id"], role_agent.get("playbook_version"))
     details = args.details or ""
     created: dict[str, Any] = {}
     if action == "fulfillment-task":
@@ -2437,7 +2587,7 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
         active["change_orders"].append(change_order)
         created["change_order"] = change_order
         if args.signed:
-            applied = apply_signed_change_order(state, active, change_order, actor, bool(args.human_approved), "direct-signed")
+            applied = apply_signed_change_order(state, active, change_order, actor, bool(args.human_approved), "direct-signed", as_human=as_human)
             created.update(applied)
             if applied.get("blocked"):
                 created["change_order"] = change_order
@@ -2792,6 +2942,27 @@ def command_override(args: argparse.Namespace, state: dict[str, Any]) -> dict[st
         agent["status"] = "production"
         if agent.get("type") == "Selling Agent" and agent.get("service_id") in state["services"]:
             state["services"][agent["service_id"]]["status"] = "listed"
+    elif args.action == "intervene" and getattr(args, "flow_id", None):
+        flow, flow_type = find_flow(state, args.flow_id)
+        previous = set_flow_control(
+            state,
+            flow,
+            flow_type,
+            "human_controlled",
+            args.actor,
+            "intervene",
+            args.details or f"Human intervened to take manual control of {flow_type} {flow['id']}.",
+        )
+        skill = "belong-operate-buying-flow" if flow_type == "Buying Request" else "belong-operate-selling-flow"
+        return output(
+            f"Human intervened on {flow_type} {flow['id']}; control is now human_controlled (was {previous}).",
+            {"flow": flow},
+            [
+                f"Use {skill} to perform actions on this flow with --as-human.",
+                "Use flow-control --action release to hand the flow back to the agent when done.",
+                "Per-flow control does not change the agent-wide pause; other flows are unaffected.",
+            ],
+        )
     else:
         agent.setdefault("human_overrides", []).append({"action": args.action, "details": args.details, "timestamp": now()})
     audit(
@@ -2813,6 +2984,75 @@ def command_override(args: argparse.Namespace, state: dict[str, Any]) -> dict[st
         [
             "Paused agents stop new autonomous actions but preserve obligations, deadlines, disputes, and notices.",
             "Use belong-train-buying-agent or belong-train-selling-agent for durable Playbook changes.",
+            "Inspect audit and inbox for downstream effects.",
+        ],
+    )
+
+
+FLOW_CONTROL_TRANSITIONS = {
+    "take": "human_controlled",
+    "release": "agent_controlled",
+    "pause": "paused",
+    "resume": "agent_controlled",
+}
+
+
+def find_flow(state: dict[str, Any], flow_id: str) -> tuple[dict[str, Any], str]:
+    if flow_id in state.get("buying_requests", {}):
+        return state["buying_requests"][flow_id], "Buying Request"
+    if flow_id in state.get("active_services", {}):
+        return state["active_services"][flow_id], "Active Service"
+    raise ValueError(f"Unknown flow: {flow_id}. Provide a Buying Request or Active Service id.")
+
+
+def set_flow_control(
+    state: dict[str, Any],
+    flow: dict[str, Any],
+    flow_type: str,
+    new_state: str,
+    actor: str,
+    event_label: str,
+    details: str = "",
+) -> str:
+    previous = flow.get("control_state", "agent_controlled")
+    flow["control_state"] = new_state
+    summary = details or f"{flow_type} {flow['id']} control changed from {previous} to {new_state}."
+    audit(
+        state,
+        actor,
+        f"flow_control.{event_label}",
+        flow_type,
+        flow["id"],
+        summary,
+        {"previous_control_state": previous, "control_state": new_state},
+    )
+    add_inbox(
+        state,
+        "both",
+        "operational_intervention",
+        f"{flow_type} {flow['id']} is now {new_state}",
+        summary,
+        flow_type,
+        flow["id"],
+    )
+    return previous
+
+
+def command_flow_control(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+    flow, flow_type = find_flow(state, args.flow_id)
+    new_state = FLOW_CONTROL_TRANSITIONS[args.action]
+    previous = set_flow_control(state, flow, flow_type, new_state, args.actor, args.action, args.details)
+    hints = {
+        "human_controlled": "The agent will not act on this flow; the human drives it directly. Use flow-control --action release to return it to the agent.",
+        "agent_controlled": "The agent resumes autonomous work on this flow.",
+        "paused": "The flow is frozen; nobody acts until it is resumed. Obligations, deadlines, disputes, and notices remain visible in the inbox.",
+    }
+    return output(
+        f"Flow {flow['id']} ({flow_type}) control set to {new_state} (was {previous}).",
+        {"flow": flow},
+        [
+            hints[new_state],
+            "Per-flow control does not change the agent-wide pause; other flows are unaffected.",
             "Inspect audit and inbox for downstream effects.",
         ],
     )
@@ -3834,6 +4074,7 @@ def command_composite(args: argparse.Namespace, state: dict[str, Any]) -> dict[s
         "mode": "composite",
         "is_composite": True,
         "status": "coordinating_active_services",
+        "control_state": "agent_controlled",
         "active_service_ids": active_ids,
         "coordination": {
             "dependencies": split_list(args.dependencies),
@@ -4103,6 +4344,7 @@ def build_parser() -> argparse.ArgumentParser:
     sell.add_argument("--meeting-rules", default="")
     sell.add_argument("--dispute-rules", default="")
     sell.add_argument("--reputation-rules", default="")
+    sell.add_argument("--human-controlled-actions", default="")
     sell.add_argument("--activate", action="store_true")
 
     buy = sub.add_parser("train-buying")
@@ -4128,6 +4370,7 @@ def build_parser() -> argparse.ArgumentParser:
     buy.add_argument("--dispute-posture", default="")
     buy.add_argument("--rating-rules", default="")
     buy.add_argument("--optimization-goals", default="")
+    buy.add_argument("--human-controlled-actions", default="")
     buy.add_argument("--activate", action="store_true")
 
     req = sub.add_parser("buying-request")
@@ -4166,9 +4409,11 @@ def build_parser() -> argparse.ArgumentParser:
     answer = sub.add_parser("answer-discovery")
     answer.add_argument("--feed-id", required=True)
     answer.add_argument("--answers", required=True)
+    answer.add_argument("--as-human", action="store_true")
 
     proposals = sub.add_parser("create-proposals")
     proposals.add_argument("--feed-id", required=True)
+    proposals.add_argument("--as-human", action="store_true")
 
     compare = sub.add_parser("compare-proposals")
     compare.add_argument("--request-id", required=True)
@@ -4178,10 +4423,12 @@ def build_parser() -> argparse.ArgumentParser:
     negotiate.add_argument("--instruction", required=True)
     negotiate.add_argument("--price-delta", default=None)
     negotiate.add_argument("--seller-approved", action="store_true")
+    negotiate.add_argument("--as-human", action="store_true")
 
     sign = sub.add_parser("sign")
     sign.add_argument("--proposal-id", required=True)
     sign.add_argument("--human-approved", action="store_true")
+    sign.add_argument("--as-human", action="store_true")
 
     active = sub.add_parser("active-action")
     active.add_argument("--active-service-id", required=True)
@@ -4201,6 +4448,7 @@ def build_parser() -> argparse.ArgumentParser:
     active.add_argument("--timeline-change", default=None)
     active.add_argument("--signed", action="store_true")
     active.add_argument("--human-approved", action="store_true")
+    active.add_argument("--as-human", action="store_true")
     active.add_argument("--meeting-mode", default=None)
     active.add_argument("--urgency", choices=["normal", "high"], default="normal")
 
@@ -4278,9 +4526,16 @@ def build_parser() -> argparse.ArgumentParser:
     resolve.add_argument("--notes", default="")
     resolve.add_argument("--actor", default="human")
 
+    flow_control = sub.add_parser("flow-control")
+    flow_control.add_argument("--flow-id", required=True)
+    flow_control.add_argument("--action", choices=["take", "release", "pause", "resume"], required=True)
+    flow_control.add_argument("--details", default="")
+    flow_control.add_argument("--actor", default="human")
+
     override = sub.add_parser("override")
     override.add_argument("--agent-id", required=True)
     override.add_argument("--action", choices=["pause", "resume", "direct-instruction", "cancel-negotiation", "request-meeting", "intervene"], required=True)
+    override.add_argument("--flow-id", default=None)
     override.add_argument("--details", default="")
     override.add_argument("--actor", default="human")
 
@@ -4405,6 +4660,7 @@ COMMANDS = {
     "run-buying-agent": command_run_buying_agent,
     "run-selling-agent": command_run_selling_agent,
     "resolve-inbox": command_resolve_inbox,
+    "flow-control": command_flow_control,
     "override": command_override,
     "steer-agent": command_steer_agent,
     "steer-buying-agent": command_steer_buying_agent,

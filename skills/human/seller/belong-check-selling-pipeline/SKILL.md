@@ -18,6 +18,7 @@ Run runtime `selling-pipeline` with the relevant Selling Agent, optional Service
 Show:
 
 - Service status and Service Playbook version
+- The inbound flow `control_state` (agent_controlled, human_controlled, or paused) when an engagement is under per-flow control
 - Buyer Engagement Feed state
 - Seller-led Discovery Questionnaire state
 - Seller-signed Service Contract/SOW proposals
@@ -28,8 +29,9 @@ Show:
 
 ## Route Actions
 
-- Operational escalation, approval, fulfillment, meeting, payment, or discount exception: `$belong-inbox`
+- Operational escalation, approval, fulfillment, meeting, payment, or discount exception, or to take/release/pause/resume control of a flow: `$belong-inbox`
 - Let the Selling Agent continue autonomously when the next step is inside the Service Playbook and Standing Authorization.
+- Take manual control of an inbound flow, or operate one already `human_controlled`: `$belong-operate-selling-flow`
 - Temporary Selling Agent guidance: `$belong-steer-selling-agent`
 - Durable Service Playbook or Service positioning change: `$belong-train-selling-agent`
 - Signed/active delivery state: `$belong-check-active-services`

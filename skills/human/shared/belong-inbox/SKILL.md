@@ -37,6 +37,7 @@ Handle all Marketplace Request types:
 - Change Order approval
 - Pause/resume
 - Operational intervention
+- Human-performed action (a high-criticality action the Playbook reserves for the human, Scenario B)
 
 Notifications are mocked as channel messages that send the human back to the agentic application and this inbox.
 
@@ -55,6 +56,13 @@ Notifications are mocked as channel messages that send the human back to the age
   it by checking the files and links against the SOW acceptance criteria, then accept,
   request a revision, or reject. Do not release final payment before the evidence meets
   acceptance.
+- Human-performed action (Scenario B): the agent reached an action type the Playbook
+  reserves as always human-performed (for example sign, payment, accept, deliver,
+  change-order, or dispute). This is not an approval request — the agent will not execute
+  it. Do not resolve it here; route the human to `$belong-operate-buying-flow` (buyer) or
+  `$belong-operate-selling-flow` (seller) to take control of the flow and perform the
+  action with `--as-human`. To stop reserving that action type, change the rule in
+  `$belong-train-buying-agent` or `$belong-train-selling-agent`.
 
 ## Resolve Or Override
 
@@ -71,6 +79,31 @@ Use `override` when the human wants to:
 Paused agents stop new autonomous actions but preserve active obligations, urgent escalations, deadlines, payment notices, disputes, and required notices.
 
 Enforce pause before every guided action. A paused agent cannot start new search engagement, proposal creation, negotiation, signature, Change Order, payment movement, optimization, or steering. Resume only after explicit human direction and a fresh pending-inbox check.
+
+## Per-Flow Control (separate from agent-wide pause)
+
+Agent-wide pause is all-or-nothing: it freezes every flow the agent manages. Per-flow control is granular: it changes who drives one flow (a Buying Request or an Active Service) while the agent keeps operating every other flow normally. The two coexist and are distinct.
+
+Each flow has one `control_state`:
+
+- `agent_controlled` (default): the agent acts autonomously.
+- `human_controlled`: the human drives this flow directly and the agent does not act on it.
+- `paused`: nobody acts on this flow; obligations, deadlines, disputes, and notices stay visible here in the Inbox.
+
+Set control from the inbox:
+
+```bash
+python3 skills/marketplace/belong-marketplace-runtime/scripts/belong_mock.py flow-control --flow-id <flow-id> --action take|release|pause|resume
+```
+
+- `take` → `human_controlled` (human takes manual control of the whole flow).
+- `release` → `agent_controlled` (hand the flow back to the agent).
+- `pause` → `paused` (freeze just this flow).
+- `resume` → `agent_controlled` (unfreeze).
+
+`override --action intervene --flow-id <flow-id>` is the override-driven way to take control: it sets the flow to `human_controlled`. After taking control, the human performs marketplace actions with the act-directly skills, not here: route a buyer to `$belong-operate-buying-flow` and a seller to `$belong-operate-selling-flow`. The inbox sets control and resolves escalations; it does not run the flow by hand.
+
+Do not leave a flow `human_controlled` once the human is done — release it so the agent resumes. Taking control of one flow does not pause the agent on others.
 
 Do not approve or apply durable Playbook changes here. Durable changes to budget rules, pricing, authority, selection rules, escalation thresholds, contract terms, service scope, or policy behavior belong in the training skills. Direct operational instructions and one-off overrides are not durable Playbook changes.
 

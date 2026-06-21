@@ -59,6 +59,7 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 | Handle a contested delivery or dispute | `$belong-inbox` to respond; `$belong-check-active-services` and `$belong-check-reputation` for detail |
 | Temporarily nudge an agent | `$belong-steer-buying-agent` or `$belong-steer-selling-agent` |
 | Permanently change how an agent behaves | `$belong-train-buying-agent` or `$belong-train-selling-agent` |
+| Take over one flow and run it by hand | `$belong-operate-buying-flow` (buyer) or `$belong-operate-selling-flow` (seller) |
 
 ## Shared Human Skills
 
@@ -74,12 +75,14 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 - `$belong-start-buying-request`: buyer intent surface for "I need X"; creates a Buying Request, launches semantic Service search, and optionally opens an Engagement Feed.
 - `$belong-check-buying-requests`: read/check pre-contract buyer pipeline: Buying Requests, Service Search Results, Engagement Feeds, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiations, authority checks, and linked Inbox items.
 - `$belong-steer-buying-agent`: temporary non-durable guidance for a Buying Agent inside the current Buying Playbook and Standing Authorization.
+- `$belong-operate-buying-flow`: act-directly skill to take manual control of one Buying Request or Active Service and perform marketplace actions by hand (answer discovery, negotiate, sign, accept, pay, Change Order, dispute) while the agent keeps running every other flow.
 
 ## Seller-Specific Human Skills
 
 - `$belong-train-selling-agent`: Service Provider setup, training, validation, activation, and later durable Service Playbook retraining for one Selling Agent per Service.
 - `$belong-check-selling-pipeline`: read/check seller inbound pipeline: Services, buyer engagements, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiation, billing readiness, and linked Inbox items.
 - `$belong-steer-selling-agent`: temporary non-durable guidance for a Selling Agent inside the current Service Playbook and Standing Authorization.
+- `$belong-operate-selling-flow`: act-directly skill to take manual control of one inbound flow or Active Service and perform marketplace actions by hand (answer discovery, create proposals, negotiate, deliver, accept Change Order, collect/pay, dispute) while the agent keeps running every other flow.
 
 ## Internal Agent Skills
 
@@ -109,7 +112,9 @@ Enforce these across every skill:
 - Treat pending Marketplace Inbox as the canonical work list. Resolve stale, duplicate, or superseded inbox items after each state change before saying the path is clean.
 - Check agent status, pause state, Standing Authorization, payment rules, contract authority, and cumulative spend before signing, negotiating, changing scope, or moving money.
 - Enforce pause: a paused agent does not start new autonomous work. It may still preserve obligations, notices, deadlines, payment alerts, dispute responses, and required escalations.
-- Let Belong agents continue autonomously inside their Playbooks and Standing Authorization. Humans do not run agent workflows manually; they check state, respond through Inbox, steer temporarily, or retrain durably.
+- A Belong agent always exists, but control is tracked per flow. Each Buying Request and Active Service has a `control_state`: `agent_controlled` (agent acts), `human_controlled` (the human drives the flow directly and the agent does not act on it), or `paused` (nobody acts on it; obligations and notices stay visible in the Inbox). This per-flow control is separate from the coarser agent-wide pause; both coexist. Taking control of one flow does not stop the agent on others.
+- Human skills split into two categories: talk-to-your-agent (`$belong-train-*`, `$belong-steer-*`, `$belong-start-buying-request`, `$belong-inbox`, and the read/check skills) and act-directly (`$belong-operate-buying-flow`, `$belong-operate-selling-flow`). Act-directly skills operate only on `human_controlled` flows and record actions under the agent identity with `actor = human`.
+- Let Belong agents continue autonomously inside their Playbooks and Standing Authorization. Humans usually check state, respond through Inbox, steer temporarily, or retrain durably; to run a flow by hand, they take control of that one flow and use an act-directly skill, then release it back to the agent.
 - Keep payments ledgered: authorization, charge, hold, release, refund, collection, seller-side platform fee, seller net, and merchant-of-record context must be visible when payment state changes.
 - Treat Change Orders as signed contract/SOW amendments. Scope, price, timeline, deliverables, and payment changes must update the contract trail and payment expectations.
 - Route durable Playbook changes through `$belong-train-buying-agent` or `$belong-train-selling-agent`. Inbox is for day-to-day operations, not durable training.

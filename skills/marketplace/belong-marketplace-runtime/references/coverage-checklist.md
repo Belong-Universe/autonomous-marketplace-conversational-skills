@@ -13,6 +13,7 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Shared human skills cover setup, inbox, Active Service checks, payment checks, reputation/audit/explanation checks.
 - Buyer-specific human skills cover Buying Agent training/retraining, starting a Buying Request from buyer intent, continuing Buying Agent autonomous work, checking the pre-contract buyer pipeline, and temporary Buying Agent steering.
 - Seller-specific human skills cover Selling Agent training/retraining, continuing Selling Agent autonomous work, checking the seller inbound pipeline, and temporary Selling Agent steering.
+- Act-directly human skills let a buyer-side or seller-side human take manual control of one flow and perform its marketplace actions by hand with `--as-human`.
 
 ## Agents And Training
 
@@ -49,6 +50,8 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Change Orders as signed contract/SOW amendments that state scope, price, timeline, deliverable, approval/signature, payment ledger impact, and acceptance evidence changes
 - Human Override and Agent Pause
 - Agent Pause blocks new autonomous search engagement, proposals, negotiations, signatures, Change Orders, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
+- Per-flow control (separate from agent-wide pause): each Buying Request and Active Service has one `control_state` (`agent_controlled`, `human_controlled`, `paused`); `flow-control` and `override --action intervene` change it, the runtime enforces who may act, and the human acts on a `human_controlled` flow with `--as-human`
+- Scenario B standing human-performed actions: a Playbook may reserve high-criticality action types as always human-performed (buyer: sign, accept, payment, change-order, dispute; seller: sign, deliver, accept-change-order, payment, dispute); the agent routes a reserved action to a human_performed_action inbox item instead of executing or asking for approval
 - Disputes managed by agents
 - Belong Judge autonomous decision
 - Belong human judge escalation

@@ -17,7 +17,7 @@ Run runtime `buying-requests` with the relevant Buying Agent and status filter.
 
 Show:
 
-- Buying Request status and need
+- Buying Request status, need, and `control_state` (agent_controlled, human_controlled, or paused)
 - Semantic Service Search Results and tags
 - Direct or competitive Engagement Feed state
 - Seller-led Discovery Questionnaire state
@@ -31,7 +31,8 @@ Show:
 
 - New buyer intent: `$belong-start-buying-request`
 - Let the Buying Agent continue autonomously when the next step is inside the Buying Playbook and Standing Authorization.
-- Operational escalation or approval: `$belong-inbox`
+- Take manual control of a request, or operate one already `human_controlled`: `$belong-operate-buying-flow`
+- Operational escalation or approval, or to take/release/pause/resume control of a flow: `$belong-inbox`
 - Temporary Buying Agent guidance: `$belong-steer-buying-agent`
 - Durable Buying Playbook change: `$belong-train-buying-agent`
 - Signed/active delivery state: `$belong-check-active-services`

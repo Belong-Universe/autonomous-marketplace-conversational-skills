@@ -51,8 +51,9 @@ def run_belong_raw(state_path, *args):
     return completed.returncode, payload
 
 
-def train_ready_buyer(state_path, name="Nia Buyer", org="Quill Health", budget="20000", max_spend="20000"):
+def train_ready_buyer(state_path, name="Nia Buyer", org="Quill Health", budget="20000", max_spend="20000", human_controlled_actions=""):
     run_belong(state_path, "setup-account", "--human-name", name, "--role", "buyer", "--org-name", org)
+    extra = ["--human-controlled-actions", human_controlled_actions] if human_controlled_actions else []
     run_belong(
         state_path,
         "train-buying",
@@ -91,11 +92,13 @@ def train_ready_buyer(state_path, name="Nia Buyer", org="Quill Health", budget="
         "--optimization-goals",
         "Continuously search for better providers and value.",
         "--activate",
+        *extra,
     )
 
 
-def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", service="CS Onboarding Sprint", price="9000"):
+def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", service="CS Onboarding Sprint", price="9000", human_controlled_actions=""):
     run_belong(state_path, "setup-account", "--human-name", name, "--role", "seller", "--org-name", org)
+    extra = ["--human-controlled-actions", human_controlled_actions] if human_controlled_actions else []
     return run_belong(
         state_path,
         "train-selling",
@@ -142,17 +145,23 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
         "--reputation-rules",
         "Accepted delivery, strong evidence, and fast escalation improve reputation; missed obligations reduce it.",
         "--activate",
+        *extra,
     )
+
+
+def buy_to_proposal(state_path, budget="25000"):
+    request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", budget, "--timeline", "30 days")["objects"]["buying_request"]
+    run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+    feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
+    run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need onboarding journey and evidence.")
+    proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
+    return request, proposal
 
 
 def execute_basic_active_service(state_path, buyer_budget="25000", buyer_max_spend="25000"):
     train_ready_seller(state_path, price="9000")
     train_ready_buyer(state_path, budget=buyer_budget, max_spend=buyer_max_spend)
-    request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", buyer_budget, "--timeline", "30 days")["objects"]["buying_request"]
-    run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
-    feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
-    run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need onboarding journey and evidence.")
-    proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
+    _, proposal = buy_to_proposal(state_path, budget=buyer_budget)
     return run_belong(state_path, "sign", "--proposal-id", proposal["id"])["objects"]["active_service"]
 
 
@@ -1069,6 +1078,173 @@ class BelongSkillPackTests(unittest.TestCase):
         ]
         missing = [term for term in required_terms if term not in text]
         self.assertFalse(missing, f"Missing coverage terms: {missing}")
+
+    def test_flow_control_cycle_sets_control_state_and_audits(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            active = execute_basic_active_service(state_path)
+            flow_id = active["id"]
+            taken = run_belong(state_path, "flow-control", "--flow-id", flow_id, "--action", "take", "--actor", "Nia Buyer")
+            self.assertEqual(taken["objects"]["flow"]["control_state"], "human_controlled")
+            paused = run_belong(state_path, "flow-control", "--flow-id", flow_id, "--action", "pause", "--actor", "Nia Buyer")
+            self.assertEqual(paused["objects"]["flow"]["control_state"], "paused")
+            resumed = run_belong(state_path, "flow-control", "--flow-id", flow_id, "--action", "resume", "--actor", "Nia Buyer")
+            self.assertEqual(resumed["objects"]["flow"]["control_state"], "agent_controlled")
+            run_belong(state_path, "flow-control", "--flow-id", flow_id, "--action", "take", "--actor", "Nia Buyer")
+            released = run_belong(state_path, "flow-control", "--flow-id", flow_id, "--action", "release", "--actor", "Nia Buyer")
+            self.assertEqual(released["objects"]["flow"]["control_state"], "agent_controlled")
+            state = json.loads(state_path.read_text())
+            self.assertTrue(any(event["event_type"].startswith("flow_control.") for event in state["audit"].values()))
+
+    def test_paused_flow_blocks_agent_action(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            train_ready_seller(state_path, price="9000")
+            train_ready_buyer(state_path, budget="25000", max_spend="25000")
+            request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", "25000", "--timeline", "30 days")["objects"]["buying_request"]
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+            run_belong(state_path, "flow-control", "--flow-id", request["id"], "--action", "pause", "--actor", "Nia Buyer")
+            code, payload = run_belong_raw(state_path, "engage", "--request-id", request["id"], "--count", "1")
+            self.assertNotEqual(code, 0)
+            self.assertIn("is paused", payload["summary"])
+
+    def test_human_controlled_flow_blocks_agent_and_requires_take_for_human(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            active = execute_basic_active_service(state_path)
+            run_belong(
+                state_path,
+                "active-action",
+                "--active-service-id",
+                active["id"],
+                "--action",
+                "deliver",
+                "--actor",
+                "Maya Seller",
+                "--deliverable",
+                "Seller evidence package",
+                "--files",
+                "evidence.pdf",
+                "--acceptance-mapping",
+                "report delivered",
+            )
+            code, payload = run_belong_raw(
+                state_path,
+                "active-action",
+                "--active-service-id",
+                active["id"],
+                "--action",
+                "accept",
+                "--actor",
+                "Nia Buyer",
+                "--as-human",
+                "--details",
+                "Human accepts before taking control.",
+            )
+            self.assertNotEqual(code, 0)
+            self.assertIn("Take control first", payload["summary"])
+
+            run_belong(state_path, "flow-control", "--flow-id", active["id"], "--action", "take", "--actor", "Nia Buyer")
+            code, payload = run_belong_raw(
+                state_path,
+                "active-action",
+                "--active-service-id",
+                active["id"],
+                "--action",
+                "accept",
+                "--actor",
+                "Nia Buyer",
+                "--details",
+                "Agent tries to act on a human-controlled flow.",
+            )
+            self.assertNotEqual(code, 0)
+            self.assertIn("under human control", payload["summary"])
+
+            accepted = run_belong(
+                state_path,
+                "active-action",
+                "--active-service-id",
+                active["id"],
+                "--action",
+                "accept",
+                "--actor",
+                "Nia Buyer",
+                "--as-human",
+                "--details",
+                "Human accepts after taking control.",
+            )["objects"]
+            self.assertEqual(accepted["active_service"]["status"], "accepted")
+
+    def test_intervene_override_takes_flow_control(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            active = execute_basic_active_service(state_path)
+            buyer_agent_id = active["buyer_agent_id"]
+            result = run_belong(
+                state_path,
+                "override",
+                "--agent-id",
+                buyer_agent_id,
+                "--action",
+                "intervene",
+                "--flow-id",
+                active["id"],
+                "--actor",
+                "Nia Buyer",
+            )
+            self.assertIn("control is now human_controlled", result["summary"])
+            self.assertEqual(result["objects"]["flow"]["control_state"], "human_controlled")
+            state = json.loads(state_path.read_text())
+            self.assertEqual(state["active_services"][active["id"]]["control_state"], "human_controlled")
+
+    def test_ineligible_human_controlled_action_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            with self.assertRaises(AssertionError) as ctx:
+                train_ready_buyer(state_path, human_controlled_actions="negotiate")
+            self.assertIn("Ineligible human-controlled action", str(ctx.exception))
+
+    def test_scenario_b_reserved_buyer_sign_routes_to_human_then_human_signs(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            train_ready_seller(state_path, price="9000")
+            train_ready_buyer(state_path, budget="25000", max_spend="25000", human_controlled_actions="sign")
+            request, proposal = buy_to_proposal(state_path)
+            routed = run_belong(state_path, "sign", "--proposal-id", proposal["id"])
+            self.assertIn("routed to the buyer-side human", routed["summary"])
+            self.assertEqual(routed["objects"]["inbox_item"]["request_type"], "human_performed_action")
+
+            run_belong(state_path, "flow-control", "--flow-id", request["id"], "--action", "take", "--actor", "Nia Buyer")
+            active = run_belong(state_path, "sign", "--proposal-id", proposal["id"], "--as-human")["objects"]["active_service"]
+            self.assertTrue(active["id"])
+            state = json.loads(state_path.read_text())
+            self.assertTrue(any(event["event_type"] == "authority.routed_to_human" for event in state["audit"].values()))
+
+    def test_scenario_b_reserved_seller_deliver_routes_to_human(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            train_ready_seller(state_path, price="9000", human_controlled_actions="deliver")
+            train_ready_buyer(state_path, budget="25000", max_spend="25000")
+            _, proposal = buy_to_proposal(state_path)
+            active = run_belong(state_path, "sign", "--proposal-id", proposal["id"])["objects"]["active_service"]
+            routed = run_belong(
+                state_path,
+                "active-action",
+                "--active-service-id",
+                active["id"],
+                "--action",
+                "deliver",
+                "--actor",
+                "Maya Seller",
+                "--deliverable",
+                "Seller evidence package",
+                "--files",
+                "evidence.pdf",
+                "--acceptance-mapping",
+                "report delivered",
+            )
+            self.assertIn("routed to the seller-side human", routed["summary"])
+            self.assertEqual(routed["objects"]["inbox_item"]["request_type"], "human_performed_action")
 
 
 if __name__ == "__main__":

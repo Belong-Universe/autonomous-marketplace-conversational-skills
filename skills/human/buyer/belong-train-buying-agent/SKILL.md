@@ -56,7 +56,7 @@ Build the playbook in this order:
 
 Work one section at a time. Do not ask the human to fill every section at once. For each section, show in chat what you understood and the proposed fill, ask only the targeted questions that section needs, convert answers into clear playbook rules, and mark unknowns as `TBD` instead of inventing them. Run the per-section approval gate and the between-section checkpoint following `references/buying-playbook/checkpoints-and-approval.md`. At each approval gate, also state any profile-based assumption you made so the human confirms it rather than having it applied silently. Do not start the next section until the human approves the current one.
 
-Always re-confirm the authority-critical fields live before activation, never accept them silently from an edited file: Contract/SOW authority, escalation thresholds, and budget/max spend. For an individual or single decision-maker, contract authority usually collapses to "this human signs up to their own budget"; still confirm it live rather than skipping it.
+Always re-confirm the authority-critical fields live before activation, never accept them silently from an edited file: Contract/SOW authority, escalation thresholds, budget/max spend, and any action types reserved as always human-performed (Scenario B). For an individual or single decision-maker, contract authority usually collapses to "this human signs up to their own budget"; still confirm it live rather than skipping it.
 
 Run `train-buying` with `--activate` once the human confirms and the Playbook is complete.
 
@@ -74,7 +74,7 @@ Build the sections in the order above. Each summary below is the headline; the f
 4. **Selection And RFP Rules** — direct vs competitive, RFP structure, ranking and proposal comparison, plus the Provider Due Diligence gate/journey. `references/buying-playbook/04-selection-and-rfp-rules.md`
 5. **Negotiations** — limits, concessions, walk-away, Standing Authorization envelope, and the cross-cutting disclosure discipline. `references/buying-playbook/05-negotiations.md`
 6. **Legal And Contracts** — contract/SOW authority, required terms, acceptance criteria, Change Order triggers, and modeling a required provider invoice as an acceptance item. `references/buying-playbook/06-legal-and-contracts.md`
-7. **Escalations** — thresholds, exceptions, pause/resume, channels, and who owns each path. `references/buying-playbook/07-escalations.md`
+7. **Escalations** — thresholds, exceptions, pause/resume, channels, who owns each path, and any high-criticality action types reserved as always human-performed (Scenario B). `references/buying-playbook/07-escalations.md`
 8. **Disputes And Reputation** — dispute posture, evidence standards, deadlines, rating behavior. `references/buying-playbook/08-disputes-and-reputation.md`
 9. **Optimization Objective** — what to optimize across providers and the Provider Optimization goals (light for one-off, heavy for recurring). `references/buying-playbook/09-optimization-objective.md`
 10. **Human-To-Human Meetings** — when to propose/accept, plus the full Calendly scheduling handshake and mechanics. `references/buying-playbook/10-human-to-human-meetings.md`
@@ -97,7 +97,7 @@ When the playbook is complete, map the sections into the runtime:
 - Selection And RFP Rules -> `--selection-rules`, `--rfp-rules`, `--proposal-comparison-rules`
 - Negotiations -> `--negotiation-limits`
 - Legal And Contracts -> `--contract-authority`, `--acceptance-criteria`
-- Escalations -> `--escalation-rules`
+- Escalations -> `--escalation-rules`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `accept`, `payment`, `change-order`, `dispute`)
 - Disputes And Reputation -> `--dispute-posture`, `--rating-rules`
 - Optimization Objective -> `--optimization-goals`
 - Human-To-Human Meetings -> no dedicated buyer runtime flag (the seller playbook has `--meeting-rules`); keep it in the playbook and reflect scheduling escalations through `--escalation-rules`

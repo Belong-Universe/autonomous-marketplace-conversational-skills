@@ -17,7 +17,7 @@ Run runtime `active-services` with the relevant owner role and status filter.
 
 Show:
 
-- Active Service status
+- Active Service status and `control_state` (agent_controlled, human_controlled, or paused)
 - Service Contract/SOW obligations
 - Fulfillment Task state
 - Deliverable Evidence Package state
@@ -31,8 +31,9 @@ Show:
 
 ## Route Actions
 
-- Operational escalation or approval: `$belong-inbox`
+- Operational escalation or approval, or to take/release/pause/resume control of a flow: `$belong-inbox`
 - Let the relevant Buying Agent or Selling Agent continue autonomously when the next step is inside its Playbook and Standing Authorization.
+- Take manual control of an Active Service, or operate one already `human_controlled`: `$belong-operate-buying-flow` (buyer side) or `$belong-operate-selling-flow` (seller side)
 - Temporary guidance to a Buying Agent or Selling Agent: `$belong-steer-buying-agent` or `$belong-steer-selling-agent`
 - Durable Buying Playbook or Service Playbook change: `$belong-train-buying-agent` or `$belong-train-selling-agent`
 - Money details: `$belong-check-payments`

@@ -255,6 +255,8 @@ Scheduling mechanics the agent must follow:
 
 Capture ordinary fulfillment escalations, exception thresholds, information requests, authorization requests, payment exceptions, Change Order approvals, agent pause/resume rules, notification channels, and who in the Service Provider organization owns each escalation path.
 
+Also capture any high-criticality action types reserved as **always performed by the human** (Scenario B): a third authority outcome beyond "agent executes" and "agent escalates for approval". When the agent reaches one, it hands the action to the Service Provider human, who performs it directly with `$belong-operate-selling-flow`. Only this fixed set of seller action types is eligible: `sign` (seller-signed proposal), `deliver`, `accept-change-order`, `payment` (collection), `dispute`. Operational actions (negotiate, discovery, meeting, message, fulfillment-task) are not eligible. This is a standing rule per action type, never arbitrary sub-flow slicing; treat it as authority-critical and confirm it live before activation. Map the confirmed set to `--human-controlled-actions`.
+
 ### Disputes And Reputation Rules
 
 Capture dispute posture, evidence standards, response deadlines, refund/rework preferences, when to escalate to Belong Judge or human review, rating behavior, reputation signals, and how outcomes should update future Selling Optimization recommendations.
@@ -294,7 +296,7 @@ When the playbook is complete, map the sections into the runtime:
 - Negotiations -> `--discount-limit`, `--scope-limits`, `--negotiation-limits`
 - Way Of Work During An Active Service -> `--delivery-workflow`, plus relevant deliverables and evidence requirements
 - Human-To-Human Meetings -> `--meeting-rules`
-- Escalations -> `--escalation-paths`
+- Escalations -> `--escalation-paths`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `deliver`, `accept-change-order`, `payment`, `dispute`)
 - Disputes And Reputation Rules -> `--dispute-rules`, `--reputation-rules`
 - Capacity And Objective -> delivery capacity maps onto `--availability` and at-capacity behavior onto `--escalation-paths`; the optimization objective has no dedicated seller runtime flag (the buyer playbook has `--optimization-goals`), so keep it in the playbook and reflect it through `--negotiation-limits` and `--reputation-rules`
 
