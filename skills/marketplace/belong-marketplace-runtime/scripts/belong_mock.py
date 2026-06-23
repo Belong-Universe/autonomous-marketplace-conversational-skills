@@ -2120,7 +2120,7 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
     active_service = {
         "id": active_service_id,
         "status": "delivery",
-        "control_state": "agent_controlled",
+        "control_state": request.get("control_state", "agent_controlled"),
         "buying_request_id": request["id"],
         "proposal_id": proposal["id"],
         "contract_id": contract["id"],
@@ -2197,14 +2197,37 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
         buyer_agent["name"],
         "Buyer-side human approval was applied to signature.",
     )
+    control_state = active_service["control_state"]
+    summary = f"Executed Service Contract/SOW and created Active Service {active_service_id}."
+    next_steps = [
+        "Internal agent capabilities can now coordinate fulfillment tasks, meetings, evidence, Delivery Acceptance, payments, and Change Orders.",
+        "Use belong-inbox to resolve provider fulfillment requests.",
+        "Use belong-check-reputation to inspect the audit trail and reputation events.",
+    ]
+    if control_state == "human_controlled":
+        summary = (
+            f"We have started the Active Service flow {active_service_id}; right now the human is in "
+            "control and it will stay that way. To hand control to the agent, you can say so at any time."
+        )
+        next_steps = [
+            f"You (the human) are in control of Active Service {active_service_id}; use "
+            "belong-operate-buying-flow to act with --as-human.",
+            f"To hand this flow to the agent at any time, use flow-control --flow-id {active_service_id} "
+            "--action release.",
+        ] + next_steps
+        audit(
+            state,
+            "Belong Agent",
+            "flow_control.inherited",
+            "Active Service",
+            active_service_id,
+            "Active Service inherited human_controlled from its Buying Request on signature.",
+            {"inherited_from": request["id"]},
+        )
     return output(
-        f"Executed Service Contract/SOW and created Active Service {active_service_id}.",
+        summary,
         {"active_service": active_service, "contract": contract, "payment": auth_payment, "signature_payment": signature_payment},
-        [
-            "Internal agent capabilities can now coordinate fulfillment tasks, meetings, evidence, Delivery Acceptance, payments, and Change Orders.",
-            "Use belong-inbox to resolve provider fulfillment requests.",
-            "Use belong-check-reputation to inspect the audit trail and reputation events.",
-        ],
+        next_steps,
     )
 
 

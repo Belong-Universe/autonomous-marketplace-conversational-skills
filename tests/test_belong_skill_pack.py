@@ -1246,6 +1246,29 @@ class BelongSkillPackTests(unittest.TestCase):
             self.assertIn("routed to the seller-side human", routed["summary"])
             self.assertEqual(routed["objects"]["inbox_item"]["request_type"], "human_performed_action")
 
+    def test_active_service_inherits_human_control_from_buying_request(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            train_ready_seller(state_path, price="9000")
+            train_ready_buyer(state_path, budget="25000", max_spend="25000")
+            request, proposal = buy_to_proposal(state_path)
+            run_belong(state_path, "flow-control", "--flow-id", request["id"], "--action", "take", "--actor", "Nia Buyer")
+            signed = run_belong(state_path, "sign", "--proposal-id", proposal["id"], "--as-human")
+            active = signed["objects"]["active_service"]
+            self.assertEqual(active["control_state"], "human_controlled")
+            self.assertIn("the human is in control and it will stay that way", signed["summary"])
+            state = json.loads(state_path.read_text())
+            self.assertTrue(any(event["event_type"] == "flow_control.inherited" for event in state["audit"].values()))
+
+    def test_active_service_stays_agent_controlled_when_agent_signs(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            train_ready_seller(state_path, price="9000")
+            train_ready_buyer(state_path, budget="25000", max_spend="25000")
+            _, proposal = buy_to_proposal(state_path)
+            active = run_belong(state_path, "sign", "--proposal-id", proposal["id"])["objects"]["active_service"]
+            self.assertEqual(active["control_state"], "agent_controlled")
+
 
 if __name__ == "__main__":
     unittest.main()
