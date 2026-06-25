@@ -1,6 +1,6 @@
 ---
 name: belong-setup-account
-description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, required Stripe connection for payment readiness, legal/signing readiness, required Calendly connection (plus optional Google Calendar) for scheduling Human-to-Human Meetings, and routing into Buying Agent or Selling Agent training.
+description: Guide a Service Provider human or buyer-side human through Belong account onboarding. Use for OAuth-style login, Belong Account creation, Organization Profile setup, account ownership, role context, notification preferences such as email/Slack/WhatsApp, required Stripe connection for payment readiness, legal/signing readiness, and required Calendly connection (plus optional Google Calendar) for scheduling Human-to-Human Meetings. The account belongs to an Organization; any Buying or Selling Agent also belongs to the Organization and is created later in training, not in setup.
 ---
 
 # Belong Setup Account
@@ -41,7 +41,7 @@ To change rather than add, use `update-account`:
 
 Start with runtime `status`, then explain that this flow represents the one web/OAuth moment. After it completes, all work returns to the user's favorite agentic application.
 
-Also explain the next milestone clearly: after account setup, the user will create and fill an Autonomous Playbook. For procurement, this becomes a Buying Playbook. For selling, this becomes one Service/Selling Playbook per Service. The playbook is the operating contract that lets Belong agents sell and/or procure autonomously inside Standing Authorization while escalating exceptions to Marketplace Inbox.
+Also explain the next milestone clearly: after account setup, the user will create and fill an Autonomous Playbook. For procurement, this becomes a Buying Playbook. For selling, this becomes one Service/Selling Playbook per Service. The playbook is the operating contract that lets Belong agents sell and/or procure autonomously inside Standing Authorization while escalating exceptions to Marketplace Inbox. This is a separate step: setup creates the account and its Organization, and any Buying or Selling Agent belongs to the Organization and is created later in training, not here.
 
 As part of this one connection moment, require the human to connect a Calendly account
 (and optionally Google Calendar). Calendly is connected here alongside payment and legal
@@ -87,7 +87,7 @@ Summarize:
 - Invited teammates and that invitation emails were sent
 - Which training skill comes next: `$belong-train-buying-agent`, `$belong-train-selling-agent`, or both
 
-If the human is a Service Provider, route to `$belong-train-selling-agent`. If the human is a buyer-side human, route to `$belong-train-buying-agent`. If both, tell them to train both agents but keep one Selling Agent per Service.
+Once the account and its Organization exist, the separate next step is to create an agent in training: route a Service Provider to `$belong-train-selling-agent`, a buyer-side human to `$belong-train-buying-agent`. If both, tell them to train both agents but keep one Selling Agent per Service. The agent is created in training, not in setup.
 
 Use the Marketplace Inbox as the canonical next-work list.
 
