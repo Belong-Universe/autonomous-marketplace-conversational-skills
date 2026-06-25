@@ -23,9 +23,9 @@ Look for delivery SOPs, onboarding checklists, kickoff decks, project plans, sta
 - Audit requirements
 - Completion and handoff process
 
-## Deliverable / evidence types (runtime)
+## Deliverable / evidence types (Belong marketplace)
 
-Every deliverable the Selling Agent submits is one of two runtime kinds (closed set):
+Every deliverable the Selling Agent submits is one of two Belong marketplace kinds (closed set):
 
 - **External URL** (`external_url`): a link to work hosted off-platform. Requires an `https` URL (no credentials, no private/metadata IPs), a description, and a `sha256:` content hash computed off-marketplace.
 - **Platform file** (`platform_file`): a file uploaded to Belong's storage. Belong computes the `sha256` server-side, records its content type and size (up to 5 GiB), and runs an antivirus scan; only a `clean` file is accepted. No URL is attached.
