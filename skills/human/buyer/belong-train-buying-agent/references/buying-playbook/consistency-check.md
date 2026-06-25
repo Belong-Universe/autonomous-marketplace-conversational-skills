@@ -1,22 +1,28 @@
 # Consistency Check
 
-Before running validation, do a Consistency Check across the whole Buying Playbook, not
-just per section. The runtime checks that fields are present; it does not catch
-contradictions between sections. Review at least these cross-section pairs:
+[Back to index](index.md)
 
-- Budget vs negotiation limits: max spend and concessions must not exceed the budget.
-- Selection rules vs provider preferences: a blocked provider must not be winnable
-  under the ranking criteria.
-- Contract authority vs escalation thresholds: anything above signing authority must
-  trigger an escalation, not an autonomous signature.
-- Acceptance criteria vs payment rules: payment release must line up with what counts
-  as accepted delivery.
-- Optimization objective vs negotiation and selection: the stated objective (cost,
-  quality, speed, relationships) must match how the agent ranks and concedes.
-- Meeting authority vs escalation thresholds: confirming a meeting beyond the agent's
-  scheduling authority must escalate, not auto-confirm.
+Run this once the sections are drafted and before `train-buying --activate` or `update-buying-playbook`. The runtime checks that fields are present; it does not check that sections agree with each other.
 
-When two statements conflict, show them side by side, ask the human which one is
-correct, and update the affected section(s). Do not run `train-buying --activate` until
-the playbook is internally consistent or the human explicitly accepts a remaining
-conflict.
+## How To Run It
+
+- Read the whole playbook, not one section at a time.
+- For each check below, compare the relevant sections.
+- When two statements conflict, show them side by side, ask the human which is correct, and update the affected section(s).
+- Do not activate until every conflict is resolved or the human explicitly accepts it.
+
+## Cross-Section Checks
+
+| Check | Sections | Conflict example |
+| --- | --- | --- |
+| Spend within budget | Budget And Payment vs Negotiations | max spend or concessions exceed the stated budget |
+| Selection matches preferences | Selection And RFP Rules vs Provider Preferences | a blocked provider can still win under the ranking criteria |
+| Authority matches escalation | Legal And Contracts vs Escalations | signing authority above the escalation threshold |
+| Acceptance matches payment | Legal And Contracts vs Budget And Payment | payment release does not line up with accepted delivery |
+| Objective matches tactics | Optimization Objective vs Negotiations/Selection | "minimize cost" but ranking and concessions favor speed |
+| Meeting authority matches escalation | Human-To-Human Meetings vs Escalations | confirming a meeting beyond scheduling authority auto-confirms instead of escalating |
+
+## Output Of The Check
+
+- A short list of conflicts found, each with the two sections and a proposed resolution.
+- If none, state the playbook is internally consistent and ready for runtime validation.

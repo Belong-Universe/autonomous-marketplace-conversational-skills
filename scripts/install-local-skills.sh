@@ -17,6 +17,7 @@ SKILL_PATHS=(
   "skills/human/shared/belong-check-active-services"
   "skills/human/shared/belong-check-payments"
   "skills/human/shared/belong-check-reputation"
+  "skills/human/shared/belong-manage-dispute"
   "skills/human/buyer/belong-train-buying-agent"
   "skills/human/buyer/belong-start-buying-request"
   "skills/human/buyer/belong-check-buying-requests"

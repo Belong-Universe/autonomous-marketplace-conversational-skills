@@ -5,7 +5,7 @@ description: Internal agent and Belong Judge capability for mocked Belong market
 
 # Belong Internal Disputes
 
-Use this when delivery, payment, contract/SOW compliance, acceptance, evidence, or conduct is contested. This is an internal agent/Judge capability. Humans see dispute work through `$belong-inbox`, `$belong-check-active-services`, and `$belong-check-reputation`.
+Use this when delivery, payment, contract/SOW compliance, acceptance, evidence, or conduct is contested. This is an internal agent/Judge capability. Humans participate in a Dispute through `$belong-manage-dispute` (open, respond, ask the Belong Judge, escalate to a Belong human judge) and see dispute work through `$belong-inbox`, `$belong-check-active-services`, and `$belong-check-reputation`.
 
 ## Start
 

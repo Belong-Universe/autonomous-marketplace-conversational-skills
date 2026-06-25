@@ -56,7 +56,7 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 | See delivery and active work after signature | `$belong-check-active-services` |
 | See money, charges, holds, refunds, or payouts | `$belong-check-payments` |
 | Understand why an agent acted, or review audit/reputation | `$belong-check-reputation` |
-| Handle a contested delivery or dispute | `$belong-inbox` to respond; `$belong-check-active-services` and `$belong-check-reputation` for detail |
+| Handle a contested delivery or dispute | `$belong-manage-dispute` to open, respond, ask the Belong Judge, or escalate; `$belong-check-active-services` and `$belong-check-reputation` for detail |
 | Temporarily nudge an agent | `$belong-steer-buying-agent` or `$belong-steer-selling-agent` |
 | Permanently change how an agent behaves | `$belong-train-buying-agent` or `$belong-train-selling-agent` |
 | Take over one flow and run it by hand | `$belong-operate-buying-flow` (buyer) or `$belong-operate-selling-flow` (seller) |
@@ -66,6 +66,7 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 - `$belong-setup-account`: OAuth-style mocked login, Belong Account, Organization Profile, notifications, mocked legal/payment readiness.
 - `$belong-inbox`: day-to-day Marketplace Inbox work: information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, Change Order approval, pause/resume, and operational intervention.
 - `$belong-check-active-services`: read/check Active Services, obligations, delivery, Deliverable Evidence Packages, Delivery Acceptance, Change Orders, Human-to-Human Meetings, Disputes, and linked Inbox items.
+- `$belong-manage-dispute`: human cockpit to participate in a Dispute on an Active Service: open, state position with evidence, respond to the other side, ask the Belong Judge to decide, escalate to a Belong human judge, and read the payment/reputation outcome. Role-aware; not the Judge.
 - `$belong-check-payments`: read/check bank readiness, transactions, payment ledger, charges, holds, releases, refunds, collections, platform fees, seller net, and merchant-of-record context.
 - `$belong-check-reputation`: read/check Agent Reputation, ratings, Audit Log, Decision Explanations, Marketplace Privacy Promise, Marketplace Learning Boundary, Belong monetization, Provider Optimization, and Selling Optimization signals.
 
