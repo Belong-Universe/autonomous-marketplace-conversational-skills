@@ -18,7 +18,7 @@ Before `sign`, `active-action --action payment`, or `composite-request`, check S
 
 After payment commands, summarize the payment ledger event: type, gross amount, platform fee, seller net, hold/release/refund/collection state, merchant-of-record distinction, linked contract/SOW, and audit path.
 
-Active Service role permissions are enforced in the mock runtime. Seller-side actors can create Fulfillment Tasks, submit Deliverable Evidence Packages, and manage seller-side charge/collection events. Buyer-side actors can review evidence, accept/reject/revise delivery, authorize buyer-side payment events, release accepted payments, and request refunds in allowed contexts. Both sides can message, schedule meetings, and open/respond to disputes.
+Active Service role permissions are enforced in the mock runtime. Seller-side actors can create Fulfillment Tasks, submit Deliverable Evidence Packages, and manage seller-side charge/collection events. Buyer-side actors can review evidence, accept/reject/revise delivery, authorize buyer-side payment events, release accepted payments, and request refunds in allowed contexts. Both sides can message, schedule meetings, and open or withdraw disputes; a Belong admin issues the binary verdict.
 
 Delivery acceptance requires a Deliverable Evidence Package. Direct `payment` release, charge, or collection requires deliverable evidence plus buyer acceptance unless the command includes an explicit human-approved exception.
 
@@ -71,9 +71,10 @@ Add `--as-human` to any `active-action` call the human performs directly on a `h
 - `resolve-inbox --item-id ... --decision approve|reject|provided|executed --notes ...`
 - `flow-control --flow-id ... --action take|release|pause|resume [--actor ...] [--details ...]`
 - `override --agent-id ... --action pause|resume|direct-instruction|request-meeting|intervene [--flow-id ...]`
-- `dispute-open --active-service-id ... --opened-by buyer|seller --reason ... --evidence ...`
-- `dispute-respond --dispute-id ... --actor ... --response ...`
-- `judge --dispute-id ... [--decision ...] [--escalate-human --reason ...]`
+- `dispute-open --active-service-id ... --opened-by buyer|seller --kind deliverable_rejection|sla_determination|charge_disagreement|other --reason ... --evidence ...`
+- `dispute-review --dispute-id ...` (Belong admin takes an opened Dispute under review)
+- `dispute-resolve --dispute-id ... --resolution refund_buyer|release_provider [--notes ...]` (admin-only binary, full-only verdict)
+- `dispute-withdraw --dispute-id ... [--reason ...]` (claimant withdraws before resolution)
 - `reputation`
 - `rate --agent-id ... --score 1..5 --notes ...`
 - `audit --object-id ... --limit 50`
@@ -98,4 +99,4 @@ Use `explain --audit-id ...` for evidence-rich Decision Explanations. Cite audit
 
 ## Scenario
 
-Use `scenario full-lifecycle --reset` for smoke tests and demos. It creates buyer and seller humans, trains agents, runs search, competitive engagement, discovery, seller-signed contract/SOW proposals, buyer signature, Active Service delivery, meeting, evidence, acceptance, payment release, rating, dispute, Belong Judge, human judge escalation, provider optimization, selling optimization, training recommendations, composite buying request, agent pause, inbox, reputation, and audit state.
+Use `scenario full-lifecycle --reset` for smoke tests and demos. It creates buyer and seller humans, trains agents, runs search, competitive engagement, discovery, seller-signed contract/SOW proposals, buyer signature, Active Service delivery, meeting, evidence, acceptance, payment release, rating, dispute, admin dispute resolution, provider optimization, selling optimization, training recommendations, composite buying request, agent pause, inbox, reputation, and audit state.

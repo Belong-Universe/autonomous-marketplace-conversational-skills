@@ -23,7 +23,7 @@ Show:
 - Deliverable Evidence Package state
 - Delivery Acceptance state
 - Human-to-Human Meeting prep and follow-up state
-- Dispute and Belong Judge state
+- Dispute state and admin verdict
 - Payment ledger summary
 - Linked Marketplace Inbox items
 - Agent Reputation and Audit Log path when relevant

@@ -13,7 +13,7 @@ Run runtime `status`. Identify the Active Service and role:
 
 - Selling Agent primarily handles delivery plan, provider-side Fulfillment Tasks, deliverable submission, evidence, billing/collections, seller escalations, and seller-side meeting prep.
 - Buying Agent primarily handles buyer requirements, buyer-side tasks, payment authorization, evidence review, acceptance/rejection/revision/dispute, buyer escalations, and buyer-side meeting prep.
-- Both can message, request information, schedule meetings, and open/respond to disputes.
+- Both can message, request information, schedule meetings, and open or withdraw disputes (a Belong admin resolves them).
 
 Confirm the signed Service Contract/SOW version, open obligations, pending inbox items, pause state for both agents, authority envelope, cumulative spend, and payment ledger before changing delivery or payment state.
 
@@ -47,7 +47,7 @@ agent may add a transcript, recording, or photo mapped to the acceptance criteri
 
 Whatever files are tied to an Active Service — deliverables, sources, or evidence — are
 retained with that service so that, if a dispute opens, the marketplace and the Belong
-Judge can access the complete file record for the whole Active Service.
+admin/arbiter can access the complete file record for the whole Active Service.
 
 ## Escalation
 

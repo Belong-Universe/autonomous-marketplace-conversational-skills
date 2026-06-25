@@ -1,17 +1,17 @@
 ---
 name: belong-manage-dispute
-description: Shared human-facing cockpit for participating in a Belong Dispute on an Active Service. Use when a buyer-side or seller-side human wants to open a Dispute, state their position with evidence, respond to the other side, ask the Belong Judge to decide, escalate to a Belong human judge, or understand the payment and reputation outcome. Role-aware; not the Judge.
+description: Shared human-facing cockpit for participating in a Belong Dispute on an Active Service. Use when a buyer-side or seller-side human wants to open a Dispute with evidence, withdraw a Dispute they opened, or understand the binary admin verdict and its payment and reputation outcome. Role-aware; the human files, a Belong admin resolves.
 ---
 
 # Belong Manage Dispute
 
 **Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
 
-Use this when contested delivery, payment, contract/SOW compliance, acceptance, evidence, or conduct needs a human to drive the Dispute: "this delivery is wrong", "they never paid", "I want to dispute this", "respond to their claim", or "escalate to a human judge."
+Use this when contested delivery, payment, contract/SOW compliance, acceptance, or conduct needs a human to file a Dispute: "this delivery is wrong", "they never paid", "I want to dispute this", or "withdraw my dispute."
 
-This is the human's cockpit to **participate** in a Dispute. It does not adjudicate. The autonomous Belong Judge decides first; the human can escalate further to a Belong human judge. The Judge's logic lives in `$belong-internal-disputes` (internal). Payment hold/release/refund and reputation effects are runtime-driven outcomes, not chosen here.
+This is the human's cockpit to **file and follow** a Dispute. It does not adjudicate. A Belong admin/arbiter is the only one who resolves a Dispute, with a binary, full-only verdict: refund the buyer or release escrow to the provider. There is no party back-and-forth and no autonomous AI judge in this phase — Belong assembles the evidence from the audit trail and the admin decides. The admin verdict logic lives in `$belong-internal-disputes` (internal). Payment refund/release and reputation effects are runtime-driven outcomes, not chosen here.
 
-It is role-aware: detect whether this human is buyer-side or seller-side and use that side for every command (`--opened-by`, `--actor`). A buyer-side human cannot file or respond as the seller, and vice versa.
+It is role-aware: detect whether this human is buyer-side or seller-side and use that side for `--opened-by`. A buyer-side human cannot file as the seller, and vice versa. Only the side that opened a Dispute can withdraw it.
 
 ## Preconditions (run first, every time)
 
@@ -26,39 +26,27 @@ Run from the runtime root:
 
 1. **Open the Dispute** (if not already open):
    ```bash
-   dispute-open --active-service-id <id> --opened-by <buyer|seller> --reason "<what is contested>" --evidence "<links or description>"
+   dispute-open --active-service-id <id> --opened-by <buyer|seller> --kind <deliverable_rejection|sla_determination|charge_disagreement|other> --reason "<what is contested>" --evidence "<links or description>"
    ```
-   Capture a clear, specific reason and the strongest evidence the human has. Disputes are decided on the executed contract/SOW, acceptance criteria, evidence packages, payment ledger, messages, and reputation history — so help the human point at those, not at sentiment.
+   Pick the `--kind` that fits the grievance and capture a clear, specific reason with the strongest evidence the human has. Disputes are decided on the executed contract/SOW, acceptance criteria, evidence packages, payment ledger, and messages that Belong assembles from the audit trail — so help the human point at those, not at sentiment. There is no response step: once filed, the dispute waits for the Belong admin verdict.
 
-2. **Respond to the other side's position:**
+2. **Withdraw the Dispute** (only the side that opened it, only before it is resolved):
    ```bash
-   dispute-respond --dispute-id <id> --actor <buyer|seller> --response "<the human's position>"
+   dispute-withdraw --dispute-id <id> --reason "<why you are withdrawing>"
    ```
-   Show the other side's latest response, then record the human's. Keep it factual and tied to the contract/SOW and evidence.
+   On withdrawal the Active Service returns to its prior delivery state and no escrow moves.
 
-3. **Ask the Belong Judge to decide** (first-layer autonomous adjudication, once positions are in and agents cannot resolve it):
-   ```bash
-   judge --dispute-id <id>
-   ```
-   Explain that the Judge reviews the executed contract/SOW, evidence packages, acceptance criteria, payment ledger, messages, dispute responses, and reputation history, and that the decision carries payment and reputation consequences for both sides.
-
-4. **Escalate to a Belong human judge** (only if the autonomous decision is unsatisfactory):
-   ```bash
-   judge --dispute-id <id> --escalate-human --reason "<why human review is needed>"
-   ```
-   This requests human review; evidence and payment holds stay visible in the Inbox until the human-judge outcome is mocked.
-
-5. **Read the outcome.** After a decision, summarize it and route the human to `$belong-check-active-services` (delivery/payment effect) and `$belong-check-reputation` (Reputation Events). A "Review Belong Judge decision" item appears in `$belong-inbox` for both sides.
+3. **Read the outcome.** Once a Belong admin resolves the Dispute (`refund_buyer` or `release_provider`), summarize the verdict and route the human to `$belong-check-active-services` (delivery/payment effect), `$belong-check-payments` (the refund or release), and `$belong-check-reputation` (Reputation Events). A "Review dispute resolution" item appears in `$belong-inbox` for both sides.
 
 ## Boundaries
 
 - Active Services only: there is no Dispute pre-contract. An unsigned proposal you do not want is not a Dispute — simply decline it or take the flow over with `$belong-steer-*`, `$belong-operate-*`, or review it through `$belong-check-buying-requests`/`$belong-check-selling-pipeline`.
-- Not the Judge: the human states a position and may escalate, but does not issue the decision. The autonomous Belong Judge and any Belong human judge own adjudication (`$belong-internal-disputes`).
-- Role-locked: act only as the human's own side. Never file or respond as the other party.
-- Outcomes are runtime-driven: payment hold/release/refund and Reputation Events follow the decision; this skill does not set them.
+- The human files; the admin resolves: the human opens or withdraws a Dispute but never issues the verdict. Resolution is admin-only and binary (refund the buyer or release to the provider), full amount only — no partial or split outcomes, and no party negotiation (`$belong-internal-disputes`).
+- Role-locked: file only as the human's own side, and only the opener can withdraw.
+- Outcomes are runtime-driven: the full refund or release and the Reputation Events follow the admin verdict; this skill does not set them.
 - Not training or steering: durable policy (dispute posture, escalation thresholds) belongs in `$belong-train-buying-agent` / `$belong-train-selling-agent`; temporary nudges in `$belong-steer-*`.
-- Opening a Dispute is also available as a shortcut inside `$belong-operate-buying-flow` / `$belong-operate-selling-flow`; this skill owns the full multi-step participation (open, respond, judge, escalate, read outcome).
+- Opening a Dispute is also available as a shortcut inside `$belong-operate-buying-flow` / `$belong-operate-selling-flow`; this skill owns filing, withdrawing, and reading the outcome.
 
 ## Output
 
-Summarize: the Active Service and contested obligation, the Dispute id and status, each human action taken (open/respond/judge/escalate) and its result, the decision when present with its payment and reputation implications, whether it came from agents, the Belong Judge, or a Belong human judge escalation, pending Marketplace Inbox items, the Audit Log path, and the next skill — usually `$belong-check-active-services`, `$belong-check-payments`, `$belong-check-reputation`, or `$belong-inbox`.
+Summarize: the Active Service and contested obligation, the Dispute id, kind, and status (`opened`/`under_review`/`resolved`/`withdrawn`), each human action taken (open/withdraw) and its result, the admin verdict when present (`refund_buyer` or `release_provider`) with its payment and reputation implications, pending Marketplace Inbox items, the Audit Log path, and the next skill — usually `$belong-check-active-services`, `$belong-check-payments`, `$belong-check-reputation`, or `$belong-inbox`.

@@ -56,7 +56,7 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 | See delivery and active work after signature | `$belong-check-active-services` |
 | See money, charges, holds, refunds, or payouts | `$belong-check-payments` |
 | Understand why an agent acted, or review audit/reputation | `$belong-check-reputation` |
-| Handle a contested delivery or dispute | `$belong-manage-dispute` to open, respond, ask the Belong Judge, or escalate; `$belong-check-active-services` and `$belong-check-reputation` for detail |
+| Handle a contested delivery or dispute | `$belong-manage-dispute` to open or withdraw a Dispute; a Belong admin issues the binary verdict; `$belong-check-active-services` and `$belong-check-reputation` for detail |
 | Temporarily nudge an agent | `$belong-steer-buying-agent` or `$belong-steer-selling-agent` |
 | Permanently change how an agent behaves | `$belong-train-buying-agent` or `$belong-train-selling-agent` |
 | Take over one flow and run it by hand | `$belong-operate-buying-flow` (buyer) or `$belong-operate-selling-flow` (seller) |
@@ -66,7 +66,7 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 - `$belong-setup-account`: OAuth-style mocked login, Belong Account, Organization Profile, notifications, mocked legal/payment readiness.
 - `$belong-inbox`: day-to-day Marketplace Inbox work: information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, pause/resume, and operational intervention.
 - `$belong-check-active-services`: read/check Active Services, obligations, delivery, Deliverable Evidence Packages, Delivery Acceptance, Human-to-Human Meetings, Disputes, and linked Inbox items.
-- `$belong-manage-dispute`: human cockpit to participate in a Dispute on an Active Service: open, state position with evidence, respond to the other side, ask the Belong Judge to decide, escalate to a Belong human judge, and read the payment/reputation outcome. Role-aware; not the Judge.
+- `$belong-manage-dispute`: human cockpit to file and follow a Dispute on an Active Service: open with evidence, withdraw before resolution, and read the binary admin verdict and its payment/reputation outcome. Role-aware; the human files, a Belong admin resolves.
 - `$belong-check-payments`: read/check bank readiness, transactions, payment ledger, charges, holds, releases, refunds, collections, platform fees, seller net, and merchant-of-record context.
 - `$belong-check-reputation`: read/check Agent Reputation, ratings, Audit Log, Decision Explanations, Marketplace Privacy Promise, Marketplace Learning Boundary, Belong monetization, Provider Optimization, and Selling Optimization signals.
 
@@ -92,7 +92,7 @@ These run automatically as part of the Belong agents' autonomous work. The human
 - `$belong-internal-buying-workflow`: internal Buying Agent capability for Buying Request, semantic search, Engagement Feed, Discovery Questionnaire answers, seller-signed Service Contract/SOW comparison, buyer signature, Composite Buying Request, and Provider Optimization.
 - `$belong-internal-selling-workflow`: internal Selling Agent capability for seller-led discovery, seller-signed Service Contract/SOW proposals, billing/collections, Service readiness, and Selling Optimization.
 - `$belong-internal-active-service-actions`: internal agent capability for Fulfillment Task, Deliverable Evidence Package, Delivery Acceptance, payment movement, meeting, and messages.
-- `$belong-internal-disputes`: internal agent and Belong Judge capability for Dispute handling, evidence review, autonomous decisions, and Belong human judge escalation.
+- `$belong-internal-disputes`: internal Belong admin/arbiter capability for Dispute resolution: evidence review and the binary, full-only verdict (refund the buyer or release to the provider).
 - `$belong-marketplace-runtime`: shared mock backend and command reference.
 
 ## Guided Navigation

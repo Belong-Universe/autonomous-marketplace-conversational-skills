@@ -50,9 +50,8 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Agent Pause blocks new autonomous search engagement, proposals, signatures, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
 - Per-flow control (separate from agent-wide pause): each Buying Request and Active Service has one `control_state` (`agent_controlled`, `human_controlled`, `paused`); `flow-control` and `override --action intervene` change it, the runtime enforces who may act, and the human acts on a `human_controlled` flow with `--as-human`
 - Scenario B standing human-performed actions: a Playbook may reserve high-criticality action types as always human-performed (buyer: sign, accept, payment, dispute; seller: sign, deliver, payment, dispute); the agent routes a reserved action to a human_performed_action inbox item instead of executing or asking for approval
-- Disputes managed by agents
-- Belong Judge autonomous decision
-- Belong human judge escalation
+- Disputes filed by a buyer-side or seller-side human on an Active Service (`opened` -> `under_review` -> `resolved` | `withdrawn`)
+- Admin-only binary, full-only dispute verdict (`refund_buyer` or `release_provider`); no party negotiation and no autonomous AI judge
 - Agent Reputation outcome and conduct events
 - Buyer ratings and search/trust impact
 - Complete Audit Log

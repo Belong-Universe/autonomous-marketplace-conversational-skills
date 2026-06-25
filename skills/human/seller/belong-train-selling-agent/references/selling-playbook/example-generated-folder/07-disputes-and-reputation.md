@@ -13,10 +13,8 @@ Approval: Not requested
 
 - Dispute posture
 - Evidence standards
-- Response deadlines
 - Refund or rework preferences
-- Belong Judge escalation rules
-- Human review escalation rules
+- When to open a Dispute on an Active Service
 - Rating behavior
 - Reputation signals
 - Selling Optimization update rules

@@ -19,7 +19,7 @@ Use `rate` after delivery, dispute, or cancellation outcomes. Reputation events 
 
 ## Audit
 
-Run `audit` for a complete log of identities, timestamps, instructions, Playbook versions, authority checks, decisions, messages, proposals, contracts, signatures, payments, evidence, acceptance, escalations, disputes, Judge decisions, and reputation changes.
+Run `audit` for a complete log of identities, timestamps, instructions, Playbook versions, authority checks, decisions, messages, proposals, contracts, signatures, payments, evidence, acceptance, escalations, disputes, dispute resolutions, and reputation changes.
 
 Run `explain --audit-id ...` for a Decision Explanation. Explain from audit evidence:
 

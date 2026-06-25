@@ -1,33 +1,32 @@
 ---
 name: belong-internal-disputes
-description: Internal agent and Belong Judge capability for mocked Belong marketplace disputes. Use when Buying Agents, Selling Agents, the autonomous Belong Judge, or a Belong human judge escalation handles contested delivery, payment, contract/SOW compliance, acceptance, evidence, conduct issues, payment/reputation impact, and dispute outcomes.
+description: Internal Belong admin/arbiter capability for mocked Belong marketplace disputes. Use when the Belong admin reviews a contested Active Service and issues the binary, full-only verdict (refund the buyer or release escrow to the provider). No party negotiation and no autonomous AI judge in this phase.
 ---
 
 # Belong Internal Disputes
 
-Use this when delivery, payment, contract/SOW compliance, acceptance, evidence, or conduct is contested. This is an internal agent/Judge capability. Humans participate in a Dispute through `$belong-manage-dispute` (open, respond, ask the Belong Judge, escalate to a Belong human judge) and see dispute work through `$belong-inbox`, `$belong-check-active-services`, and `$belong-check-reputation`.
+Use this when delivery, payment, contract/SOW compliance, acceptance, or conduct on an Active Service is contested and a Belong admin/arbiter must resolve it. This is the internal admin capability. The buyer-side and seller-side humans only file or withdraw a Dispute through `$belong-manage-dispute`, and see dispute work through `$belong-inbox`, `$belong-check-active-services`, and `$belong-check-reputation`.
+
+In this phase there is no party back-and-forth and no autonomous AI judge. Belong assembles the evidence from the audit trail, and a Belong admin issues a single binary verdict.
 
 ## Start
 
-Run runtime `status` and inspect pending dispute inbox items. Identify:
+Run runtime `status` and inspect open dispute inbox items. Identify:
 
 - Active Service
-- Contract/SOW obligation at issue
-- Evidence package
-- Buyer-side and seller-side positions
-- Whether agents can handle it inside their Playbooks or must escalate
+- Contract/SOW obligation at issue (`kind`: deliverable_rejection, sla_determination, charge_disagreement, other)
+- The opening statement and the claimant's side
+- Evidence assembled from the audit trail (executed contract/SOW, acceptance criteria, evidence packages, payment ledger, messages)
 
 ## Guided Actions
 
-Use:
+A Dispute moves through a fixed lifecycle: `opened` → `under_review` → `resolved` | `withdrawn`. Use:
 
-- `dispute-open` to open a structured Dispute
-- `dispute-respond` for buyer or seller responses
-- `judge` for the autonomous Belong Judge decision
-- `judge --escalate-human` when a human wants Belong human judge review
+- `dispute-review --dispute-id <id>` for the admin to take an opened Dispute under review.
+- `dispute-resolve --dispute-id <id> --resolution <refund_buyer|release_provider> [--notes "<rationale>"]` for the admin's binary, full-only verdict. `refund_buyer` refunds the full escrow to the buyer; `release_provider` releases the full escrow (minus the platform fee) to the provider. Partial or split outcomes are not supported.
 
-The Belong Judge is first-layer autonomous adjudication. It reviews mocked evidence, contract/SOW terms, messages, acceptance criteria, payment state, and reputation history. Humans may escalate further to a Belong human judge.
+Resolution is admin-only. The parties cannot resolve a Dispute, and the claimant can only withdraw it (`dispute-withdraw`) before it is resolved.
 
 ## Output
 
-Summarize Dispute status, evidence considered, payment hold/release/refund implications when present, reputation impact, pending inbox items, whether the decision came from agents, Belong Judge, or a Belong human judge escalation, and the audit path.
+Summarize Dispute status, the `kind` and opening statement, the evidence considered, the binary verdict (`refund_buyer` or `release_provider`) and its full refund/release effect on the payment ledger, the reputation impact on both sides, pending inbox items, and the audit path.

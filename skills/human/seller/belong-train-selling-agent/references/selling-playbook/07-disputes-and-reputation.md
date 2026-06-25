@@ -12,22 +12,22 @@ Look for support tickets, refund records, delivery disputes, legal notes, custom
 
 - Dispute posture
 - Evidence standards
-- Response deadlines
 - Buyer complaint categories
 - Rework, refund, hold, release, and collection preferences
-- When to escalate to Belong Judge
-- When to request human review
+- When to open a Dispute on an Active Service
 - Reputation signals to record
 - Rating behavior after completion, cancellation, or dispute
 - Selling Optimization lessons to apply to future engagements
 
+A Dispute is resolved by a Belong admin/arbiter with a binary, full-only verdict (refund the buyer or release escrow to the provider). There is no party negotiation and no autonomous AI judge in this phase; the parties only open or withdraw a Dispute.
+
 ## Quality Bar
 
-The section is `Done` when the Selling Agent can respond to disputes with evidence, protect payment and contract state, escalate adjudication correctly, and update reputation without exposing private data beyond the marketplace action.
+The section is `Done` when the Selling Agent can open disputes with evidence, protect payment and contract state, and update reputation without exposing private data beyond the marketplace action.
 
 ## Guardrails
 
 - Do not expose raw model reasoning or private unrelated data.
 - Do not retaliate through ratings.
-- Do not change payment state during a dispute without the required ledger event, approval, or judge decision.
+- Do not change payment state during a dispute without the required ledger event, approval, or the admin verdict.
 

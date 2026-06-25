@@ -1,4 +1,4 @@
 interface:
   display_name: "Belong Internal Disputes"
   short_description: "Internal dispute capability"
-  default_prompt: "Use $belong-internal-disputes only as an internal dispute and Belong Judge capability."
+  default_prompt: "Use $belong-internal-disputes only as the internal Belong admin/arbiter dispute-resolution capability."

@@ -39,7 +39,7 @@ Preserve the resolved product model:
 - Treat Proposal as the seller-signed Service Contract/SOW awaiting buyer signature. Do not create a separate intermediate proposal artifact.
 - Treat buyer signature as the event that creates an Active Service.
 - Keep Belong as workflow, legal layer, payment orchestration, inbox, reputation, audit, and dispute facilitator, not the Service Provider or merchant of record.
-- Keep all integrations mocked: OAuth, Stripe, signing provider, notifications, semantic search, reputation scoring, disputes, Belong Judge, and backend agent runtime.
+- Keep all integrations mocked: OAuth, Stripe, signing provider, notifications, semantic search, reputation scoring, disputes, admin dispute resolution, and backend agent runtime.
 - Treat Inbox as day-to-day operations only. Durable Buying Playbook or Service Playbook changes happen through training/retraining commands, while steering remains temporary and non-durable.
 
 ## References

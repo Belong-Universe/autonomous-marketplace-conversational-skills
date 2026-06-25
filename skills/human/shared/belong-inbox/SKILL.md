@@ -56,11 +56,12 @@ Notifications are mocked as channel messages that send the human back to the age
   request a revision, or reject. Do not release final payment before the evidence meets
   acceptance.
 - Dispute: this item flags a contested Active Service. The Inbox notifies and shows
-  status, but the full multi-step participation (open, state position with evidence,
-  respond to the other side, ask the Belong Judge to decide, escalate to a Belong human
-  judge, read the payment/reputation outcome) lives in `$belong-manage-dispute`. Route
-  the human there to act on the Dispute; come back here for the "Review Belong Judge
-  decision" item.
+  status, but filing and following a Dispute (open with evidence, withdraw before
+  resolution, read the binary admin verdict and its payment/reputation outcome) lives in
+  `$belong-manage-dispute`. The parties do not exchange responses and do not issue the
+  verdict — a Belong admin resolves it (refund the buyer or release to the provider).
+  Route the human there to act on the Dispute; come back here for the "Review dispute
+  resolution" item.
 - Human-performed action (Scenario B): the agent reached an action type the Playbook
   reserves as always human-performed (for example sign, payment, accept, deliver,
   or dispute). This is not an approval request — the agent will not execute

@@ -135,7 +135,7 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
         "--meeting-rules",
         "Video kickoff and review workshops are allowed when the Service needs human context.",
         "--dispute-rules",
-        "Try agent-led revision first, then Belong Judge if delivery remains contested.",
+        "Try agent-led revision first; if delivery stays contested, open a Dispute for a Belong admin verdict.",
         "--reputation-rules",
         "Accepted delivery, strong evidence, and fast escalation improve reputation; missed obligations reduce it.",
         "--activate",
@@ -184,8 +184,8 @@ class BelongSkillPackTests(unittest.TestCase):
             self.assertTrue(active["delivery"]["acceptance"])
             self.assertTrue(active["meetings"])
             self.assertTrue(state["training_recommendations"])
-            self.assertTrue(any(item.get("judge_decision") for item in state["disputes"].values()))
-            self.assertTrue(any(item.get("human_judge_escalation") for item in state["disputes"].values()))
+            self.assertTrue(any(item.get("status") == "resolved" for item in state["disputes"].values()))
+            self.assertTrue(any((item.get("resolution") or {}).get("direction") in {"refund_buyer", "release_provider"} for item in state["disputes"].values()))
             self.assertTrue(any(req.get("is_composite") for req in state["buying_requests"].values()))
             self.assertTrue(state["notification_events"])
 
@@ -475,7 +475,7 @@ class BelongSkillPackTests(unittest.TestCase):
             self.assertNotEqual(code, 0)
             self.assertIn("must belong to Buying Agent", payload["summary"])
 
-    def test_decision_explanations_include_playbook_version_for_inbox_and_judge(self):
+    def test_decision_explanations_include_playbook_version_for_inbox_and_dispute(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "state.json"
             active = execute_basic_active_service(state_path)
@@ -503,18 +503,52 @@ class BelongSkillPackTests(unittest.TestCase):
             explanation = run_belong(state_path, "explain", "--audit-id", inbox_audit_id)["objects"]["decision_explanation"]
             self.assertIsNotNone(explanation["playbook_version"])
 
-            run_belong(state_path, "dispute-open", "--active-service-id", active["id"], "--opened-by", "buyer", "--reason", "Evidence missed acceptance criteria.")
+            run_belong(state_path, "dispute-open", "--active-service-id", active["id"], "--opened-by", "buyer", "--kind", "deliverable_rejection", "--reason", "Evidence missed acceptance criteria.")
             state = json.loads(state_path.read_text())
             dispute_id = next(iter(state["disputes"]))
-            run_belong(state_path, "judge", "--dispute-id", dispute_id, "--decision", "seller_revision_required")
+            run_belong(state_path, "dispute-review", "--dispute-id", dispute_id)
+            run_belong(state_path, "dispute-resolve", "--dispute-id", dispute_id, "--resolution", "refund_buyer")
             state = json.loads(state_path.read_text())
-            judge_audit_id = next(
+            resolve_audit_id = next(
                 event_id
                 for event_id, event in state["audit"].items()
-                if event["event_type"] == "dispute.judge_decision"
+                if event["event_type"] == "dispute.resolved"
             )
-            judge_explanation = run_belong(state_path, "explain", "--audit-id", judge_audit_id)["objects"]["decision_explanation"]
-            self.assertIsNotNone(judge_explanation["playbook_version"])
+            resolve_explanation = run_belong(state_path, "explain", "--audit-id", resolve_audit_id)["objects"]["decision_explanation"]
+            self.assertIsNotNone(resolve_explanation["playbook_version"])
+
+    def test_dispute_admin_binary_verdict_releases_to_provider(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            active = execute_basic_active_service(state_path)
+            opened = run_belong(state_path, "dispute-open", "--active-service-id", active["id"], "--opened-by", "seller", "--kind", "charge_disagreement", "--reason", "Extra request outside the signed scope.", "--evidence", "contract scope,meeting notes")["objects"]["dispute"]
+            self.assertEqual(opened["status"], "opened")
+            self.assertEqual(opened["kind"], "charge_disagreement")
+            state = json.loads(state_path.read_text())
+            self.assertEqual(state["active_services"][active["id"]]["status"], "disputed")
+            run_belong(state_path, "dispute-review", "--dispute-id", opened["id"])
+            state = json.loads(state_path.read_text())
+            self.assertEqual(state["disputes"][opened["id"]]["status"], "under_review")
+            resolved = run_belong(state_path, "dispute-resolve", "--dispute-id", opened["id"], "--resolution", "release_provider")
+            dispute = resolved["objects"]["dispute"]
+            self.assertEqual(dispute["status"], "resolved")
+            self.assertEqual(dispute["resolution"]["direction"], "release_provider")
+            self.assertEqual(dispute["resolution"]["decided_by"], "Belong Admin")
+            self.assertEqual(resolved["objects"]["payment_event"]["type"], "release")
+            state = json.loads(state_path.read_text())
+            self.assertEqual(state["active_services"][active["id"]]["status"], "completed")
+            self.assertTrue(any(event["event_type"] == "dispute.resolved" for event in state["audit"].values()))
+
+    def test_dispute_withdraw_restores_prior_active_status(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "state.json"
+            active = execute_basic_active_service(state_path)
+            prior_status = json.loads(state_path.read_text())["active_services"][active["id"]]["status"]
+            opened = run_belong(state_path, "dispute-open", "--active-service-id", active["id"], "--opened-by", "buyer", "--kind", "deliverable_rejection", "--reason", "Deliverable missed acceptance criteria.")["objects"]["dispute"]
+            run_belong(state_path, "dispute-withdraw", "--dispute-id", opened["id"], "--reason", "Resolved directly with the provider.")
+            state = json.loads(state_path.read_text())
+            self.assertEqual(state["disputes"][opened["id"]]["status"], "withdrawn")
+            self.assertEqual(state["active_services"][active["id"]]["status"], prior_status)
 
     def test_paused_agent_blocks_optimization_and_payment(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -973,7 +1007,7 @@ class BelongSkillPackTests(unittest.TestCase):
             "Deliverable Evidence Package",
             "Delivery Acceptance",
             "Dispute",
-            "Belong Judge",
+            "Belong admin",
             "Agent Reputation",
             "Audit Log",
             "Decision Explanation",

@@ -1148,7 +1148,7 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "payment_modality": ESCROW_PAYMENT_TERMS,
             "escalation_paths": ["contract exceptions", "scope expansion", "human workshop scheduling"],
             "meeting_rules": "Video meetings allowed for kickoff, dispute, or complex delivery.",
-            "dispute_rules": "Attempt agent negotiation first, then Belong Judge.",
+            "dispute_rules": "Open a Dispute on the Active Service; a Belong admin issues a binary, full-only verdict (refund the buyer or release to the provider).",
             "reputation_rules": "Accepted delivery and fast response improve score; missed obligations reduce score.",
             "standing_authorization": {"scope_limits": "No regulated legal advice", "contract_terms": "standard", "must_escalate": ["non-standard legal terms"]},
         }
@@ -2298,7 +2298,7 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
             )
         elif action == "dispute":
             active["status"] = "disputed"
-            dispute = create_dispute(state, active["id"], "buyer", details or "Acceptance contested", "Acceptance decision opened dispute")
+            dispute = create_dispute(state, active["id"], "buyer", "deliverable_rejection", details or "Acceptance contested", "Acceptance decision opened dispute")
             created["dispute"] = dispute
         else:
             active["status"] = "revision_requested"
@@ -2425,126 +2425,167 @@ def payment_for_active(
     return record_payment_event(state, active, payment_type, amount, notes, authority_check)
 
 
-def create_dispute(state: dict[str, Any], active_service_id: str, opened_by: str, reason: str, evidence: str) -> dict[str, Any]:
+DISPUTE_KINDS = {"deliverable_rejection", "sla_determination", "charge_disagreement", "other"}
+DISPUTE_RESOLUTIONS = {"refund_buyer", "release_provider"}
+
+
+def create_dispute(state: dict[str, Any], active_service_id: str, opened_by: str, kind: str, reason: str, evidence: str) -> dict[str, Any]:
     active = get_active(state, active_service_id)
+    if kind not in DISPUTE_KINDS:
+        raise ValueError(f"Unknown Dispute kind: {kind}. Choose one of {sorted(DISPUTE_KINDS)}.")
     dispute_id = next_id(state, "dispute")
     dispute = {
         "id": dispute_id,
         "active_service_id": active_service_id,
         "opened_by": opened_by,
-        "status": "agent_negotiation",
+        "status": "opened",
+        "kind": kind,
         "reason": reason,
-        "evidence": split_list(evidence) or [evidence],
-        "responses": [],
-        "judge_decision": None,
-        "human_judge_escalation": None,
+        "evidence": split_list(evidence) or ([evidence] if evidence else []),
+        "prior_active_status": active.get("status"),
+        "resolution": None,
         "created_at": now(),
     }
     state["disputes"][dispute_id] = dispute
     active["status"] = "disputed"
-    add_inbox(state, "both", "dispute", "Respond to Dispute", reason, "Dispute", dispute_id, urgency="high")
+    add_inbox(state, "both", "dispute", "Dispute under Belong review", reason, "Dispute", dispute_id, urgency="high")
     audit(state, opened_by, "dispute.opened", "Dispute", dispute_id, reason, dispute)
     return dispute
 
 
 def command_dispute_open(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
-    dispute = create_dispute(state, args.active_service_id, args.opened_by, args.reason, args.evidence)
+    dispute = create_dispute(state, args.active_service_id, args.opened_by, args.kind, args.reason, args.evidence)
     return output(
         f"Opened Dispute {dispute['id']}.",
         {"dispute": dispute},
         [
-            "Let agents negotiate or respond inside Playbooks.",
-            "Run Belong Judge if agent negotiation cannot resolve the dispute.",
-            "Escalate to a Belong human judge if the autonomous decision is unsatisfactory.",
+            "Belong assembles the evidence from the audit trail; the parties do not exchange responses.",
+            "A Belong admin/arbiter reviews and issues a binary, full-only verdict: refund the buyer or release to the provider.",
+            "The claimant can withdraw the dispute before it is resolved.",
         ],
     )
 
 
-def command_dispute_respond(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+def command_dispute_review(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
     dispute = state["disputes"].get(args.dispute_id)
     if not dispute:
         raise ValueError(f"Unknown Dispute: {args.dispute_id}")
-    response = {"actor": args.actor, "response": args.response, "timestamp": now()}
-    dispute["responses"].append(response)
+    if dispute["status"] != "opened":
+        raise ValueError(f"Dispute {args.dispute_id} can only move to review from 'opened' (current: {dispute['status']}).")
+    dispute["status"] = "under_review"
+    dispute["reviewed_at"] = now()
+    audit(state, "Belong Admin", "dispute.under_review", "Dispute", args.dispute_id, "Belong admin took the dispute under review.", dispute)
+    return output(
+        f"Dispute {args.dispute_id} is under Belong review.",
+        {"dispute": dispute},
+        ["A Belong admin/arbiter will issue a binary verdict: refund the buyer or release to the provider."],
+    )
+
+
+def command_dispute_resolve(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+    dispute = state["disputes"].get(args.dispute_id)
+    if not dispute:
+        raise ValueError(f"Unknown Dispute: {args.dispute_id}")
+    if dispute["status"] not in {"opened", "under_review"}:
+        raise ValueError(f"Dispute {args.dispute_id} cannot be resolved in status {dispute['status']}.")
+    if args.resolution not in DISPUTE_RESOLUTIONS:
+        raise ValueError(f"Resolution must be one of {sorted(DISPUTE_RESOLUTIONS)} (full-only; partial verdicts are not supported).")
+    active = get_active(state, dispute["active_service_id"])
+    resolution = {
+        "direction": args.resolution,
+        "notes": args.notes or "Belong admin binary verdict.",
+        "decided_by": "Belong Admin",
+        "timestamp": now(),
+    }
+    created: dict[str, Any] = {}
+    if args.resolution == "release_provider":
+        payment = payment_for_active(
+            state,
+            active["id"],
+            "release",
+            "Dispute resolved in favor of the provider; escrow released in full.",
+            {"result": "dispute_release_provider", "rule": "Belong admin binary verdict"},
+        )
+        created["payment_event"] = payment
+        active["status"] = "completed"
+        add_reputation_event(state, active["selling_agent_id"], 1.0, "Dispute resolved in provider's favor", "Dispute", args.dispute_id)
+        add_reputation_event(state, active["buyer_agent_id"], -0.5, "Dispute resolved against buyer", "Dispute", args.dispute_id)
+    else:
+        payment = payment_for_active(
+            state,
+            active["id"],
+            "refund",
+            "Dispute resolved in favor of the buyer; escrow refunded in full.",
+            {"result": "dispute_refund_buyer", "rule": "Belong admin binary verdict"},
+        )
+        created["payment_event"] = payment
+        active["status"] = "refunded"
+        add_reputation_event(state, active["selling_agent_id"], -1.5, "Dispute resolved against provider", "Dispute", args.dispute_id)
+        add_reputation_event(state, active["buyer_agent_id"], 0.5, "Dispute resolved in buyer's favor", "Dispute", args.dispute_id)
+    dispute["status"] = "resolved"
+    dispute["resolution"] = resolution
+    created["dispute"] = dispute
     resolve_matching_inbox(
         state,
         "Dispute",
         args.dispute_id,
-        "Respond to Dispute",
-        args.actor,
-        "Dispute response recorded.",
+        "Dispute under Belong review",
+        "Belong Admin",
+        f"Belong admin resolved the dispute: {args.resolution}.",
     )
-    audit(state, args.actor, "dispute.responded", "Dispute", args.dispute_id, args.response, response)
-    return output(
-        f"Recorded response on Dispute {args.dispute_id}.",
-        {"dispute": dispute},
-        ["Run Belong Judge, negotiate a settlement, or escalate to the human if authority is exceeded."],
-    )
-
-
-def command_judge(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
-    dispute = state["disputes"].get(args.dispute_id)
-    if not dispute:
-        raise ValueError(f"Unknown Dispute: {args.dispute_id}")
-    if args.escalate_human:
-        dispute["human_judge_escalation"] = {
-            "status": "requested",
-            "reason": args.reason or "Human requested Belong human judge review.",
-            "timestamp": now(),
-        }
-        dispute["status"] = "human_judge_requested"
-        audit(state, "Belong Judge", "dispute.escalated_human_judge", "Dispute", args.dispute_id, dispute["human_judge_escalation"]["reason"], dispute)
-        return output(
-            f"Escalated Dispute {args.dispute_id} to a Belong human judge.",
-            {"dispute": dispute},
-            ["Keep evidence and payment holds visible in the inbox until the human judge outcome is mocked."],
-        )
-    decision = {
-        "status": "decided",
-        "decision": args.decision or "partial_credit_to_buyer_revision_required",
-        "rationale": "Mocked autonomous Belong Judge reviewed the executed contract/SOW version, evidence packages, acceptance criteria, payment ledger, messages, dispute responses, and reputation history.",
-        "timestamp": now(),
-    }
-    dispute["judge_decision"] = decision
-    dispute["status"] = "judge_decided"
-    active = get_active(state, dispute["active_service_id"])
-    add_reputation_event(state, active["buyer_agent_id"], -0.5, "Dispute required Belong Judge review", "Dispute", args.dispute_id)
-    add_reputation_event(state, active["selling_agent_id"], -1.0, "Dispute outcome affected delivery trust", "Dispute", args.dispute_id)
     audit(
         state,
-        "Belong Judge",
-        "dispute.judge_decision",
+        "Belong Admin",
+        "dispute.resolved",
         "Dispute",
         args.dispute_id,
-        decision["decision"],
+        args.resolution,
         {
-            "judge_decision": decision,
+            "resolution": resolution,
             "active_service": active,
             "contract": state["contracts"].get(active.get("contract_id")),
             "payment_ledger": active.get("payment_ledger"),
-            "evidence_packages": active.get("delivery", {}).get("evidence_packages", []),
-            "dispute_responses": dispute.get("responses", []),
-            "playbook_rule": "Belong Judge reviews dispute evidence after agents cannot resolve contested delivery, payment, contract compliance, acceptance, evidence, or conduct.",
-            "authority_check": {"result": "belong_judge_autonomous_decision", "rule": "first-layer Belong Judge"},
+            "evidence": dispute.get("evidence", []),
+            "playbook_rule": "Belong admin/arbiter reviews the audit trail and issues a binary, full-only verdict: refund the buyer or release to the provider.",
+            "authority_check": {"result": "belong_admin_binary_verdict", "rule": "admin-only dispute resolution"},
         },
     )
+    add_inbox(state, "both", "authorization", "Review dispute resolution", args.resolution, "Dispute", args.dispute_id, urgency="high")
+    return output(
+        f"Belong admin resolved Dispute {args.dispute_id}: {args.resolution}.",
+        created,
+        [
+            "Review the verdict and the resulting escrow movement.",
+            "Review the reputation impact.",
+            "Inspect the audit trail for the evidence Belong assembled.",
+        ],
+    )
+
+
+def command_dispute_withdraw(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
+    dispute = state["disputes"].get(args.dispute_id)
+    if not dispute:
+        raise ValueError(f"Unknown Dispute: {args.dispute_id}")
+    if dispute["status"] not in {"opened", "under_review"}:
+        raise ValueError(f"Dispute {args.dispute_id} cannot be withdrawn in status {dispute['status']}.")
+    dispute["status"] = "withdrawn"
+    dispute["withdrawn_at"] = now()
+    dispute["withdraw_reason"] = args.reason or "Claimant withdrew the dispute."
+    active = get_active(state, dispute["active_service_id"])
+    active["status"] = dispute.get("prior_active_status") or "delivered"
     resolve_matching_inbox(
         state,
         "Dispute",
         args.dispute_id,
-        "Respond to Dispute",
-        "Belong Judge",
-        "Belong Judge decision issued after dispute response window.",
+        "Dispute under Belong review",
+        dispute["opened_by"],
+        "Claimant withdrew the dispute.",
     )
-    add_inbox(state, "both", "authorization", "Review Belong Judge decision", decision["decision"], "Dispute", args.dispute_id, urgency="high")
+    audit(state, dispute["opened_by"], "dispute.withdrawn", "Dispute", args.dispute_id, dispute["withdraw_reason"], dispute)
     return output(
-        f"Belong Judge issued a mocked autonomous decision for {args.dispute_id}.",
-        {"dispute": dispute, "judge_decision": decision},
-        [
-            "Accept the Judge decision, negotiate settlement, or escalate to a Belong human judge.",
-            "Review reputation impact.",
-            "Inspect the audit trail for the evidence used in the decision.",
-        ],
+        f"Withdrew Dispute {args.dispute_id}.",
+        {"dispute": dispute},
+        ["The Active Service returns to its prior delivery state; no escrow moves on a withdrawal."],
     )
 
 
@@ -2605,12 +2646,7 @@ def command_resolve_inbox(args: argparse.Namespace, state: dict[str, Any]) -> di
                     resolution_details["meeting"] = meeting
                     break
     elif linked_type == "Dispute" and linked_id in state["disputes"]:
-        dispute = state["disputes"][linked_id]
-        if item["title"] == "Respond to Dispute":
-            dispute["responses"].append({"actor": args.actor, "response": args.notes or args.decision, "timestamp": now(), "source": "inbox_resolution"})
-        elif item["title"] == "Review Belong Judge decision":
-            dispute["judge_review_resolution"] = {"decision": args.decision, "notes": args.notes, "actor": args.actor, "timestamp": now()}
-        resolution_details["dispute"] = dispute
+        resolution_details["dispute"] = state["disputes"][linked_id]
     audit(state, args.actor, "inbox.resolved", "Marketplace Inbox", args.item_id, f"Resolved inbox item with {args.decision}", resolution_details)
     return output(
         f"Resolved Inbox item {args.item_id}.",
@@ -3871,7 +3907,7 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         evidence_requirements="links,files,meeting notes,acceptance criteria mapping",
         escalation_paths="workshop scheduling,scope expansion,custom legal terms",
         meeting_rules="Video meeting for kickoff or review workshop.",
-        dispute_rules="Agent negotiation first, then Belong Judge.",
+        dispute_rules="Open a Dispute on the Active Service; a Belong admin issues a binary, full-only verdict (refund the buyer or release to the provider).",
         reputation_rules="Accepted delivery improves score; late evidence or poor escalation lowers score.",
         activate=True,
     )
@@ -3929,10 +3965,9 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
     command_active_action(argparse.Namespace(active_service_id=active["id"], action="deliver", actor="Selling Agent", details="Delivered onboarding journey, handoff playbook, and dashboard evidence.", owner=None, due=None, context=None, evidence_required=None, files="journey-map.pdf,playbook.docx", links="https://mock.belong/evidence/dashboard", acceptance_mapping="journey map delivered,playbook delivered,dashboard delivered", deliverable="CS Onboarding Sprint Evidence Package", payment_type=None, meeting_mode=None, human_approved=False), state)
     command_active_action(argparse.Namespace(active_service_id=active["id"], action="accept", actor="Buying Agent", details="Evidence matches SOW acceptance criteria.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, meeting_mode=None, human_approved=False), state)
     command_rate(argparse.Namespace(agent_id=active["selling_agent_id"], score="5", notes="Strong evidence and fast escalation.", linked_object_type="Active Service", linked_object_id=active["id"]), state)
-    dispute = command_dispute_open(argparse.Namespace(active_service_id=active["id"], opened_by="seller", reason="Mock post-acceptance dispute over a late extra request outside scope.", evidence="contract scope,meeting notes"), state)["objects"]["dispute"]
-    command_dispute_respond(argparse.Namespace(dispute_id=dispute["id"], actor="Buying Agent", response="Buyer acknowledges the extra request falls outside the signed scope."), state)
-    command_judge(argparse.Namespace(dispute_id=dispute["id"], decision="extra_request_outside_scope_no_refund", escalate_human=False, reason=None), state)
-    command_judge(argparse.Namespace(dispute_id=dispute["id"], decision=None, escalate_human=True, reason="Seller wants Belong human judge review for pricing precedent."), state)
+    dispute = command_dispute_open(argparse.Namespace(active_service_id=active["id"], opened_by="seller", kind="charge_disagreement", reason="Mock post-acceptance dispute over a late extra request outside scope.", evidence="contract scope,meeting notes"), state)["objects"]["dispute"]
+    command_dispute_review(argparse.Namespace(dispute_id=dispute["id"]), state)
+    command_dispute_resolve(argparse.Namespace(dispute_id=dispute["id"], resolution="release_provider", notes="Belong admin reviewed the audit trail; the signed scope upholds the provider, so escrow is released."), state)
     command_optimization(argparse.Namespace(agent_id=active["buyer_agent_id"]), state)
     command_optimization(argparse.Namespace(agent_id=active["selling_agent_id"]), state)
     command_composite(
@@ -4246,19 +4281,21 @@ def build_parser() -> argparse.ArgumentParser:
     dispute = sub.add_parser("dispute-open")
     dispute.add_argument("--active-service-id", required=True)
     dispute.add_argument("--opened-by", choices=["buyer", "seller"], required=True)
+    dispute.add_argument("--kind", choices=["deliverable_rejection", "sla_determination", "charge_disagreement", "other"], required=True)
     dispute.add_argument("--reason", required=True)
     dispute.add_argument("--evidence", default="")
 
-    dispute_response = sub.add_parser("dispute-respond")
-    dispute_response.add_argument("--dispute-id", required=True)
-    dispute_response.add_argument("--actor", required=True)
-    dispute_response.add_argument("--response", required=True)
+    dispute_review = sub.add_parser("dispute-review")
+    dispute_review.add_argument("--dispute-id", required=True)
 
-    judge = sub.add_parser("judge")
-    judge.add_argument("--dispute-id", required=True)
-    judge.add_argument("--decision", default=None)
-    judge.add_argument("--escalate-human", action="store_true")
-    judge.add_argument("--reason", default=None)
+    dispute_resolve = sub.add_parser("dispute-resolve")
+    dispute_resolve.add_argument("--dispute-id", required=True)
+    dispute_resolve.add_argument("--resolution", choices=["refund_buyer", "release_provider"], required=True)
+    dispute_resolve.add_argument("--notes", default=None)
+
+    dispute_withdraw = sub.add_parser("dispute-withdraw")
+    dispute_withdraw.add_argument("--dispute-id", required=True)
+    dispute_withdraw.add_argument("--reason", default=None)
 
     sub.add_parser("reputation")
 
@@ -4334,8 +4371,9 @@ COMMANDS = {
     "update-buying-playbook": command_update_buying_playbook,
     "update-selling-playbook": command_update_selling_playbook,
     "dispute-open": command_dispute_open,
-    "dispute-respond": command_dispute_respond,
-    "judge": command_judge,
+    "dispute-review": command_dispute_review,
+    "dispute-resolve": command_dispute_resolve,
+    "dispute-withdraw": command_dispute_withdraw,
     "reputation": command_reputation,
     "rate": command_rate,
     "audit": command_audit,

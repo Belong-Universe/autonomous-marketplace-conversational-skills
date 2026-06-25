@@ -253,7 +253,7 @@ Also capture any high-criticality action types reserved as **always performed by
 
 ### Disputes And Reputation Rules
 
-Capture dispute posture, evidence standards, response deadlines, refund/rework preferences, when to escalate to Belong Judge or human review, rating behavior, reputation signals, and how outcomes should update future Selling Optimization recommendations.
+Capture dispute posture, evidence standards, refund/rework preferences, when to open a Dispute, rating behavior, reputation signals, and how outcomes should update future Selling Optimization recommendations. Disputes are resolved by a Belong admin with a binary, full-only verdict (refund the buyer or release to the provider) — there is no party negotiation and no autonomous AI judge in this phase.
 
 ### Capacity And Objective
 
