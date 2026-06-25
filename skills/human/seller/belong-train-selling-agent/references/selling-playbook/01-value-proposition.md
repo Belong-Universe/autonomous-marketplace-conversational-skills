@@ -16,7 +16,7 @@ Look for service pages, decks, case studies, proposals, testimonials, CRM notes,
 - Buyer pains, desired outcomes, and trigger events
 - Differentiators and proof points
 - Availability, geographies, capacity, or scheduling limits
-- Service Tags for marketplace search
+- Service Category for marketplace search
 - Use cases the Selling Agent should pursue
 - Use cases the Selling Agent should avoid
 - Seller-led discovery questions

@@ -9,7 +9,7 @@ description: Buyer-specific human-facing guided work for starting a Belong Buyin
 
 Use this when the buyer-side human expresses a new buying intention: "I need X", "find me a provider", "run an RFP", or "look in the marketplace."
 
-This creates a Buying Request, launches semantic Service search with optional tags, and may open an Engagement Feed if the Buying Playbook and Standing Authorization allow it. This is not steering. Steering only nudges behavior on an existing agent/object.
+This creates a Buying Request, launches semantic Service search with an optional category filter, and may open an Engagement Feed if the Buying Playbook and Standing Authorization allow it. This is not steering. Steering only nudges behavior on an existing agent/object.
 
 ## Preconditions (run first, every time)
 
@@ -31,7 +31,7 @@ Collect only what is needed to start:
 - Budget and timeline when known
 - Constraints or blocked providers when known
 - Direct or competitive mode
-- Search query and Service Tags when useful
+- Search query and an optional Service Category filter when useful
 - Whether the request may become composite
 - Whether the Buying Agent should auto-engage one or more search results
 

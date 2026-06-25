@@ -29,16 +29,16 @@ Delivery acceptance requires a Deliverable Evidence Package. Direct `payment` re
 - `setup-account --human-name ... --role buyer|seller|both --org-name ... --notifications email,Slack`
 - `update-account [--account-id ...] [--human-name ...] [--set-notifications ...] [--rename-org ... [--org-id ...]] [--remove-role buyer|seller]`
 - `train-buying --human-name ... --org-name ... --goals ... --timeline ... --selection-rules ... --contract-authority ... --payment-rules ... --acceptance-criteria ... --escalation-rules ... [--human-controlled-actions sign,accept,payment,change-order,dispute] --activate`
-- `train-selling --human-name ... --org-name ... --service-name ... --description ... --tags ... --buyer-personas ... --use-cases ... --discovery-questions ... --pricing-model ... --billing-cycle ... --collections ... --contract-terms ... --discount-limit ... --scope-limits ... --delivery-workflow ... --deliverables ... --evidence-requirements ... --escalation-paths ... --meeting-rules ... --dispute-rules ... --reputation-rules ... [--human-controlled-actions sign,deliver,accept-change-order,payment,dispute] --activate`
+- `train-selling --human-name ... --org-name ... --service-name ... --description ... --category ... --buyer-personas ... --use-cases ... --discovery-questions ... --pricing-model ... --billing-cycle ... --collections ... --contract-terms ... --discount-limit ... --scope-limits ... --delivery-workflow ... --deliverables ... --evidence-requirements ... --escalation-paths ... --meeting-rules ... --dispute-rules ... --reputation-rules ... [--human-controlled-actions sign,deliver,accept-change-order,payment,dispute] --activate`
 - `update-buying-playbook --agent-id ... --changes ... --reason ...`
 - `update-selling-playbook --agent-id ... --service-id ... --changes ... --reason ...`
 
 ## Buying Flow
 
-- `start-buying-request --need ... [--budget ...] [--timeline ...] [--constraints ...] [--mode direct|competitive] [--composite] [--search-query ...] [--tags ...] [--auto-engage-count ...]`
+- `start-buying-request --need ... [--budget ...] [--timeline ...] [--constraints ...] [--mode direct|competitive] [--composite] [--search-query ...] [--category ...] [--auto-engage-count ...]`
 - `run-buying-agent [--buyer-agent-id ...] [--request-id ...] [--active-service-id ...] [--mode next|pre-contract|active-service|optimization|composite] [--sign-best]`
 - `buying-request --need ... --budget ... --timeline ... --mode direct|competitive`
-- `search --request-id ... --query ... --tags ...`
+- `search --request-id ... --query ... --category ...`
 - `engage --request-id ... --count 3`
 - `answer-discovery --feed-id ... --answers ... [--as-human]`
 - `create-proposals --feed-id ... [--as-human]`

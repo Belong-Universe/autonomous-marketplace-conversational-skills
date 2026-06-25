@@ -1,6 +1,6 @@
 ---
 name: belong-internal-buying-workflow
-description: Internal Buying Agent capability for Production buying workflows in the mocked Belong marketplace. Use when the Belong Buying Agent autonomously runs Buying Requests, semantic Service search with tags, ranked Service Search Results, direct or competitive Engagement Feeds, seller-led Discovery Questionnaire answers, seller-signed Service Contract/SOW proposal comparison, negotiation, buyer signature, Active Service creation, Composite Buying Requests, and Provider Optimization.
+description: Internal Buying Agent capability for Production buying workflows in the mocked Belong marketplace. Use when the Belong Buying Agent autonomously runs Buying Requests, semantic Service search with an optional category filter, ranked Service Search Results, direct or competitive Engagement Feeds, seller-led Discovery Questionnaire answers, seller-signed Service Contract/SOW proposal comparison, negotiation, buyer signature, Active Service creation, Composite Buying Requests, and Provider Optimization.
 ---
 
 # Belong Internal Buying Workflow
@@ -28,7 +28,7 @@ Run `buying-request`, then `search`.
 
 ## Search And Engagement
 
-Explain that search is semantic-first with optional Service Tags. Results represent Services, not companies as the primitive. Each result must show Service fit, provider identity, Selling Agent reputation, price/timeline signals, availability, and supported contract/SOW terms.
+Explain that search is semantic-first with an optional Service Category filter. Results represent Services, not companies as the primitive. Each result must show Service fit, provider identity, Selling Agent reputation, price/timeline signals, availability, and supported contract/SOW terms.
 
 Engage one result directly or several competitively:
 

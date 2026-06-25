@@ -903,7 +903,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         "provider_organization_id": org_id,
         "selling_agent_id": agent_id,
         "description": args.description,
-        "tags": split_list(args.tags),
+        "category": args.category,
         "availability": args.availability,
         "price_signal": playbook["pricing"],
         "supported_contract_terms": args.contract_terms,
@@ -1104,7 +1104,8 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "provider": "Northstar RevOps",
             "service": "RevOps Pipeline Rescue",
             "description": "Diagnose funnel leakage, rebuild CRM stages, and deliver a revenue operations playbook.",
-            "tags": ["revops", "crm", "pipeline", "sales"],
+            "category": "revenue-operations",
+            "use_cases": ["revops", "crm", "pipeline", "sales"],
             "price": 12000,
             "deliverables": ["CRM audit", "pipeline dashboard", "handoff workshop"],
         },
@@ -1112,7 +1113,8 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "provider": "Brightline Support",
             "service": "AI Support Desk Launch",
             "description": "Stand up a customer support operation with agent triage, macros, QA, and escalation design.",
-            "tags": ["support", "customer-success", "ai-ops", "zendesk"],
+            "category": "customer-support",
+            "use_cases": ["support", "customer-success", "ai-ops", "zendesk"],
             "price": 8500,
             "deliverables": ["support workflow", "macro library", "QA evidence pack"],
         },
@@ -1120,7 +1122,8 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "provider": "Meridian Security",
             "service": "SOC2 Readiness Sprint",
             "description": "Prepare a startup for SOC2 readiness with control mapping, evidence collection, and gap closure.",
-            "tags": ["security", "soc2", "compliance", "evidence"],
+            "category": "security-compliance",
+            "use_cases": ["security", "soc2", "compliance", "evidence"],
             "price": 18000,
             "deliverables": ["control matrix", "evidence binder", "readiness report"],
         },
@@ -1135,7 +1138,7 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
         playbook = {
             "service_description": item["description"],
             "buyer_personas": ["ops leader", "founder", "department head"],
-            "use_cases": item["tags"],
+            "use_cases": item["use_cases"],
             "discovery_questions": [
                 "What outcome do you need and by when?",
                 "What systems, constraints, and budget should we account for?",
@@ -1183,7 +1186,7 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "provider_organization_id": org_id,
             "selling_agent_id": agent_id,
             "description": item["description"],
-            "tags": item["tags"],
+            "category": item["category"],
             "availability": "24/7 agent response; human workshops during business hours",
             "price_signal": playbook["pricing"],
             "supported_contract_terms": playbook["contract_terms"],
@@ -1266,7 +1269,7 @@ def command_start_buying_request(args: argparse.Namespace, state: dict[str, Any]
         argparse.Namespace(
             request_id=request["id"],
             query=args.search_query or args.need,
-            tags=args.tags,
+            category=args.category,
             limit=args.limit,
         ),
         state,
@@ -1309,12 +1312,12 @@ def command_start_buying_request(args: argparse.Namespace, state: dict[str, Any]
     return output(f"Started Buying Request {request['id']} from buyer intent.", objects, next_steps)
 
 
-def score_service(request: dict[str, Any], service: dict[str, Any], agent: dict[str, Any], buyer_agent: dict[str, Any], query: str, tags: list[str]) -> dict[str, Any]:
+def score_service(request: dict[str, Any], service: dict[str, Any], agent: dict[str, Any], buyer_agent: dict[str, Any], query: str) -> dict[str, Any]:
     service_text = " ".join(
         [
             service.get("name", ""),
             service.get("description", ""),
-            " ".join(service.get("tags", [])),
+            service.get("category", ""),
             " ".join(agent.get("playbook", {}).get("deliverables", [])),
             " ".join(agent.get("playbook", {}).get("use_cases", [])),
         ]
@@ -1332,20 +1335,16 @@ def score_service(request: dict[str, Any], service: dict[str, Any], agent: dict[
     )
     matched_terms = sorted(term for term in query_terms if term in service_text)
     overlap_ratio = len(matched_terms) / max(1, len(query_terms))
-    service_tags = [tag.lower() for tag in service.get("tags", [])]
-    matched_tags = sorted(tag for tag in tags if tag.lower() in service_tags)
-    tag_bonus = len(matched_tags) * 6
     price = float(service.get("price_signal", {}).get("starting_price", 0))
     budget = float(request.get("budget") or 0)
     budget_fit = budget and price <= budget
     budget_score = 12 if budget_fit else -10
     reputation = float(agent.get("reputation", {}).get("score", 80))
-    semantic_fit = round(min(100, 20 + overlap_ratio * 65 + tag_bonus), 2)
-    score = max(0, min(100, round(semantic_fit * 0.58 + reputation * 0.24 + budget_score + len(matched_tags) * 2, 2)))
+    semantic_fit = round(min(100, 20 + overlap_ratio * 65), 2)
+    score = max(0, min(100, round(semantic_fit * 0.58 + reputation * 0.24 + budget_score, 2)))
     return {
         "semantic_fit": semantic_fit,
         "matched_terms": matched_terms,
-        "matched_tags": matched_tags,
         "budget_fit": bool(budget_fit) if budget else True,
         "reputation": reputation,
         "score": score,
@@ -1361,13 +1360,15 @@ def command_search(args: argparse.Namespace, state: dict[str, Any]) -> dict[str,
     ensure_flow_agent_can_act(request, "run marketplace search")
     if not any(service.get("status") == "listed" for service in state["services"].values()):
         seed_marketplace_catalog(state)
-    tags = split_list(args.tags)
+    category = (args.category or "").strip()
     results = []
     for service_id, service in state["services"].items():
         if service.get("status") != "listed":
             continue
+        if category and (service.get("category") or "").lower() != category.lower():
+            continue
         selling_agent = state["agents"][service["selling_agent_id"]]
-        scoring = score_service(request, service, selling_agent, buyer_agent, args.query or request.get("need", ""), tags)
+        scoring = score_service(request, service, selling_agent, buyer_agent, args.query or request.get("need", ""))
         results.append(
             {
                 "service_id": service_id,
@@ -1377,7 +1378,7 @@ def command_search(args: argparse.Namespace, state: dict[str, Any]) -> dict[str,
                 "price_signal": service["price_signal"],
                 "availability": service["availability"],
                 "supported_contract_terms": service["supported_contract_terms"],
-                "tags": service["tags"],
+                "category": service.get("category"),
                 "ranking": scoring,
             }
         )
@@ -1725,7 +1726,7 @@ def sow_fit(contract: dict[str, Any], service: dict[str, Any], request: dict[str
         [
             service.get("name", ""),
             service.get("description", ""),
-            " ".join(service.get("tags", [])),
+            service.get("category", ""),
             " ".join(contract.get("sow", {}).get("deliverables", [])),
             " ".join(contract.get("sow", {}).get("evidence_requirements", [])),
             contract.get("sow", {}).get("scope", ""),
@@ -3636,7 +3637,7 @@ def command_run_buying_agent(args: argparse.Namespace, state: dict[str, Any]) ->
             argparse.Namespace(
                 request_id=request["id"],
                 query=args.search_query or request.get("need", ""),
-                tags=args.tags or "",
+                category=args.category or "",
                 limit=args.limit,
             ),
             state,
@@ -4189,7 +4190,7 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         notifications="email,Slack",
         service_name="Customer Success Onboarding Sprint",
         description="A two-week service that designs onboarding journeys, playbooks, and customer success handoffs.",
-        tags="customer-success,onboarding,cs-playbook",
+        category="customer-success",
         availability="24/7 Selling Agent; human workshops weekdays",
         buyer_personas="Head of CS, founder, operations leader",
         use_cases="new customer onboarding, churn reduction, implementation process",
@@ -4255,7 +4256,7 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         ),
         state,
     )["objects"]["buying_request"]
-    command_search(argparse.Namespace(request_id=request["id"], query="customer success onboarding implementation playbook", tags="customer-success,onboarding", limit=5), state)
+    command_search(argparse.Namespace(request_id=request["id"], query="customer success onboarding implementation playbook", category="", limit=5), state)
     feed = command_engage(argparse.Namespace(request_id=request["id"], service_ids=None, count=2), state)["objects"]["engagement_feed"]
     command_answer_discovery(argparse.Namespace(feed_id=feed["id"], answers="We need a 30-day onboarding redesign for healthcare SMB customers with a concrete evidence package and stakeholder review."), state)
     proposals = command_create_proposals(argparse.Namespace(feed_id=feed["id"]), state)["objects"]["proposals"]
@@ -4346,7 +4347,7 @@ def build_parser() -> argparse.ArgumentParser:
     sell.add_argument("--notifications", default="email")
     sell.add_argument("--service-name", required=True)
     sell.add_argument("--description", required=True)
-    sell.add_argument("--tags", default="")
+    sell.add_argument("--category", default="")
     sell.add_argument("--availability", default="24/7 Selling Agent availability")
     sell.add_argument("--buyer-personas", default="")
     sell.add_argument("--use-cases", default="")
@@ -4414,14 +4415,14 @@ def build_parser() -> argparse.ArgumentParser:
     start_req.add_argument("--mode", choices=["direct", "competitive"], default="competitive")
     start_req.add_argument("--composite", action="store_true")
     start_req.add_argument("--search-query", default="")
-    start_req.add_argument("--tags", default="")
+    start_req.add_argument("--category", default="")
     start_req.add_argument("--limit", type=int, default=5)
     start_req.add_argument("--auto-engage-count", type=int, default=0)
 
     search = sub.add_parser("search")
     search.add_argument("--request-id", required=True)
     search.add_argument("--query", default="")
-    search.add_argument("--tags", default="")
+    search.add_argument("--category", default="")
     search.add_argument("--limit", type=int, default=5)
 
     engage = sub.add_parser("engage")
@@ -4509,7 +4510,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_buying.add_argument("--active-service-id", default=None)
     run_buying.add_argument("--mode", choices=["next", "pre-contract", "active-service", "optimization", "composite"], default="next")
     run_buying.add_argument("--search-query", default="")
-    run_buying.add_argument("--tags", default="")
+    run_buying.add_argument("--category", default="")
     run_buying.add_argument("--limit", type=int, default=5)
     run_buying.add_argument("--engage-count", type=int, default=0)
     run_buying.add_argument("--discovery-answers", default="")

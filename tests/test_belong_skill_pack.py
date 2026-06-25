@@ -110,8 +110,8 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
         service,
         "--description",
         "Customer success onboarding service with journey maps, handoff playbooks, and dashboard evidence.",
-        "--tags",
-        "customer-success,onboarding,operations",
+        "--category",
+        "customer-success",
         "--buyer-personas",
         "Head of Customer Success,COO,founder",
         "--use-cases",
@@ -151,7 +151,7 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
 
 def buy_to_proposal(state_path, budget="25000"):
     request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", budget, "--timeline", "30 days")["objects"]["buying_request"]
-    run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+    run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding")
     feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
     run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need onboarding journey and evidence.")
     proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
@@ -218,7 +218,7 @@ class BelongSkillPackTests(unittest.TestCase):
                 "30 days",
                 "--search-query",
                 "customer success onboarding",
-                "--tags",
+                "--category",
                 "customer-success",
             )["objects"]["buying_request"]
             feed = run_belong(state_path, "run-buying-agent", "--buyer-agent-id", buyer_agent_id, "--request-id", started["id"])["objects"]["engagement_feed"]
@@ -281,7 +281,7 @@ class BelongSkillPackTests(unittest.TestCase):
                 "--activate",
             )
             request = run_belong(state_path, "buying-request", "--need", "SOC2 readiness", "--budget", "1000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "SOC2 readiness", "--tags", "soc2")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "SOC2 readiness")
             feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
             run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need SOC2 readiness under a very small budget.")
             proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
@@ -298,7 +298,7 @@ class BelongSkillPackTests(unittest.TestCase):
             run_belong(state_path, "reset", "--seed-catalog")
             train_ready_buyer(state_path, budget="25000", max_spend="25000")
             request = run_belong(state_path, "buying-request", "--need", "Need SOC2 readiness and evidence collection", "--budget", "25000", "--timeline", "45 days")["objects"]["buying_request"]
-            results = run_belong(state_path, "search", "--request-id", request["id"], "--query", "SOC2 compliance controls evidence readiness", "--tags", "soc2,security,evidence")["objects"]["search_results"]
+            results = run_belong(state_path, "search", "--request-id", request["id"], "--query", "SOC2 compliance controls evidence readiness")["objects"]["search_results"]
 
             self.assertIn("SOC2", results[0]["service_name"])
             self.assertGreater(results[0]["ranking"]["semantic_fit"], results[-1]["ranking"]["semantic_fit"])
@@ -352,7 +352,7 @@ class BelongSkillPackTests(unittest.TestCase):
                 "30 days",
                 "--search-query",
                 "customer success onboarding",
-                "--tags",
+                "--category",
                 "customer-success",
                 "--auto-engage-count",
                 "1",
@@ -418,7 +418,7 @@ class BelongSkillPackTests(unittest.TestCase):
             train_ready_seller(state_path)
             train_ready_buyer(state_path)
             request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", "20000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding")
             feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
             code, payload = run_belong_raw(state_path, "create-proposals", "--feed-id", feed["id"])
             self.assertNotEqual(code, 0)
@@ -435,7 +435,7 @@ class BelongSkillPackTests(unittest.TestCase):
             train_ready_seller(state_path, price="9000")
             train_ready_buyer(state_path)
             request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", "20000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding")
             feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
             run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need onboarding journey and evidence.")
             proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
@@ -495,7 +495,7 @@ class BelongSkillPackTests(unittest.TestCase):
             )
             train_ready_seller(state_path, service="CS Evidence Review", price="6000")
             request = run_belong(state_path, "buying-request", "--need", "customer success evidence review", "--budget", "15000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success evidence review", "--tags", "customer-success")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success evidence review")
             state = json.loads(state_path.read_text())
             service_id = next(service_id for service_id, service in state["services"].items() if service["name"] == "CS Evidence Review")
             feed = run_belong(state_path, "engage", "--request-id", request["id"], "--service-ids", service_id)["objects"]["engagement_feed"]
@@ -529,7 +529,7 @@ class BelongSkillPackTests(unittest.TestCase):
             )
             train_ready_seller(state_path, service="CS Automation Sprint", price="10000")
             request = run_belong(state_path, "buying-request", "--need", "customer success automation sprint", "--budget", "20000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success automation", "--tags", "customer-success")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success automation")
             state = json.loads(state_path.read_text())
             service_id = next(service_id for service_id, service in state["services"].items() if service["name"] == "CS Automation Sprint")
             feed = run_belong(state_path, "engage", "--request-id", request["id"], "--service-ids", service_id)["objects"]["engagement_feed"]
@@ -1102,7 +1102,7 @@ class BelongSkillPackTests(unittest.TestCase):
             train_ready_seller(state_path, price="9000")
             train_ready_buyer(state_path, budget="25000", max_spend="25000")
             request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", "25000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding", "--tags", "customer-success")
+            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding")
             run_belong(state_path, "flow-control", "--flow-id", request["id"], "--action", "pause", "--actor", "Nia Buyer")
             code, payload = run_belong_raw(state_path, "engage", "--request-id", request["id"], "--count", "1")
             self.assertNotEqual(code, 0)

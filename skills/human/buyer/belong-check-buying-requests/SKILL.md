@@ -18,7 +18,7 @@ Run runtime `buying-requests` with the relevant Buying Agent and status filter.
 Show:
 
 - Buying Request status, need, and `control_state` (agent_controlled, human_controlled, or paused)
-- Semantic Service Search Results and tags
+- Semantic Service Search Results and category
 - Direct or competitive Engagement Feed state
 - Seller-led Discovery Questionnaire state
 - Seller-signed Service Contract/SOW proposals

@@ -19,7 +19,7 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 
 - Belong agents only; no bring-your-own-agent.
 - Buying Agent training creates a Buying Playbook with buying goals, provider preferences, budget, RFP/selection rules, proposal comparison, contract authority, payment rules, acceptance criteria, escalation rules, dispute posture, rating rules, and optimization goals.
-- Selling Agent training creates a Service Playbook for one Service with description, tags, discovery, pricing, monetization, billing, collections, contract/SOW behavior, negotiation limits, delivery, evidence, meetings, escalations, disputes, reputation, and Standing Authorization.
+- Selling Agent training creates a Service Playbook for one Service with description, category, discovery, pricing, monetization, billing, collections, contract/SOW behavior, negotiation limits, delivery, evidence, meetings, escalations, disputes, reputation, and Standing Authorization.
 - Setup, Training, Validation, and Production phases are explicit.
 
 ## Marketplace Lifecycle
@@ -27,7 +27,7 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Lifecycle order is enforced; downstream objects are not created before required predecessors.
 - Buying Request
 - Buyer-side human intent starts through a Buying Request, not a Steering Instruction.
-- Semantic-first Service search with optional tags
+- Semantic-first Service search with an optional category filter
 - Ranked Service Search Results with Service, provider identity, Selling Agent reputation, price/timeline signals, availability, and supported terms
 - Direct or competitive Engagement Feed
 - Seller-led Discovery Questionnaire

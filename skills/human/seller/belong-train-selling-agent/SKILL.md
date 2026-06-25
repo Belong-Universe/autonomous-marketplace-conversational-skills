@@ -183,7 +183,7 @@ Keep `Missing` cells short. Use `-` for nothing missing. If the table gets long,
 
 ### Value Proposition
 
-Capture what the Service is, who it is for, the buyer pain or outcome, proof points, availability, Service Tags, buyer personas, use cases, and seller-led discovery questions that qualify fit.
+Capture what the Service is, who it is for, the buyer pain or outcome, proof points, availability, Service Category, buyer personas, use cases, and seller-led discovery questions that qualify fit.
 
 ### Monetization Models
 
@@ -290,7 +290,7 @@ If the human only wants a temporary nudge such as "push harder on evidence in th
 
 When the playbook is complete, map the sections into the runtime:
 
-- Value Proposition -> `--service-name`, `--description`, `--tags`, `--availability`, `--buyer-personas`, `--use-cases`, `--discovery-questions`
+- Value Proposition -> `--service-name`, `--description`, `--category`, `--availability`, `--buyer-personas`, `--use-cases`, `--discovery-questions`
 - Monetization Models -> `--pricing-model`, `--starting-price`, `--currency`, `--billing-cycle`, `--collections`
 - Legal And Contracts -> `--contract-terms`, `--deliverables`, `--evidence-requirements`
 - Negotiations -> `--discount-limit`, `--scope-limits`, `--negotiation-limits`

@@ -15,7 +15,7 @@ Approval: Approved
 - Use proof points carefully as public examples, not guaranteed outcomes: customer stories mention 98% reconciliation-time reduction at Nexxia, 94% operational-time reduction at Compartamos Banco, 100% automated reconciliations at Neon, and more than 1,620 monthly reconciliations at Niubiz.
 - Treat likely buyer personas as Finance Operations leaders, Accounting/Controller teams, Platform Operations/IT leaders, and operators inside PSPs, marketplaces, acquirers, issuers, neobanks, banks, retailers, fintechs, and complex transaction businesses.
 - Treat likely use cases as transaction reconciliation, payment/settlement reconciliation, fee validation, operational balance reconciliation, ERP/accounting sync, discrepancy/exception management, audit evidence, regulatory reporting support, and financial close support.
-- Use these proposed Service Tags unless Alejandro revises them: `transactional-reconciliation`, `finance-operations`, `accounting-automation`, `payment-reconciliation`, `settlement-reconciliation`, `exception-management`, `audit-readiness`, `no-code-integrations`, `financial-close`.
+- Use this proposed Service Category unless Alejandro revises it: `financial-reconciliation`.
 - Ask seller-led discovery questions that qualify fit:
   - Which transaction flows need reconciliation today, and which systems produce the source files or data?
   - What volume do you process daily or monthly, and how much of the work is currently manual?
