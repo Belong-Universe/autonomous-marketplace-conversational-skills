@@ -16,6 +16,7 @@ from typing import Any
 
 STATE_VERSION = "2026-06-08.5"
 DEFAULT_PLATFORM_FEE_RATE = 0.08
+ESCROW_PAYMENT_TERMS = "Escrow: the full amount is held at signature and released to the seller when the buyer accepts the deliverable."
 STOPWORDS = {
     "and",
     "are",
@@ -776,13 +777,12 @@ def command_update_account(args: argparse.Namespace, state: dict[str, Any]) -> d
 
 
 def service_price(args: argparse.Namespace) -> dict[str, Any]:
-    amount = float(args.starting_price or 5000)
+    amount = float(args.price or 5000)
     return {
         "pricing_model": args.pricing_model,
-        "starting_price": amount,
-        "currency": args.currency,
-        "billing_cycle": args.billing_cycle,
-        "collections": args.collections,
+        "price": amount,
+        "currency": "USD",
+        "payment_terms": ESCROW_PAYMENT_TERMS,
         "platform_fee_rate": DEFAULT_PLATFORM_FEE_RATE,
         "seller_receives_after_platform_fee": round(amount * (1 - DEFAULT_PLATFORM_FEE_RATE), 2),
     }
@@ -835,10 +835,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         "delivery_workflow": args.delivery_workflow,
         "deliverables": split_list(args.deliverables),
         "evidence_requirements": split_list(args.evidence_requirements),
-        "billing_collections": {
-            "billing_cycle": args.billing_cycle,
-            "collections": args.collections,
-        },
+        "payment_modality": ESCROW_PAYMENT_TERMS,
         "escalation_paths": split_list(args.escalation_paths),
         "meeting_rules": args.meeting_rules,
         "dispute_rules": args.dispute_rules,
@@ -865,7 +862,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         "delivery_workflow",
         "deliverables",
         "evidence_requirements",
-        "billing_collections",
+        "payment_modality",
         "escalation_paths",
         "meeting_rules",
         "dispute_rules",
@@ -968,7 +965,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         },
         [
             "Use belong-check-active-services to inspect active seller obligations after buyer signature.",
-            "Use belong-check-payments to inspect billing, collections, and transaction ledger state.",
+            "Use belong-check-payments to inspect escrow holds, releases, and transaction ledger state.",
             "Use belong-inbox to resolve any pending information or validation items.",
         ],
     )
@@ -1146,19 +1143,18 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             ],
             "pricing": {
                 "pricing_model": "fixed_fee",
-                "starting_price": item["price"],
+                "price": item["price"],
                 "currency": "USD",
-                "billing_cycle": "milestone",
-                "collections": "50% at signature, 50% on acceptance",
+                "payment_terms": ESCROW_PAYMENT_TERMS,
                 "platform_fee_rate": DEFAULT_PLATFORM_FEE_RATE,
                 "seller_receives_after_platform_fee": round(item["price"] * (1 - DEFAULT_PLATFORM_FEE_RATE), 2),
             },
-            "contract_terms": "Standard Belong facilitated Service Contract/SOW with milestone payment and revision window.",
+            "contract_terms": "Standard Belong facilitated Service Contract/SOW with escrow payment and revision window.",
             "negotiation_limits": {"discount_limit": "10%", "scope_limits": "No regulated legal advice", "commercial_notes": "Escalate non-standard indemnity."},
             "delivery_workflow": "Kickoff, discovery, draft delivery, evidence submission, acceptance review.",
             "deliverables": item["deliverables"],
             "evidence_requirements": ["files", "links", "completion notes", "acceptance criteria mapping"],
-            "billing_collections": {"billing_cycle": "milestone", "collections": "50% at signature, 50% on acceptance"},
+            "payment_modality": ESCROW_PAYMENT_TERMS,
             "escalation_paths": ["contract exceptions", "scope expansion", "human workshop scheduling"],
             "meeting_rules": "Video meetings allowed for kickoff, dispute, or complex delivery.",
             "dispute_rules": "Attempt agent negotiation first, then Belong Judge.",
@@ -1335,7 +1331,7 @@ def score_service(request: dict[str, Any], service: dict[str, Any], agent: dict[
     )
     matched_terms = sorted(term for term in query_terms if term in service_text)
     overlap_ratio = len(matched_terms) / max(1, len(query_terms))
-    price = float(service.get("price_signal", {}).get("starting_price", 0))
+    price = float(service.get("price_signal", {}).get("price", 0))
     budget = float(request.get("budget") or 0)
     budget_fit = budget and price <= budget
     budget_score = 12 if budget_fit else -10
@@ -1539,29 +1535,16 @@ def command_answer_discovery(args: argparse.Namespace, state: dict[str, Any]) ->
 
 
 def proposal_amount(service: dict[str, Any], request: dict[str, Any]) -> float:
-    starting = float(service["price_signal"].get("starting_price", 5000))
-    budget = float(request.get("budget") or starting)
-    if starting > budget:
-        return starting
-    return starting
+    return float(service["price_signal"].get("price", 5000))
 
 
-def payment_schedule(amount: float, payment_terms: str | None) -> dict[str, Any]:
-    text = (payment_terms or "").lower()
-    if "50%" in text:
-        signature_due = round(amount * 0.5, 2)
-        acceptance_due = round(amount - signature_due, 2)
-    elif "subscription" in text:
-        signature_due = round(amount, 2)
-        acceptance_due = 0.0
-    else:
-        signature_due = round(amount, 2)
-        acceptance_due = 0.0
+def payment_schedule(amount: float, payment_terms: str | None = None) -> dict[str, Any]:
+    total = round(amount, 2)
     return {
-        "signature_due": signature_due,
-        "acceptance_due": acceptance_due,
-        "total": round(amount, 2),
-        "description": payment_terms or "Collected according to signed Service Contract/SOW",
+        "signature_due": 0.0,
+        "acceptance_due": total,
+        "total": total,
+        "description": ESCROW_PAYMENT_TERMS,
     }
 
 
@@ -1610,7 +1593,7 @@ def command_create_proposals(args: argparse.Namespace, state: dict[str, Any]) ->
         amount = proposal_amount(service, request)
         proposal_id = next_id(state, "proposal")
         contract_id = next_id(state, "contract")
-        schedule = payment_schedule(amount, service["price_signal"].get("collections"))
+        schedule = payment_schedule(amount)
         contract = {
             "id": contract_id,
             "proposal_id": proposal_id,
@@ -1632,9 +1615,8 @@ def command_create_proposals(args: argparse.Namespace, state: dict[str, Any]) ->
             },
             "commercial_terms": {
                 "amount": amount,
-                "currency": service["price_signal"].get("currency", "USD"),
-                "payment_terms": service["price_signal"].get("collections"),
-                "billing_cycle": service["price_signal"].get("billing_cycle"),
+                "currency": "USD",
+                "payment_terms": ESCROW_PAYMENT_TERMS,
                 "payment_schedule": schedule,
                 "belong_platform_fee": round(amount * DEFAULT_PLATFORM_FEE_RATE, 2),
                 "seller_net_after_platform_fee": round(amount * (1 - DEFAULT_PLATFORM_FEE_RATE), 2),
@@ -2032,7 +2014,7 @@ def record_payment_event(
         {
             "payment": payment,
             "payment_ledger": deepcopy(ledger),
-            "playbook_rule": "Payments and collections follow the executed Service Contract/SOW.",
+            "playbook_rule": "Payments follow the escrow modality of the executed Service Contract/SOW: held at signature, released on buyer acceptance.",
             "authority_check": authority_check or {"result": "mocked_provider_event", "rule": "Stripe Payment Stack mock"},
         },
     )
@@ -4196,11 +4178,8 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         use_cases="new customer onboarding, churn reduction, implementation process",
         discovery_questions="What product and customer segment are we onboarding?;What churn or activation target matters?;What systems and stakeholders are involved?",
         pricing_model="fixed_fee",
-        starting_price="9000",
-        currency="USD",
-        billing_cycle="milestone",
-        collections="50% at signature, 50% after accepted deliverables",
-        contract_terms="Standard Service Contract/SOW with one revision window and milestone payment.",
+        price="9000",
+        contract_terms="Standard Service Contract/SOW with one revision window and escrow payment.",
         discount_limit="10%",
         scope_limits="No custom software development beyond workflow templates",
         negotiation_limits="Escalate indemnity, discounts above 10%, or timelines under one week.",
@@ -4353,10 +4332,7 @@ def build_parser() -> argparse.ArgumentParser:
     sell.add_argument("--use-cases", default="")
     sell.add_argument("--discovery-questions", default="")
     sell.add_argument("--pricing-model", default="fixed_fee")
-    sell.add_argument("--starting-price", default="5000")
-    sell.add_argument("--currency", default="USD")
-    sell.add_argument("--billing-cycle", default="milestone")
-    sell.add_argument("--collections", default="Collected according to signed Service Contract/SOW")
+    sell.add_argument("--price", default="5000")
     sell.add_argument("--contract-terms", default="")
     sell.add_argument("--discount-limit", default="0%")
     sell.add_argument("--scope-limits", default="")

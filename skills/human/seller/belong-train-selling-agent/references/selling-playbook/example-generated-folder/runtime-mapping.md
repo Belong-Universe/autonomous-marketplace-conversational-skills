@@ -15,10 +15,7 @@ Status: Missing
 - `--use-cases`: transaction reconciliation; payment and settlement reconciliation; fee validation; operational balance reconciliation; ERP and accounting sync; discrepancy and exception management; audit evidence; regulatory reporting support; financial close support
 - `--discovery-questions`: Which transaction flows need reconciliation today, and which systems produce the source files or data? What volume do you process daily or monthly, and how much of the work is currently manual? Which mismatches are most expensive or risky? Which teams depend on the reconciliation output? What is the required reconciliation cadence? What evidence, audit trail, dashboards, reports, or ERP outputs must the implementation produce? Which systems must Simetrik integrate with first? What deadline or business event makes this urgent?
 - `--pricing-model`: TBD
-- `--starting-price`: TBD
-- `--currency`: TBD
-- `--billing-cycle`: TBD
-- `--collections`: TBD
+- `--price`: TBD
 - `--contract-terms`: TBD
 - `--discount-limit`: TBD
 - `--scope-limits`: TBD

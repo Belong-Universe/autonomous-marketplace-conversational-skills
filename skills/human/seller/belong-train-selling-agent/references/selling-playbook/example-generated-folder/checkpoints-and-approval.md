@@ -8,7 +8,7 @@ Progress: 13%
 | Section | Status | Missing |
 | --- | --- | --- |
 | Value Proposition | Done | availability optional |
-| Monetization Models | Partial | pricing, billing, collections |
+| Monetization Models | Partial | fixed price, payment exceptions |
 | Legal And Contracts | Missing | all |
 | Negotiations | Missing | all |
 | Way Of Work During An Active Service | Missing | all |

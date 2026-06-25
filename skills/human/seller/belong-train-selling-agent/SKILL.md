@@ -91,7 +91,7 @@ Use this compact source summary shape:
 
 | Source | Sections informed | Confidence | Gaps |
 | --- | --- | --- | --- |
-| Sales deck | Value Proposition, Monetization Models | High | collections |
+| Sales deck | Value Proposition, Monetization Models | High | fixed price |
 | MSA template | Legal And Contracts, Disputes And Reputation Rules | Medium | approval limits |
 
 If a source appears useful for later sections, keep the extracted facts in the prefill map. Still present and approve only the current section when working through the guided flow.
@@ -176,7 +176,7 @@ Use this table shape:
 | Section | Status | Missing |
 | --- | --- | --- |
 | Value Proposition | Done | - |
-| Monetization Models | Partial | collections, refund rules |
+| Monetization Models | Partial | fixed price, escalation path |
 | Legal And Contracts | Missing | all |
 
 Keep `Missing` cells short. Use `-` for nothing missing. If the table gets long, combine the not-yet-started sections into one final row such as `Remaining sections`. Do not ask the first question for the next section until the human approves the current section.
@@ -187,7 +187,7 @@ Capture what the Service is, who it is for, the buyer pain or outcome, proof poi
 
 ### Monetization Models
 
-Capture pricing model, starting price, currency, billing cycle, collections process, seller-side platform fee awareness, payment readiness assumptions, refund/hold expectations, and when billing exceptions require human approval.
+Capture the pricing model (a fixed price in phase 1), the fixed price in USD, seller-side platform fee awareness and seller net, payment readiness assumptions, the escrow modality (the full amount is held at signature and released to the seller when the buyer accepts the deliverable), and when payment exceptions require human approval.
 
 ### Legal And Contracts
 
@@ -291,7 +291,7 @@ If the human only wants a temporary nudge such as "push harder on evidence in th
 When the playbook is complete, map the sections into the runtime:
 
 - Value Proposition -> `--service-name`, `--description`, `--category`, `--availability`, `--buyer-personas`, `--use-cases`, `--discovery-questions`
-- Monetization Models -> `--pricing-model`, `--starting-price`, `--currency`, `--billing-cycle`, `--collections`
+- Monetization Models -> `--pricing-model`, `--price`
 - Legal And Contracts -> `--contract-terms`, `--deliverables`, `--evidence-requirements`
 - Negotiations -> `--discount-limit`, `--scope-limits`, `--negotiation-limits`
 - Way Of Work During An Active Service -> `--delivery-workflow`, plus relevant deliverables and evidence requirements
@@ -308,7 +308,7 @@ Setup -> Training -> Validation -> Production.
 
 Before running validation, do a Consistency Check across the whole Selling Playbook, not just per section. The runtime checks that fields are present; it does not catch contradictions between sections. Read `references/selling-playbook/consistency-check.md` and review the cross-section pairs there. When two statements conflict, show them side by side, ask the human which one is correct, and update the affected section(s). Do not run `train-selling --activate` until the playbook is internally consistent or the human explicitly accepts a remaining conflict.
 
-Validation must check identity, Selling Playbook completeness, payment/legal behavior, notifications, disputes, reputation, audit, delivery, billing/collections, and safety. If the runtime returns missing fields, ask only for those fields and update only the affected playbook section.
+Validation must check identity, Selling Playbook completeness, payment/legal behavior, notifications, disputes, reputation, audit, delivery, escrow payment, and safety. If the runtime returns missing fields, ask only for those fields and update only the affected playbook section.
 
 ## Output
 

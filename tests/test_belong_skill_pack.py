@@ -118,12 +118,8 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
         "customer onboarding,implementation operations,activation improvement",
         "--discovery-questions",
         "What customer segment is in scope?,What systems are involved?,What evidence proves acceptance?",
-        "--starting-price",
+        "--price",
         price,
-        "--billing-cycle",
-        "milestone",
-        "--collections",
-        "50% at signature, 50% on acceptance",
         "--contract-terms",
         "Standard Service Contract/SOW with one revision window.",
         "--discount-limit",
@@ -471,8 +467,8 @@ class BelongSkillPackTests(unittest.TestCase):
 
             self.assertEqual(ledger["contract_amount"], 12000.0)
             self.assertEqual(ledger["authorized"], 12000.0)
-            self.assertEqual(ledger["collected"], 6000.0)
-            self.assertEqual(ledger["platform_fee_accrued"], 480.0)
+            self.assertEqual(ledger["collected"], 0.0)
+            self.assertEqual(ledger["platform_fee_accrued"], 0.0)
             self.assertTrue(any(payment["type"] == "authorization_delta" for payment in state["payments"].values()))
 
     def test_pending_change_order_counts_against_signature_authority(self):

@@ -6,24 +6,26 @@ This section defines how the Service makes money and how payment behavior should
 
 ## Source Signals
 
-Look for pricing sheets, proposals, order forms, invoices, billing terms, collections policies, finance notes, refund history, and sales approval rules.
+Look for pricing sheets, proposals, order forms, invoices, finance notes, and sales approval rules.
 
 ## Required Fields
 
-- Pricing model: fixed fee, subscription, milestone, retainer, usage, hourly, outcome-based, hybrid, or other
-- Starting price and currency
-- Billing cycle and payment timing
-- Deposit, authorization, hold, charge, release, refund, and collection expectations
+- Pricing model (for phase 1 this is a fixed price)
+- Fixed price (the currency is always USD)
 - Seller-side platform fee awareness and seller net explanation
 - Payment readiness assumptions
-- What the Selling Agent can quote autonomously
-- What requires human approval
-- Late payment, failed payment, refund, collection, and write-off handling
 - Payment exception escalation path
+
+In phase 1 there is one payment modality: escrow. The full amount is held when the
+contract is signed and released to the seller when the buyer accepts the deliverable.
+There is no starting price, no billing cycle, and no collections policy, because there
+are no negotiations or discounts in this phase.
 
 ## Quality Bar
 
-The section is `Done` when the Selling Agent can explain price, bill correctly, avoid unauthorized concessions, summarize seller net, and escalate payment exceptions before moving money outside authority.
+The section is `Done` when the Selling Agent can explain the fixed price in USD, the
+escrow modality, the platform fee, and the seller net, and can escalate payment
+exceptions before moving money outside authority.
 
 ## Guardrails
 

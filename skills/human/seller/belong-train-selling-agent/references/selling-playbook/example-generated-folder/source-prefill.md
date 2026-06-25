@@ -53,7 +53,7 @@ Status: Partial
 | Section | Prefill strength | Source-backed draft available | Still requires Alejandro |
 | --- | --- | --- | --- |
 | Value Proposition | Strong | Yes | approval, availability if required |
-| Monetization Models | Weak | Limited MSA payment terms only | pricing, currency, billing cycle, collections, exceptions |
+| Monetization Models | Weak | Limited MSA payment terms only | fixed price, payment exceptions |
 | Legal And Contracts | Medium | Public legal/security docs and MSA | Service-specific SOW, authority, terms never to change |
 | Negotiations | Weak | None reliable | discount, concessions, walk-away rules |
 | Way Of Work During An Active Service | Medium | Platform capabilities and case-study delivery themes | actual implementation workflow, owners, milestones |

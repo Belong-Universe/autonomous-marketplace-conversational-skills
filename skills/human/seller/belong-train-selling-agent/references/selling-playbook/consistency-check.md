@@ -15,7 +15,7 @@ Run this once the sections are drafted and before `train-selling --activate` or 
 
 | Check | Sections | Conflict example |
 | --- | --- | --- |
-| Pricing matches billing | Monetization | `fixed_fee` priced but `billing-cycle: hourly` |
+| Price is a fixed USD amount | Monetization | escrow modality described but no fixed `price` set |
 | Discount authority agrees | Monetization vs Negotiations | `discount-limit: 0%` but negotiation offers 15% |
 | Capacity matches availability | Capacity And Objective vs Value Proposition | "max 2 concurrent" but "24/7 unlimited" |
 | Objective matches tactics | Capacity And Objective vs Negotiations/Monetization | "maximize margin" but aggressive discounting allowed |
