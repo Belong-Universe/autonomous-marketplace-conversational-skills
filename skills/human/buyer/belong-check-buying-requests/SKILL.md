@@ -1,15 +1,15 @@
 ---
 name: belong-check-buying-requests
-description: Buyer-specific human-facing read/check view for pre-contract Buying Requests. Use for Buying Requests, semantic search results, Engagement Feeds, seller-led Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiation state, authority checks, linked Marketplace Inbox items, and buyer pipeline visibility before Active Service.
+description: Buyer-specific human-facing read/check view for pre-contract Buying Requests. Use for Buying Requests, semantic search results, Engagement Feeds, seller-led Discovery Questionnaires, seller-signed Service Contract/SOW proposals, authority checks, linked Marketplace Inbox items, and buyer pipeline visibility before Active Service.
 ---
 
 # Belong Check Buying Requests
 
 **Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
 
-Use this when a buyer-side human asks what is happening before a contract is signed: open needs, search results, RFPs, competitive feeds, discovery, proposals, negotiation, or pending buyer approvals.
+Use this when a buyer-side human asks what is happening before a contract is signed: open needs, search results, RFPs, competitive feeds, discovery, proposals, or pending buyer approvals.
 
-This is a read/check skill. It must not create a new request, answer discovery, negotiate, sign, move money, approve exceptions, or change the Buying Playbook.
+This is a read/check skill. It must not create a new request, answer discovery, sign, move money, approve exceptions, or change the Buying Playbook.
 
 ## Guided Flow
 
@@ -22,7 +22,7 @@ Show:
 - Direct or competitive Engagement Feed state
 - Seller-led Discovery Questionnaire state
 - Seller-signed Service Contract/SOW proposals
-- Proposal comparison and negotiation state when present
+- Proposal comparison when present
 - Authority, budget, cumulative spend, and payment readiness signals when present
 - Linked Marketplace Inbox items
 - Audit Log or Decision Explanation path when relevant
@@ -43,7 +43,7 @@ Show:
 This is a read-only view, so nothing changes. Summarize:
 
 - Which Buying Request(s) the human is looking at, by status and need
-- Current pre-contract phase: search, engagement, discovery, proposals, or negotiation
+- Current pre-contract phase: search, engagement, discovery, or proposals
 - The most relevant state: results found, feeds open, proposals received, and how they compare
 - Authority signals when present: budget, cumulative spend, and whether signature is within Standing Authorization
 - Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail

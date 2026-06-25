@@ -78,13 +78,12 @@ Use `override` when the human wants to:
 
 - Pause or resume an agent
 - Give direct instructions
-- Cancel negotiation
 - Request a meeting
 - Intervene in an Active Service
 
 Paused agents stop new autonomous actions but preserve active obligations, urgent escalations, deadlines, payment notices, disputes, and required notices.
 
-Enforce pause before every guided action. A paused agent cannot start new search engagement, proposal creation, negotiation, signature, Change Order, payment movement, optimization, or steering. Resume only after explicit human direction and a fresh pending-inbox check.
+Enforce pause before every guided action. A paused agent cannot start new search engagement, proposal creation, signature, Change Order, payment movement, optimization, or steering. Resume only after explicit human direction and a fresh pending-inbox check.
 
 ## Per-Flow Control (separate from agent-wide pause)
 

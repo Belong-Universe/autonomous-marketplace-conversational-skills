@@ -1,6 +1,6 @@
 ---
 name: belong-train-selling-agent
-description: Human-facing Selling Agent training and retraining. Use when a Service Provider human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Selling Playbook folder for one Service, including value proposition, monetization models, legal/contracts, negotiation rules, active-service delivery work, escalations, human-to-human meetings, disputes, reputation rules, delivery capacity, optimization objective, and Standing Authorization.
+description: Human-facing Selling Agent training and retraining. Use when a Service Provider human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Selling Playbook folder for one Service, including value proposition, monetization models, legal/contracts, active-service delivery work, escalations, human-to-human meetings, disputes, reputation rules, delivery capacity, optimization objective, and Standing Authorization.
 ---
 
 # Belong Train Selling Agent
@@ -23,7 +23,7 @@ Never assume an account exists from conversation, shared files, or prior context
 
 Start with runtime `status`. If no account exists, route to `$belong-setup-account`.
 
-Explain the purpose before collecting details: this flow creates and fills an Autonomous Service/Selling Playbook for one Service. That playbook is the operating contract that lets the Belong Selling Agent meet buyers, answer discovery, propose, negotiate, contract, coordinate delivery, handle payment expectations, and optimize selling autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
+Explain the purpose before collecting details: this flow creates and fills an Autonomous Service/Selling Playbook for one Service. That playbook is the operating contract that lets the Belong Selling Agent meet buyers, answer discovery, propose, contract, coordinate delivery, handle payment expectations, and optimize selling autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
 
 Gather context first, do not interrogate. Open with a single broad question, such as:
 "Tell me about the Service you want to sell, who it is for, and how you like to deliver
@@ -138,18 +138,17 @@ Required files:
 - `01-value-proposition.md`
 - `02-monetization-models.md`
 - `03-legal-and-contracts.md`
-- `04-negotiations.md`
-- `05-active-service-work.md`
-- `06-human-to-human-meetings.md`
-- `07-escalations.md`
-- `08-disputes-and-reputation.md`
-- `09-capacity-and-objective.md`
+- `04-active-service-work.md`
+- `05-human-to-human-meetings.md`
+- `06-escalations.md`
+- `07-disputes-and-reputation.md`
+- `08-capacity-and-objective.md`
 - `checkpoints-and-approval.md`
 - `runtime-mapping.md`
 - `approval-log.md`
 - `final-selling-playbook.md`
 
-Create all files once company and Service are known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-selling-playbook.md` only after all nine sections are approved.
+Create all files once company and Service are known. Update the current section file before asking for approval. Update `checkpoints-and-approval.md` at every checkpoint. Update `approval-log.md` after every approval or revision. Update `final-selling-playbook.md` only after all eight sections are approved.
 
 ## Selling Playbook Sections
 
@@ -158,18 +157,17 @@ Build the Selling Playbook in this order:
 1. Value Proposition
 2. Monetization Models
 3. Legal And Contracts
-4. Negotiations
-5. Way Of Work During An Active Service
-6. Human-To-Human Meetings
-7. Escalations
-8. Disputes And Reputation Rules
-9. Capacity And Objective
+4. Way Of Work During An Active Service
+5. Human-To-Human Meetings
+6. Escalations
+7. Disputes And Reputation Rules
+8. Capacity And Objective
 
 ## Section Checkpoints
 
 After drafting each section and before asking for approval to move on, show a checkpoint. Keep it compact and easy to scan. Start with a short line like: "Checkpoint: this is where we're at. You're 38% through the Selling Playbook." The checkpoint and approval gate happen together between sections.
 
-Compute progress from the nine playbook sections: `Done` = 1, `Partial` = 0.5, `Missing` = 0. Round to the nearest whole percent. A section can be `Done` when it has enough detail to become playbook rules, even if some optional details remain `TBD`.
+Compute progress from the eight playbook sections: `Done` = 1, `Partial` = 0.5, `Missing` = 0. Round to the nearest whole percent. A section can be `Done` when it has enough detail to become playbook rules, even if some optional details remain `TBD`.
 
 Use this table shape:
 
@@ -193,11 +191,7 @@ Capture the pricing model (a fixed price in phase 1), the fixed price in USD, se
 
 Capture standard Service Contract/SOW terms, deliverables, evidence requirements, acceptance criteria, contract authority, scope boundaries, required signatures, Change Order triggers, legal exceptions, and terms the agent must never change without approval.
 
-### Negotiations
-
-Capture discount limit, scope limits, price/timeline/payment concessions, contract fallback positions, buyer qualification rules, walk-away conditions, cumulative exposure checks, the Standing Authorization envelope for autonomous negotiation, and the disclosure scope: what the agent may tell a buyer versus keep internal. Give the agent a clear decision to state (for example, "no discount available" when the buyer is not eligible) without exposing the discount limit, margins, authority thresholds, capacity, or internal policy behind it.
-
-This disclosure discipline is cross-cutting: it applies to every section, not only negotiations. The agent should give buyers a clear, usable answer on pricing, capacity, authority, timelines, and other clients while keeping the underlying limits, costs, thresholds, and policy internal. When in doubt about whether something is shareable, treat it as internal and escalate.
+Disclosure discipline is cross-cutting: it applies to every section. The agent should give buyers a clear, usable answer on pricing, capacity, authority, timelines, and other clients while keeping the underlying limits, costs, thresholds, and policy internal. When in doubt about whether something is shareable, treat it as internal and escalate.
 
 ### Way Of Work During An Active Service
 
@@ -255,7 +249,7 @@ Scheduling mechanics the agent must follow:
 
 Capture ordinary fulfillment escalations, exception thresholds, information requests, authorization requests, payment exceptions, Change Order approvals, agent pause/resume rules, notification channels, and who in the Service Provider organization owns each escalation path.
 
-Also capture any high-criticality action types reserved as **always performed by the human** (Scenario B): a third authority outcome beyond "agent executes" and "agent escalates for approval". When the agent reaches one, it hands the action to the Service Provider human, who performs it directly with `$belong-operate-selling-flow`. Only this fixed set of seller action types is eligible: `sign` (seller-signed proposal), `deliver`, `accept-change-order`, `payment` (collection), `dispute`. Operational actions (negotiate, discovery, meeting, message, fulfillment-task) are not eligible. This is a standing rule per action type, never arbitrary sub-flow slicing; treat it as authority-critical and confirm it live before activation. Map the confirmed set to `--human-controlled-actions`.
+Also capture any high-criticality action types reserved as **always performed by the human** (Scenario B): a third authority outcome beyond "agent executes" and "agent escalates for approval". When the agent reaches one, it hands the action to the Service Provider human, who performs it directly with `$belong-operate-selling-flow`. Only this fixed set of seller action types is eligible: `sign` (seller-signed proposal), `deliver`, `accept-change-order`, `payment` (collection), `dispute`. Operational actions (discovery, meeting, message, fulfillment-task) are not eligible. This is a standing rule per action type, never arbitrary sub-flow slicing; treat it as authority-critical and confirm it live before activation. Map the confirmed set to `--human-controlled-actions`.
 
 ### Disputes And Reputation Rules
 
@@ -266,7 +260,7 @@ Capture dispute posture, evidence standards, response deadlines, refund/rework p
 Capture the two strategic inputs that frame every other section:
 
 - Delivery capacity: how many Active Services the provider can run at once, typical lead time, and what the agent does when demand exceeds capacity (pause or de-prioritize the listing, extend quoted timelines, or escalate to the human). This keeps the Selling Agent from winning more work than the team can deliver.
-- Optimization objective: what the agent should maximize (for example win rate, margin, utilization, or strategic accounts) and the key trade-offs between them, so pricing, negotiation, and acceptance decisions have a clear target.
+- Optimization objective: what the agent should maximize (for example win rate, margin, utilization, or strategic accounts) and the key trade-offs between them, so pricing and acceptance decisions have a clear target.
 
 Surface both during the opening context gathering so they inform the earlier sections, then confirm them here.
 
@@ -280,7 +274,7 @@ twice; only re-gather the fields specific to each Service.
 
 ## Durable Retraining
 
-Use this same skill when the Service Provider human wants durable changes to any Selling Playbook section: value proposition, monetization, legal/contracts, negotiations, active-service work, meetings, escalations, disputes, reputation rules, evidence requirements, Service positioning, or marketplace offer packaging.
+Use this same skill when the Service Provider human wants durable changes to any Selling Playbook section: value proposition, monetization, legal/contracts, active-service work, meetings, escalations, disputes, reputation rules, evidence requirements, Service positioning, or marketplace offer packaging.
 
 For retraining an existing agent, first show the current section being changed and the proposed replacement text. Then run `update-selling-playbook`. This creates a new Selling Playbook version and preserves pause state and Service listing state. Do not send durable Playbook changes to `$belong-inbox`; Inbox is for day-to-day operational escalations.
 
@@ -292,13 +286,12 @@ When the playbook is complete, map the sections into the runtime:
 
 - Value Proposition -> `--service-name`, `--description`, `--category`, `--availability`, `--buyer-personas`, `--use-cases`, `--discovery-questions`
 - Monetization Models -> `--pricing-model`, `--price`
-- Legal And Contracts -> `--contract-terms`, `--deliverables`, `--evidence-requirements`
-- Negotiations -> `--discount-limit`, `--scope-limits`, `--negotiation-limits`
+- Legal And Contracts -> `--contract-terms`, `--scope-limits`, `--deliverables`, `--evidence-requirements`
 - Way Of Work During An Active Service -> `--delivery-workflow`, plus relevant deliverables and evidence requirements
 - Human-To-Human Meetings -> `--meeting-rules`
 - Escalations -> `--escalation-paths`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `deliver`, `accept-change-order`, `payment`, `dispute`)
 - Disputes And Reputation Rules -> `--dispute-rules`, `--reputation-rules`
-- Capacity And Objective -> delivery capacity maps onto `--availability` and at-capacity behavior onto `--escalation-paths`; the optimization objective has no dedicated seller runtime flag (the buyer playbook has `--optimization-goals`), so keep it in the playbook and reflect it through `--negotiation-limits` and `--reputation-rules`
+- Capacity And Objective -> delivery capacity maps onto `--availability` and at-capacity behavior onto `--escalation-paths`; the optimization objective has no dedicated seller runtime flag (the buyer playbook has `--optimization-goals`), so keep it in the playbook and reflect it through `--reputation-rules`
 
 ## Validation
 

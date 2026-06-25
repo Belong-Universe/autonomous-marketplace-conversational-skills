@@ -1,6 +1,6 @@
 # Human-To-Human Meetings
 
-[Back to index](index.md) | Previous: [Way Of Work During An Active Service](05-active-service-work.md) | Next: [Escalations](07-escalations.md)
+[Back to index](index.md) | Previous: [Way Of Work During An Active Service](04-active-service-work.md) | Next: [Escalations](06-escalations.md)
 
 This section defines when humans should meet, how the Selling Agent prepares them, and how meeting outcomes become operational state.
 

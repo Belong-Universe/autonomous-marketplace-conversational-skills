@@ -19,7 +19,7 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 
 - Belong agents only; no bring-your-own-agent.
 - Buying Agent training creates a Buying Playbook with buying goals, provider preferences, budget, RFP/selection rules, proposal comparison, contract authority, payment rules, acceptance criteria, escalation rules, dispute posture, rating rules, and optimization goals.
-- Selling Agent training creates a Service Playbook for one Service with description, category, discovery, pricing, monetization, billing, collections, contract/SOW behavior, negotiation limits, delivery, evidence, meetings, escalations, disputes, reputation, and Standing Authorization.
+- Selling Agent training creates a Service Playbook for one Service with description, category, discovery, pricing, monetization, billing, collections, contract/SOW behavior, delivery, evidence, meetings, escalations, disputes, reputation, and Standing Authorization.
 - Setup, Training, Validation, and Production phases are explicit.
 
 ## Marketplace Lifecycle
@@ -32,7 +32,6 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Direct or competitive Engagement Feed
 - Seller-led Discovery Questionnaire
 - Proposal as seller-signed Service Contract/SOW, not a separate document
-- Negotiation/iteration
 - Buyer signature within Standing Authorization or human approval
 - Active Service
 - Stripe Payment Stack mock with authorizations, charges, holds, releases, refunds, collections, seller-side platform fee, and merchant-of-record distinction
@@ -49,7 +48,7 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Delivery Acceptance: accept, reject, request revision, or dispute
 - Change Orders as signed contract/SOW amendments that state scope, price, timeline, deliverable, approval/signature, payment ledger impact, and acceptance evidence changes
 - Human Override and Agent Pause
-- Agent Pause blocks new autonomous search engagement, proposals, negotiations, signatures, Change Orders, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
+- Agent Pause blocks new autonomous search engagement, proposals, signatures, Change Orders, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
 - Per-flow control (separate from agent-wide pause): each Buying Request and Active Service has one `control_state` (`agent_controlled`, `human_controlled`, `paused`); `flow-control` and `override --action intervene` change it, the runtime enforces who may act, and the human acts on a `human_controlled` flow with `--as-human`
 - Scenario B standing human-performed actions: a Playbook may reserve high-criticality action types as always human-performed (buyer: sign, accept, payment, change-order, dispute; seller: sign, deliver, accept-change-order, payment, dispute); the agent routes a reserved action to a human_performed_action inbox item instead of executing or asking for approval
 - Disputes managed by agents

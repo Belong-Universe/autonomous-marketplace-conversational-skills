@@ -16,12 +16,11 @@ Run this once the sections are drafted and before `train-selling --activate` or 
 | Check | Sections | Conflict example |
 | --- | --- | --- |
 | Price is a fixed USD amount | Monetization | escrow modality described but no fixed `price` set |
-| Discount authority agrees | Monetization vs Negotiations | `discount-limit: 0%` but negotiation offers 15% |
 | Capacity matches availability | Capacity And Objective vs Value Proposition | "max 2 concurrent" but "24/7 unlimited" |
-| Objective matches tactics | Capacity And Objective vs Negotiations/Monetization | "maximize margin" but aggressive discounting allowed |
+| Objective matches tactics | Capacity And Objective vs Monetization | "maximize margin" but capacity left unbounded |
 | Authority matches escalation | Legal And Contracts vs Escalations | contract authority above the escalation threshold |
 | Acceptance matches evidence | Legal And Contracts vs Way Of Work | acceptance needs proof the evidence package never produces |
-| Scope limits agree | Negotiations vs Legal And Contracts | negotiation concedes work the SOW forbids |
+| Scope limits agree | Legal And Contracts vs Way Of Work | the SOW scope and the delivery plan disagree |
 | Lead time matches timelines | Capacity And Objective vs Way Of Work | quoted delivery faster than stated lead time |
 
 ## Output Of The Check

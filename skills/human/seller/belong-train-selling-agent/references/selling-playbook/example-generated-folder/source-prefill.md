@@ -42,7 +42,6 @@ Status: Partial
 - Exact buyer-facing Service package name and boundaries
 - Monetization model
 - Applicable Order Form/SOW terms for this Service
-- Negotiation limits
 - Concrete implementation/delivery workflow
 - Human-to-human meeting rules
 - Escalation paths
@@ -55,7 +54,6 @@ Status: Partial
 | Value Proposition | Strong | Yes | approval, availability if required |
 | Monetization Models | Weak | Limited MSA payment terms only | fixed price, payment exceptions |
 | Legal And Contracts | Medium | Public legal/security docs and MSA | Service-specific SOW, authority, terms never to change |
-| Negotiations | Weak | None reliable | discount, concessions, walk-away rules |
 | Way Of Work During An Active Service | Medium | Platform capabilities and case-study delivery themes | actual implementation workflow, owners, milestones |
 | Human-To-Human Meetings | Weak | None reliable | meeting triggers, attendees, scheduling authority |
 | Escalations | Medium | MSA support categories and public operational claims | internal owners, Slack routing, thresholds |

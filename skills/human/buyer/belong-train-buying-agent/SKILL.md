@@ -1,6 +1,6 @@
 ---
 name: belong-train-buying-agent
-description: Human-facing Buying Agent training and retraining. Use when a buyer-side human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Buying Playbook folder, to define or durably update a Buying Playbook: buying goals and needs, budgets, payment rules, provider preferences, RFP and selection rules, proposal comparison, negotiation limits, disclosure scope, contract/SOW authority, acceptance criteria, escalation thresholds, dispute posture, rating behavior, optimization objective, human-to-human meeting scheduling, Provider Optimization behavior, and Standing Authorization.
+description: Human-facing Buying Agent training and retraining. Use when a buyer-side human needs guided, section-by-section work with existing drives, data lakes, uploaded files, shared links, compact checkpoints, automatic prefill, explicit approval gates, and a generated markdown Buying Playbook folder, to define or durably update a Buying Playbook: buying goals and needs, budgets, payment rules, provider preferences, RFP and selection rules, proposal comparison, disclosure scope, contract/SOW authority, acceptance criteria, escalation thresholds, dispute posture, rating behavior, optimization objective, human-to-human meeting scheduling, Provider Optimization behavior, and Standing Authorization.
 ---
 
 # Belong Train Buying Agent
@@ -35,7 +35,7 @@ Never apply a profile-based assumption silently: surface it at the section's app
 
 Start with runtime `status`. If no account exists, route to `$belong-setup-account`.
 
-Explain the purpose before collecting details: this flow creates and fills an Autonomous Buying Playbook. That playbook is the operating contract that lets the Belong Buying Agent procure services, compare proposals, negotiate, contract, manage delivery, and optimize providers autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
+Explain the purpose before collecting details: this flow creates and fills an Autonomous Buying Playbook. That playbook is the operating contract that lets the Belong Buying Agent procure services, compare proposals, contract, manage delivery, and optimize providers autonomously inside Standing Authorization, while escalating exceptions to Marketplace Inbox.
 
 Gather context first, do not interrogate. Open with a single broad question, such as: "Tell me about yourself or your organization, what you want to buy, and how you like to work." Then offer the human every way to provide context, and let them combine as many as they have: answer in chat, share one or more websites or links, upload one or more files, or point to existing sources of truth (Drive folder, data lake, ERP/procurement export, policy documents, budget sheets, vendor lists, past RFPs, contract templates, or spreadsheets). Make clear they can share several at once. Then apply the designated-sources rule above before prefilling.
 
@@ -47,12 +47,11 @@ Build the playbook in this order:
 2. Budget And Payment
 3. Provider Preferences
 4. Selection And RFP Rules
-5. Negotiations
-6. Legal And Contracts
-7. Escalations
-8. Disputes And Reputation
-9. Optimization Objective
-10. Human-To-Human Meetings
+5. Legal And Contracts
+6. Escalations
+7. Disputes And Reputation
+8. Optimization Objective
+9. Human-To-Human Meetings
 
 Work one section at a time. Do not ask the human to fill every section at once. For each section, show in chat what you understood and the proposed fill, ask only the targeted questions that section needs, convert answers into clear playbook rules, and mark unknowns as `TBD` instead of inventing them. Run the per-section approval gate and the between-section checkpoint following `references/buying-playbook/checkpoints-and-approval.md`. At each approval gate, also state any profile-based assumption you made so the human confirms it rather than having it applied silently. Do not start the next section until the human approves the current one.
 
@@ -72,12 +71,11 @@ Build the sections in the order above. Each summary below is the headline; the f
 2. **Budget And Payment** — total budget, max spend, currency, payment rules and timing, when spend needs human approval. `references/buying-playbook/02-budget-and-payment.md`
 3. **Provider Preferences** — preferred/blocked providers, required constraints, relationship weighting, and the due diligence documents a provider must supply. `references/buying-playbook/03-provider-preferences.md`
 4. **Selection And RFP Rules** — direct vs competitive, RFP structure, ranking and proposal comparison, plus the Provider Due Diligence gate/journey. `references/buying-playbook/04-selection-and-rfp-rules.md`
-5. **Negotiations** — limits, concessions, walk-away, Standing Authorization envelope, and the cross-cutting disclosure discipline. `references/buying-playbook/05-negotiations.md`
-6. **Legal And Contracts** — contract/SOW authority, required terms, acceptance criteria, Change Order triggers, and modeling a required provider invoice as an acceptance item. `references/buying-playbook/06-legal-and-contracts.md`
-7. **Escalations** — thresholds, exceptions, pause/resume, channels, who owns each path, and any high-criticality action types reserved as always human-performed (Scenario B). `references/buying-playbook/07-escalations.md`
-8. **Disputes And Reputation** — dispute posture, evidence standards, deadlines, rating behavior. `references/buying-playbook/08-disputes-and-reputation.md`
-9. **Optimization Objective** — what to optimize across providers and the Provider Optimization goals (light for one-off, heavy for recurring). `references/buying-playbook/09-optimization-objective.md`
-10. **Human-To-Human Meetings** — when to propose/accept, plus the full Calendly scheduling handshake and mechanics. `references/buying-playbook/10-human-to-human-meetings.md`
+5. **Legal And Contracts** — contract/SOW authority, required terms, acceptance criteria, Change Order triggers, the cross-cutting disclosure discipline, and modeling a required provider invoice as an acceptance item. `references/buying-playbook/05-legal-and-contracts.md`
+6. **Escalations** — thresholds, exceptions, pause/resume, channels, who owns each path, and any high-criticality action types reserved as always human-performed (Scenario B). `references/buying-playbook/06-escalations.md`
+7. **Disputes And Reputation** — dispute posture, evidence standards, deadlines, rating behavior. `references/buying-playbook/07-disputes-and-reputation.md`
+8. **Optimization Objective** — what to optimize across providers and the Provider Optimization goals (light for one-off, heavy for recurring). `references/buying-playbook/08-optimization-objective.md`
+9. **Human-To-Human Meetings** — when to propose/accept, plus the full Calendly scheduling handshake and mechanics. `references/buying-playbook/09-human-to-human-meetings.md`
 
 ## Durable Retraining
 
@@ -95,7 +93,6 @@ When the playbook is complete, map the sections into the runtime:
 - Budget And Payment -> `--budget`, `--max-spend`, `--payment-rules`
 - Provider Preferences -> `--provider-preferences`, `--blocked-providers`
 - Selection And RFP Rules -> `--selection-rules`, `--rfp-rules`, `--proposal-comparison-rules`
-- Negotiations -> `--negotiation-limits`
 - Legal And Contracts -> `--contract-authority`, `--acceptance-criteria`
 - Escalations -> `--escalation-rules`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `accept`, `payment`, `change-order`, `dispute`)
 - Disputes And Reputation -> `--dispute-posture`, `--rating-rules`

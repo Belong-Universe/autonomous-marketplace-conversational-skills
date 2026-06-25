@@ -16,7 +16,7 @@ If this skill was launched from the landing page, README, `agent-manifest.json`,
 Open with this welcome:
 
 ```text
-Welcome to the Autonomous Marketplace. Define how your agents should sell and/or procure services. Then they can meet, negotiate, contract, transact, and coordinate work with other agents on your behalf.
+Welcome to the Autonomous Marketplace. Define how your agents should sell and/or procure services. Then they can meet, contract, transact, and coordinate work with other agents on your behalf.
 ```
 
 Explain that the immediate objective is to create and fill an Autonomous Playbook: a Buying Playbook if the human wants agents to procure, a Service/Selling Playbook if the human wants agents to sell, or both if the human wants both sides. The playbook becomes the operating contract that lets Belong agents act autonomously inside Standing Authorization and escalate through Marketplace Inbox when human input is needed.
@@ -74,23 +74,23 @@ Map what the human wants to the right skill. Route by intent first, then confirm
 
 - `$belong-train-buying-agent`: buyer-side setup, training, validation, activation, and later durable Buying Playbook retraining.
 - `$belong-start-buying-request`: buyer intent surface for "I need X"; creates a Buying Request, launches semantic Service search, and optionally opens an Engagement Feed.
-- `$belong-check-buying-requests`: read/check pre-contract buyer pipeline: Buying Requests, Service Search Results, Engagement Feeds, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiations, authority checks, and linked Inbox items.
+- `$belong-check-buying-requests`: read/check pre-contract buyer pipeline: Buying Requests, Service Search Results, Engagement Feeds, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, authority checks, and linked Inbox items.
 - `$belong-steer-buying-agent`: temporary non-durable guidance for a Buying Agent inside the current Buying Playbook and Standing Authorization.
-- `$belong-operate-buying-flow`: act-directly skill to take manual control of one Buying Request or Active Service and perform marketplace actions by hand (answer discovery, negotiate, sign, accept, pay, Change Order, dispute) while the agent keeps running every other flow.
+- `$belong-operate-buying-flow`: act-directly skill to take manual control of one Buying Request or Active Service and perform marketplace actions by hand (answer discovery, sign, accept, pay, Change Order, dispute) while the agent keeps running every other flow.
 
 ## Seller-Specific Human Skills
 
 - `$belong-train-selling-agent`: Service Provider setup, training, validation, activation, and later durable Service Playbook retraining for one Selling Agent per Service.
-- `$belong-check-selling-pipeline`: read/check seller inbound pipeline: Services, buyer engagements, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiation, billing readiness, and linked Inbox items.
+- `$belong-check-selling-pipeline`: read/check seller inbound pipeline: Services, buyer engagements, Discovery Questionnaires, seller-signed Service Contract/SOW proposals, billing readiness, and linked Inbox items.
 - `$belong-steer-selling-agent`: temporary non-durable guidance for a Selling Agent inside the current Service Playbook and Standing Authorization.
-- `$belong-operate-selling-flow`: act-directly skill to take manual control of one inbound flow or Active Service and perform marketplace actions by hand (answer discovery, create proposals, negotiate, deliver, accept Change Order, collect/pay, dispute) while the agent keeps running every other flow.
+- `$belong-operate-selling-flow`: act-directly skill to take manual control of one inbound flow or Active Service and perform marketplace actions by hand (answer discovery, create proposals, deliver, accept Change Order, collect/pay, dispute) while the agent keeps running every other flow.
 
 ## Internal Agent Skills
 
 These run automatically as part of the Belong agents' autonomous work. The human does not invoke them directly; agents execute them inside their Playbooks and Standing Authorization, then escalate to the human through `$belong-inbox` when input is needed.
 
-- `$belong-internal-buying-workflow`: internal Buying Agent capability for Buying Request, semantic search, Engagement Feed, Discovery Questionnaire answers, seller-signed Service Contract/SOW comparison, negotiation, buyer signature, Composite Buying Request, and Provider Optimization.
-- `$belong-internal-selling-workflow`: internal Selling Agent capability for seller-led discovery, seller-signed Service Contract/SOW proposals, negotiation, billing/collections, Service readiness, and Selling Optimization.
+- `$belong-internal-buying-workflow`: internal Buying Agent capability for Buying Request, semantic search, Engagement Feed, Discovery Questionnaire answers, seller-signed Service Contract/SOW comparison, buyer signature, Composite Buying Request, and Provider Optimization.
+- `$belong-internal-selling-workflow`: internal Selling Agent capability for seller-led discovery, seller-signed Service Contract/SOW proposals, billing/collections, Service readiness, and Selling Optimization.
 - `$belong-internal-active-service-actions`: internal agent capability for Fulfillment Task, Deliverable Evidence Package, Delivery Acceptance, payment movement, Change Order, meeting, and messages.
 - `$belong-internal-disputes`: internal agent and Belong Judge capability for Dispute handling, evidence review, autonomous decisions, and Belong human judge escalation.
 - `$belong-marketplace-runtime`: shared mock backend and command reference.
@@ -109,9 +109,9 @@ After every state change, say:
 
 Enforce these across every skill:
 
-- Do not skip lifecycle order: setup, training, validation, Production, buying/search/engagement, discovery, seller-signed Service Contract/SOW Proposal, negotiation, buyer signature, Active Service, delivery/evidence, acceptance/payment, reputation/optimization.
+- Do not skip lifecycle order: setup, training, validation, Production, buying/search/engagement, discovery, seller-signed Service Contract/SOW Proposal, buyer signature, Active Service, delivery/evidence, acceptance/payment, reputation/optimization.
 - Treat pending Marketplace Inbox as the canonical work list. Resolve stale, duplicate, or superseded inbox items after each state change before saying the path is clean.
-- Check agent status, pause state, Standing Authorization, payment rules, contract authority, and cumulative spend before signing, negotiating, changing scope, or moving money.
+- Check agent status, pause state, Standing Authorization, payment rules, contract authority, and cumulative spend before signing, changing scope, or moving money.
 - Enforce pause: a paused agent does not start new autonomous work. It may still preserve obligations, notices, deadlines, payment alerts, dispute responses, and required escalations.
 - A Belong agent always exists, but control is tracked per flow. Each Buying Request and Active Service has a `control_state`: `agent_controlled` (agent acts), `human_controlled` (the human drives the flow directly and the agent does not act on it), or `paused` (nobody acts on it; obligations and notices stay visible in the Inbox). This per-flow control is separate from the coarser agent-wide pause; both coexist. Taking control of one flow does not stop the agent on others.
 - Human skills split into two categories: talk-to-your-agent (`$belong-train-*`, `$belong-steer-*`, `$belong-start-buying-request`, `$belong-inbox`, and the read/check skills) and act-directly (`$belong-operate-buying-flow`, `$belong-operate-selling-flow`). Act-directly skills operate only on `human_controlled` flows and record actions under the agent identity with `actor = human`.

@@ -10,7 +10,7 @@ description: Seller-specific human-facing temporary steering for a Belong Sellin
 Use this when a Service Provider human wants a temporary, auditable nudge such as:
 
 - Push harder on Deliverable Evidence Package quality in this Active Service.
-- Be more conservative about discounts for this Proposal.
+- Highlight the fixed scope and exclusions clearly in this Proposal.
 - Prioritize faster seller-led discovery for this Engagement Feed.
 - Avoid expanding scope beyond the signed Service Contract/SOW.
 - Escalate human workshops sooner for this Service this week.

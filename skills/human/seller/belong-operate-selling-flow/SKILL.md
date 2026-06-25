@@ -1,13 +1,13 @@
 ---
 name: belong-operate-selling-flow
-description: Seller-specific human-facing act-directly skill to operate a single Belong flow by hand while the Selling Agent stands down on it. Use when a Service Provider human wants to take manual control of one inbound flow or Active Service and perform marketplace actions directly — answer-side discovery, create seller-signed proposals, negotiate, deliver, sign a Change Order, move collection/payment, or open a dispute — without disabling the agent on every other flow.
+description: Seller-specific human-facing act-directly skill to operate a single Belong flow by hand while the Selling Agent stands down on it. Use when a Service Provider human wants to take manual control of one inbound flow or Active Service and perform marketplace actions directly — answer-side discovery, create seller-signed proposals, deliver, sign a Change Order, move collection/payment, or open a dispute — without disabling the agent on every other flow.
 ---
 
 # Belong Operate Selling Flow
 
 **Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
 
-Use this when a Service Provider human wants to drive one flow themselves: "I'll handle this buyer myself", "let me send this proposal directly", "I'll negotiate this one", or "take over this active service."
+Use this when a Service Provider human wants to drive one flow themselves: "I'll handle this buyer myself", "let me send this proposal directly", or "take over this active service."
 
 This is the act-directly category. It is the counterpart to the talk-to-your-agent skills (`$belong-train-selling-agent`, `$belong-steer-selling-agent`, `$belong-inbox`). Here the human performs marketplace actions on the flow instead of nudging or retraining the agent.
 
@@ -35,7 +35,6 @@ Pass `--as-human` on every action so the runtime records it as a human-direct ac
 Pre-contract:
 - Answer/handle discovery on the feed: `answer-discovery --feed-id <id> --answers "..." --as-human`
 - Create seller-signed Service Contract/SOW proposals: `create-proposals --feed-id <id> --as-human`
-- Negotiate a proposal: `negotiate --proposal-id <id> --instruction "..." --as-human`
 
 Post-contract (Active Service), via `active-action --active-service-id <id> --as-human --action <type>`:
 - Submit a Fulfillment Task or Deliverable Evidence Package and deliver (`fulfillment-task`, `deliver`)
@@ -44,7 +43,7 @@ Post-contract (Active Service), via `active-action --active-service-id <id> --as
 - Open a dispute (`dispute`)
 - Send a message (`message`) or coordinate a Human-to-Human Meeting (`meeting`)
 
-Negotiation discount limits and other authority thresholds are bypassed because the human is performing the action directly; this IS the human authorization. Role validation still applies — a seller-side human cannot perform buyer-only actions (for example buyer signature or delivery acceptance).
+Authority thresholds are bypassed because the human is performing the action directly; this IS the human authorization. Role validation still applies — a seller-side human cannot perform buyer-only actions (for example buyer signature or delivery acceptance).
 
 ## Release Control When Done
 
@@ -60,7 +59,7 @@ Leave the flow `human_controlled` only while the human is actively driving it. D
 
 - Operates only on `human_controlled` flows. Never act with `--as-human` on an `agent_controlled` flow; take control first.
 - Not steering: this performs real marketplace actions. For temporary nudges that keep the agent in charge, use `$belong-steer-selling-agent`.
-- Not training: do not change pricing, negotiation, legal, delivery, payment, or escalation rules here. Durable changes go to `$belong-train-selling-agent`. If the human wants an action type to *always* be performed by the human (standing policy), set it in the Service Playbook via `$belong-train-selling-agent`, not here.
+- Not training: do not change pricing, legal, delivery, payment, or escalation rules here. Durable changes go to `$belong-train-selling-agent`. If the human wants an action type to *always* be performed by the human (standing policy), set it in the Service Playbook via `$belong-train-selling-agent`, not here.
 
 ## Output
 

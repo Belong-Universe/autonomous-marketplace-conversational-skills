@@ -52,7 +52,7 @@ Run from the runtime root:
 
 ## Boundaries
 
-- Active Services only: there is no Dispute pre-contract. A contested proposal is a negotiation, not a Dispute — use `$belong-steer-*`, `$belong-operate-*`, or `$belong-check-buying-requests`/`$belong-check-selling-pipeline`.
+- Active Services only: there is no Dispute pre-contract. An unsigned proposal you do not want is not a Dispute — simply decline it or take the flow over with `$belong-steer-*`, `$belong-operate-*`, or review it through `$belong-check-buying-requests`/`$belong-check-selling-pipeline`.
 - Not the Judge: the human states a position and may escalate, but does not issue the decision. The autonomous Belong Judge and any Belong human judge own adjudication (`$belong-internal-disputes`).
 - Role-locked: act only as the human's own side. Never file or respond as the other party.
 - Outcomes are runtime-driven: payment hold/release/refund and Reputation Events follow the decision; this skill does not set them.

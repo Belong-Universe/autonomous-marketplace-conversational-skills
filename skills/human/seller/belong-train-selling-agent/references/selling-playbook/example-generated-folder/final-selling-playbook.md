@@ -4,7 +4,7 @@
 
 Status: Missing
 
-The final Selling Playbook will be assembled only after all nine sections are approved.
+The final Selling Playbook will be assembled only after all eight sections are approved.
 
 ## 1. Value Proposition
 
@@ -18,27 +18,23 @@ TBD
 
 TBD
 
-## 4. Negotiations
+## 4. Way Of Work During An Active Service
 
 TBD
 
-## 5. Way Of Work During An Active Service
+## 5. Human-To-Human Meetings
 
 TBD
 
-## 6. Human-To-Human Meetings
+## 6. Escalations
 
 TBD
 
-## 7. Escalations
+## 7. Disputes And Reputation Rules
 
 TBD
 
-## 8. Disputes And Reputation Rules
-
-TBD
-
-## 9. Capacity And Objective
+## 8. Capacity And Objective
 
 TBD
 

@@ -1,13 +1,13 @@
 ---
 name: belong-operate-buying-flow
-description: Buyer-specific human-facing act-directly skill to operate a single Belong flow by hand while the Buying Agent stands down on it. Use when a buyer-side human wants to take manual control of one Buying Request or Active Service and perform marketplace actions directly — answer discovery, negotiate, sign, accept delivery, move payment, sign a Change Order, or open a dispute — without disabling the agent on every other flow.
+description: Buyer-specific human-facing act-directly skill to operate a single Belong flow by hand while the Buying Agent stands down on it. Use when a buyer-side human wants to take manual control of one Buying Request or Active Service and perform marketplace actions directly — answer discovery, sign, accept delivery, move payment, sign a Change Order, or open a dispute — without disabling the agent on every other flow.
 ---
 
 # Belong Operate Buying Flow
 
 **Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
 
-Use this when a buyer-side human wants to drive one flow themselves: "let me handle this request", "I'll sign this myself", "I'll negotiate this one directly", or "take over this active service."
+Use this when a buyer-side human wants to drive one flow themselves: "let me handle this request", "I'll sign this myself", or "take over this active service."
 
 This is the act-directly category. It is the counterpart to the talk-to-your-agent skills (`$belong-train-buying-agent`, `$belong-steer-buying-agent`, `$belong-start-buying-request`, `$belong-inbox`). Here the human performs marketplace actions on the flow instead of nudging or retraining the agent.
 
@@ -34,7 +34,6 @@ Pass `--as-human` on every action so the runtime records it as a human-direct ac
 
 Pre-contract (Buying Request):
 - Answer seller-led discovery: `answer-discovery --feed-id <id> --answers "..." --as-human`
-- Negotiate a seller-signed proposal: `negotiate --proposal-id <id> --instruction "..." --as-human`
 - Sign the contract: `sign --proposal-id <id> --as-human`
 
 Post-contract (Active Service), via `active-action --active-service-id <id> --as-human --action <type>`:

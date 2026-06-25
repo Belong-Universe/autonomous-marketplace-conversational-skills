@@ -2,7 +2,7 @@
 
 This wiki defines the reference structure for a seller-side Belong Selling Playbook. Use it when drafting, reviewing, or retraining a Selling Agent for one Service.
 
-The playbook is not a sales brochure. It is the operating contract that tells a Selling Agent how to position, price, negotiate, contract, deliver, escalate, meet, dispute, and learn for one Service.
+The playbook is not a sales brochure. It is the operating contract that tells a Selling Agent how to position, price, contract, deliver, escalate, meet, dispute, and learn for one Service.
 
 ## Navigation
 
@@ -11,13 +11,12 @@ The playbook is not a sales brochure. It is the operating contract that tells a 
 | 0 | [Source Prefill](source-prefill.md) | Find existing material and prefill the playbook before guided review. |
 | 1 | [Value Proposition](01-value-proposition.md) | Define what is sold, to whom, and why buyers should care. |
 | 2 | [Monetization Models](02-monetization-models.md) | Define how the Service is priced, billed, collected, and exceptioned. |
-| 3 | [Legal And Contracts](03-legal-and-contracts.md) | Define contract/SOW boundaries, deliverables, evidence, signatures, and Change Orders. |
-| 4 | [Negotiations](04-negotiations.md) | Define autonomous negotiation authority and walk-away boundaries. |
-| 5 | [Way Of Work During An Active Service](05-active-service-work.md) | Define how delivery work runs after buyer signature. |
-| 6 | [Human-To-Human Meetings](06-human-to-human-meetings.md) | Define when meetings happen and how the agent prepares and follows up. |
-| 7 | [Escalations](07-escalations.md) | Define what must go to the Service Provider human/team. |
-| 8 | [Disputes And Reputation Rules](08-disputes-and-reputation.md) | Define dispute posture, reputation impact, and future learning. |
-| 9 | [Capacity And Objective](09-capacity-and-objective.md) | Define delivery capacity limits and what the agent optimizes for. |
+| 3 | [Legal And Contracts](03-legal-and-contracts.md) | Define contract/SOW boundaries, deliverables, evidence, and signatures. |
+| 4 | [Way Of Work During An Active Service](04-active-service-work.md) | Define how delivery work runs after buyer signature. |
+| 5 | [Human-To-Human Meetings](05-human-to-human-meetings.md) | Define when meetings happen and how the agent prepares and follows up. |
+| 6 | [Escalations](06-escalations.md) | Define what must go to the Service Provider human/team. |
+| 7 | [Disputes And Reputation Rules](07-disputes-and-reputation.md) | Define dispute posture, reputation impact, and future learning. |
+| 8 | [Capacity And Objective](08-capacity-and-objective.md) | Define delivery capacity limits and what the agent optimizes for. |
 | 10 | [Checkpoints And Approval](checkpoints-and-approval.md) | Define progress tables and approval gates between sections. |
 | 11 | [Consistency Check](consistency-check.md) | Cross-section checks to run before activation. |
 | 12 | [Generated Playbook Folder](generated-playbook-folder.md) | Define the markdown files created during training. |
@@ -40,7 +39,7 @@ Use [Source Prefill](source-prefill.md) before section drafting when the seller 
 
 ## Disclosure Discipline
 
-Every section also defines a disclosure boundary: what the Selling Agent may tell a buyer versus keep internal. The agent should always give the buyer a clear, usable answer (for example, "no discount available" or "earliest start is in three weeks") without exposing the underlying limits, margins, authority thresholds, capacity, or internal policy. This is captured explicitly in [Negotiations](04-negotiations.md) but applies across pricing, capacity, authority, timelines, and other clients. When unsure whether something is shareable, treat it as internal and escalate.
+Every section also defines a disclosure boundary: what the Selling Agent may tell a buyer versus keep internal. The agent should always give the buyer a clear, usable answer (for example, "earliest start is in three weeks") without exposing the underlying limits, margins, authority thresholds, capacity, or internal policy. This applies across pricing, capacity, authority, timelines, and other clients. When unsure whether something is shareable, treat it as internal and escalate.
 
 ## Review Discipline
 

@@ -17,7 +17,6 @@ Status: Missing
 - `--pricing-model`: TBD
 - `--price`: TBD
 - `--contract-terms`: TBD
-- `--discount-limit`: TBD
 - `--scope-limits`: TBD
 - `--delivery-workflow`: TBD
 - `--deliverables`: TBD

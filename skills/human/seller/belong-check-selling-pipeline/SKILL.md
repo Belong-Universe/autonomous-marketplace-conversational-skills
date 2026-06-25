@@ -1,15 +1,15 @@
 ---
 name: belong-check-selling-pipeline
-description: Seller-specific human-facing read/check view for inbound Selling Agent pipeline before Active Service. Use for Services, buyer engagements, seller-led Discovery Questionnaires, seller-signed Service Contract/SOW proposals, negotiations, billing readiness, linked Marketplace Inbox items, and seller pipeline visibility.
+description: Seller-specific human-facing read/check view for inbound Selling Agent pipeline before Active Service. Use for Services, buyer engagements, seller-led Discovery Questionnaires, seller-signed Service Contract/SOW proposals, billing readiness, linked Marketplace Inbox items, and seller pipeline visibility.
 ---
 
 # Belong Check Selling Pipeline
 
 **Communication:** follow the Belong Communication Standard in `voice.md` — apply its voice and use its verbatim scripts (filling the `<slots>`) for every human-facing message.
 
-Use this when a Service Provider human asks what is happening before a buyer signs: Service listing state, inbound buyer engagements, discovery, proposals, negotiation, billing readiness, or seller approvals.
+Use this when a Service Provider human asks what is happening before a buyer signs: Service listing state, inbound buyer engagements, discovery, proposals, billing readiness, or seller approvals.
 
-This is a read/check skill. It must not create proposals, negotiate, approve discounts, sign Change Orders, submit evidence, move money, or change the Service Playbook.
+This is a read/check skill. It must not create proposals, sign Change Orders, submit evidence, move money, or change the Service Playbook.
 
 ## Guided Flow
 
@@ -22,14 +22,13 @@ Show:
 - Buyer Engagement Feed state
 - Seller-led Discovery Questionnaire state
 - Seller-signed Service Contract/SOW proposals
-- Negotiation and discount-authority signals when present
 - Billing, collections, platform fee, seller net, and merchant-of-record readiness
 - Linked Marketplace Inbox items
 - Audit Log or Decision Explanation path when relevant
 
 ## Route Actions
 
-- Operational escalation, approval, fulfillment, meeting, payment, or discount exception, or to take/release/pause/resume control of a flow: `$belong-inbox`
+- Operational escalation, approval, fulfillment, meeting, or payment exception, or to take/release/pause/resume control of a flow: `$belong-inbox`
 - Let the Selling Agent continue autonomously when the next step is inside the Service Playbook and Standing Authorization.
 - Take manual control of an inbound flow, or operate one already `human_controlled`: `$belong-operate-selling-flow`
 - Temporary Selling Agent guidance: `$belong-steer-selling-agent`
@@ -43,7 +42,7 @@ Show:
 This is a read-only view, so nothing changes. Summarize:
 
 - Which Service(s) and Selling Agent(s) the human is looking at, by status and Playbook version
-- Current pre-contract phase: listing, engagement, discovery, proposals, or negotiation
+- Current pre-contract phase: listing, engagement, discovery, or proposals
 - The most relevant state: inbound feeds open, discovery answered, proposals issued, and where they wait
 - Billing readiness when present: billing/collections setup, platform fee, seller net, and merchant-of-record state
 - Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail

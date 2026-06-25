@@ -10,7 +10,6 @@ Progress: 13%
 | Value Proposition | Done | availability optional |
 | Monetization Models | Partial | fixed price, payment exceptions |
 | Legal And Contracts | Missing | all |
-| Negotiations | Missing | all |
 | Way Of Work During An Active Service | Missing | all |
 | Human-To-Human Meetings | Missing | all |
 | Escalations | Missing | all |

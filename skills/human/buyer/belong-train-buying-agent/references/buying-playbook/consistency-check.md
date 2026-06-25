@@ -15,11 +15,11 @@ Run this once the sections are drafted and before `train-buying --activate` or `
 
 | Check | Sections | Conflict example |
 | --- | --- | --- |
-| Spend within budget | Budget And Payment vs Negotiations | max spend or concessions exceed the stated budget |
+| Spend within budget | Budget And Payment vs Legal And Contracts | signing authority or max spend exceeds the stated budget |
 | Selection matches preferences | Selection And RFP Rules vs Provider Preferences | a blocked provider can still win under the ranking criteria |
 | Authority matches escalation | Legal And Contracts vs Escalations | signing authority above the escalation threshold |
 | Acceptance matches payment | Legal And Contracts vs Budget And Payment | payment release does not line up with accepted delivery |
-| Objective matches tactics | Optimization Objective vs Negotiations/Selection | "minimize cost" but ranking and concessions favor speed |
+| Objective matches tactics | Optimization Objective vs Selection | "minimize cost" but ranking favors speed |
 | Meeting authority matches escalation | Human-To-Human Meetings vs Escalations | confirming a meeting beyond scheduling authority auto-confirms instead of escalating |
 
 ## Output Of The Check

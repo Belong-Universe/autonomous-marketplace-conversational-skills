@@ -1,6 +1,6 @@
 # Checkpoints And Approval
 
-[Back to index](index.md) | Previous: [Capacity And Objective](09-capacity-and-objective.md) | Next: [Generated Playbook Folder](generated-playbook-folder.md)
+[Back to index](index.md) | Previous: [Capacity And Objective](08-capacity-and-objective.md) | Next: [Generated Playbook Folder](generated-playbook-folder.md)
 
 Use this between sections. The checkpoint keeps the human oriented and prevents silent advancement.
 

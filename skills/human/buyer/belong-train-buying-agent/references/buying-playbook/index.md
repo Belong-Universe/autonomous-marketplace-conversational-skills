@@ -9,17 +9,16 @@ gates.
   connecting an existing procurement system or ERP for prefill, and the source summary
   shape.
 
-## The ten sections (build in this order)
+## The nine sections (build in this order)
 1. `01-buying-goals-and-needs.md`
 2. `02-budget-and-payment.md`
 3. `03-provider-preferences.md` — includes the due diligence documents a provider must supply.
 4. `04-selection-and-rfp-rules.md` — includes the Provider Due Diligence journey.
-5. `05-negotiations.md` — includes the cross-cutting disclosure discipline.
-6. `06-legal-and-contracts.md` — includes modeling a required provider invoice as an acceptance item.
-7. `07-escalations.md`
-8. `08-disputes-and-reputation.md`
-9. `09-optimization-objective.md`
-10. `10-human-to-human-meetings.md` — full Calendly scheduling handshake and mechanics.
+5. `05-legal-and-contracts.md` — includes modeling a required provider invoice as an acceptance item.
+6. `06-escalations.md`
+7. `07-disputes-and-reputation.md`
+8. `08-optimization-objective.md`
+9. `09-human-to-human-meetings.md` — full Calendly scheduling handshake and mechanics.
 
 ## Process
 - `checkpoints-and-approval.md` — per-section approval gate and checkpoint table.

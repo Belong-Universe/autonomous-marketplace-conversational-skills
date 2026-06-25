@@ -229,7 +229,7 @@ def ensure_flow_actor_can_act(flow: dict[str, Any], as_human: bool, action: str)
 
 # Scenario B: standing Playbook rule reserving high-criticality action types for the human.
 # These are the only action types a Playbook may mark as human-performed; operational actions
-# (negotiate, discovery, meeting, message, fulfillment-task) are not eligible.
+# (discovery, meeting, message, fulfillment-task) are not eligible.
 ELIGIBLE_HUMAN_CONTROLLED_ACTIONS = {
     "buyer": {"sign", "accept", "payment", "change-order", "dispute"},
     "seller": {"sign", "deliver", "accept-change-order", "payment", "dispute"},
@@ -243,7 +243,7 @@ def validate_human_controlled_actions(tokens: list[str], role: str) -> list[str]
         raise ValueError(
             f"Ineligible human-controlled action(s) for {role}: {', '.join(invalid)}. "
             f"Eligible {role} action types: {', '.join(sorted(eligible))}. "
-            "Operational actions (negotiate, discovery, meeting, message, fulfillment-task) cannot be reserved for the human."
+            "Operational actions (discovery, meeting, message, fulfillment-task) cannot be reserved for the human."
         )
     return tokens
 
@@ -827,11 +827,7 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         ],
         "pricing": service_price(args),
         "contract_terms": args.contract_terms,
-        "negotiation_limits": {
-            "discount_limit": args.discount_limit,
-            "scope_limits": args.scope_limits,
-            "commercial_notes": args.negotiation_limits,
-        },
+        "scope_limits": args.scope_limits,
         "delivery_workflow": args.delivery_workflow,
         "deliverables": split_list(args.deliverables),
         "evidence_requirements": split_list(args.evidence_requirements),
@@ -841,7 +837,6 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         "dispute_rules": args.dispute_rules,
         "reputation_rules": args.reputation_rules,
         "standing_authorization": {
-            "discount_limit": args.discount_limit,
             "scope_limits": args.scope_limits,
             "contract_terms": args.contract_terms,
             "must_escalate": split_list(args.escalation_paths),
@@ -858,7 +853,6 @@ def command_train_selling(args: argparse.Namespace, state: dict[str, Any]) -> di
         "discovery_questions",
         "pricing",
         "contract_terms",
-        "negotiation_limits",
         "delivery_workflow",
         "deliverables",
         "evidence_requirements",
@@ -983,7 +977,6 @@ def command_train_buying(args: argparse.Namespace, state: dict[str, Any]) -> dic
         "timeline": args.timeline,
         "selection_rules": args.selection_rules,
         "rfp_rules": args.rfp_rules,
-        "negotiation_limits": args.negotiation_limits,
         "proposal_comparison_rules": args.proposal_comparison_rules,
         "contract_authority": args.contract_authority,
         "payment_rules": args.payment_rules,
@@ -1149,8 +1142,8 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
                 "platform_fee_rate": DEFAULT_PLATFORM_FEE_RATE,
                 "seller_receives_after_platform_fee": round(item["price"] * (1 - DEFAULT_PLATFORM_FEE_RATE), 2),
             },
-            "contract_terms": "Standard Belong facilitated Service Contract/SOW with escrow payment and revision window.",
-            "negotiation_limits": {"discount_limit": "10%", "scope_limits": "No regulated legal advice", "commercial_notes": "Escalate non-standard indemnity."},
+            "contract_terms": "Standard Belong facilitated Service Contract/SOW with escrow payment.",
+            "scope_limits": "No regulated legal advice",
             "delivery_workflow": "Kickoff, discovery, draft delivery, evidence submission, acceptance review.",
             "deliverables": item["deliverables"],
             "evidence_requirements": ["files", "links", "completion notes", "acceptance criteria mapping"],
@@ -1159,7 +1152,7 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
             "meeting_rules": "Video meetings allowed for kickoff, dispute, or complex delivery.",
             "dispute_rules": "Attempt agent negotiation first, then Belong Judge.",
             "reputation_rules": "Accepted delivery and fast response improve score; missed obligations reduce score.",
-            "standing_authorization": {"discount_limit": "10%", "scope_limits": "No regulated legal advice", "contract_terms": "standard", "must_escalate": ["non-standard legal terms"]},
+            "standing_authorization": {"scope_limits": "No regulated legal advice", "contract_terms": "standard", "must_escalate": ["non-standard legal terms"]},
         }
         state["agents"][agent_id] = {
             "id": agent_id,
@@ -1301,7 +1294,7 @@ def command_start_buying_request(args: argparse.Namespace, state: dict[str, Any]
         },
     )
     next_steps = [
-        "The Buying Agent can continue with discovery, proposals, comparison, negotiation, and signature inside its Buying Playbook.",
+        "The Buying Agent can continue with discovery, proposals, comparison, and signature inside its Buying Playbook.",
         "Use belong-check-buying-requests to inspect the pre-contract pipeline.",
         "Use belong-inbox for escalations, belong-steer-buying-agent for temporary guidance, or belong-train-buying-agent for durable retraining.",
     ]
@@ -1678,7 +1671,7 @@ def command_create_proposals(args: argparse.Namespace, state: dict[str, Any]) ->
         "buyer",
         "authorization",
         "Review seller-signed Service Contract/SOW proposals",
-        f"{len(proposals)} proposal(s) are ready for comparison, negotiation, or buyer signature.",
+        f"{len(proposals)} proposal(s) are ready for comparison or buyer signature.",
         "Engagement Feed",
         args.feed_id,
     )
@@ -1687,7 +1680,6 @@ def command_create_proposals(args: argparse.Namespace, state: dict[str, Any]) ->
         {"proposals": proposals},
         [
             "Compare proposals by scope, price, terms, timing, reputation, and fit.",
-            "Negotiate terms if the Buying Playbook suggests a better outcome.",
             "Sign a proposal only when it fits Standing Authorization or after human approval.",
         ],
     )
@@ -1779,110 +1771,8 @@ def command_compare_proposals(args: argparse.Namespace, state: dict[str, Any]) -
         f"Compared {len(comparisons)} proposal(s) for {args.request_id}.",
         {"comparison": comparisons},
         [
-            "Negotiate the preferred proposal if scope, price, or timeline can improve.",
             "Sign the best proposal if within Standing Authorization.",
             "Escalate to the buyer-side human if there are multiple close choices or any authority exception.",
-        ],
-    )
-
-
-def command_negotiate(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
-    proposal = state["proposals"].get(args.proposal_id)
-    if not proposal:
-        raise ValueError(f"Unknown Proposal: {args.proposal_id}")
-    if proposal.get("status") not in {"seller_signed_waiting_buyer_signature", "seller_signed_revised_waiting_buyer_signature"}:
-        raise ValueError(f"Proposal {args.proposal_id} is not negotiable in status {proposal.get('status')}.")
-    as_human = bool(getattr(args, "as_human", False))
-    negotiate_flow = state["buying_requests"].get(proposal["buying_request_id"])
-    if negotiate_flow:
-        ensure_flow_actor_can_act(negotiate_flow, as_human, "negotiate the contract")
-    contract = state["contracts"][proposal["contract_id"]]
-    previous = deepcopy(contract)
-    amount = float(contract["commercial_terms"]["amount"])
-    previous_amount = amount
-    if args.price_delta:
-        amount += float(args.price_delta)
-    elif "discount" in args.instruction.lower():
-        amount = round(amount * 0.95, 2)
-    selling_agent = state["agents"][proposal["selling_agent_id"]]
-    if not as_human:
-        ensure_agent_can_act(selling_agent, "contract negotiation")
-    original_amount = float(contract.get("versions", [{}])[0].get("commercial_terms", {}).get("amount", previous_amount)) if contract.get("versions") else previous_amount
-    discount_percent = max(0.0, round((original_amount - amount) / max(1, original_amount) * 100, 2))
-    limit = parse_percent(selling_agent["playbook"].get("standing_authorization", {}).get("discount_limit"))
-    authority_check = {
-        "rule": "Selling Agent discount limit",
-        "threshold": f"{limit}%",
-        "actual": f"{discount_percent}%",
-        "result": "passed" if discount_percent <= limit or args.seller_approved or as_human else "blocked_requires_seller_human_authorization",
-    }
-    if discount_percent > limit and not (args.seller_approved or as_human):
-        inbox = add_inbox(
-            state,
-            "seller",
-            "authorization",
-            "Approve discount above Selling Agent Standing Authorization",
-            f"Requested discount {discount_percent}% exceeds limit {limit}% for Proposal {args.proposal_id}.",
-            "Proposal",
-            args.proposal_id,
-            urgency="high",
-            metadata={"authority_check": authority_check},
-        )
-        audit(
-            state,
-            "Selling Agent",
-            "contract.negotiation_blocked_authority",
-            "Proposal",
-            args.proposal_id,
-            args.instruction,
-            {
-                "playbook_version": selling_agent.get("playbook_version"),
-                "playbook_rule": "Selling Agent must escalate discounts above Standing Authorization.",
-                "authority_check": authority_check,
-                "previous_amount": previous_amount,
-                "requested_amount": round(amount, 2),
-            },
-        )
-        return output(
-            "Negotiation was not applied because it exceeds Selling Agent Standing Authorization.",
-            {"proposal": proposal, "contract": contract, "inbox_item": inbox},
-            [
-                "Resolve the seller authorization inbox item or negotiate within discount limits.",
-                "Run negotiate again with seller approval if the Service Provider human approves the exception.",
-            ],
-        )
-    contract["version"] += 1
-    contract["versions"].append(previous)
-    contract["commercial_terms"]["amount"] = round(amount, 2)
-    contract["commercial_terms"]["belong_platform_fee"] = round(amount * DEFAULT_PLATFORM_FEE_RATE, 2)
-    contract["commercial_terms"]["seller_net_after_platform_fee"] = round(amount * (1 - DEFAULT_PLATFORM_FEE_RATE), 2)
-    contract["commercial_terms"]["payment_schedule"] = payment_schedule(amount, contract["commercial_terms"].get("payment_terms"))
-    contract["status"] = "seller_signed_revised_waiting_buyer_signature"
-    contract["seller_signature"] = {"status": "signed_revised", "timestamp": now(), "agent_id": proposal["selling_agent_id"]}
-    proposal["status"] = contract["status"]
-    audit(
-        state,
-        "Buying Agent and Selling Agent",
-        "contract.negotiated",
-        "Proposal",
-        args.proposal_id,
-        args.instruction,
-        {
-            "contract": contract,
-            "playbook_version": selling_agent.get("playbook_version"),
-            "playbook_rule": "Selling Agent may revise seller-signed Service Contract/SOW inside Standing Authorization.",
-            "authority_check": authority_check,
-            "previous_amount": previous_amount,
-            "new_amount": round(amount, 2),
-        },
-    )
-    return output(
-        f"Negotiated Proposal {args.proposal_id}; contract is now version {contract['version']}.",
-        {"proposal": proposal, "contract": contract},
-        [
-            "Compare revised proposals.",
-            "Sign if the revised terms fit Standing Authorization.",
-            "Open an authorization inbox item if terms exceed spend, scope, payment, or legal limits.",
         ],
     )
 
@@ -2085,7 +1975,6 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
             [
                 "Resolve the authorization inbox item as the buyer-side human.",
                 "Run sign again with human approval after review.",
-                "Negotiate the proposal below the authority threshold.",
             ],
         )
     service = state["services"][proposal["service_id"]]
@@ -2676,7 +2565,7 @@ def command_propose_meeting(args: argparse.Namespace, state: dict[str, Any]) -> 
         "requested_by": actor,
         "stage": "pre_contract",
         "prep": "Agent prep: summarize context, goals, risks, open decisions, and recommended asks before the meeting.",
-        "follow_up": "Agent follow-up: capture outcomes, update the proposal/negotiation, and send next steps if needed.",
+        "follow_up": "Agent follow-up: capture outcomes, update the proposal, and send next steps if needed.",
         "status": "scheduled",
         "urgency": getattr(args, "urgency", None) or "normal",
         "created_at": now(),
@@ -3217,7 +3106,7 @@ def command_optimization(args: argparse.Namespace, state: dict[str, Any]) -> dic
         recommendation = {
             "type": "Selling Optimization",
             "summary": "Improve pricing, discovery questions, scope packaging, contract terms, or offer positioning based on marketplace outcomes.",
-            "signals": ["search impressions", "won/lost proposals", "negotiation patterns", "delivery outcomes", "buyer feedback"],
+            "signals": ["search impressions", "won/lost proposals", "delivery outcomes", "buyer feedback"],
         }
     recommendation_id = next_id(state, "training_rec")
     state["training_recommendations"][recommendation_id] = {
@@ -3344,8 +3233,6 @@ def request_has_active_service(state: dict[str, Any], request_id: str) -> bool:
 def proposal_stage(state: dict[str, Any], proposal: dict[str, Any]) -> str:
     if proposal.get("status") == "signed_executed" or any(active.get("proposal_id") == proposal["id"] for active in state["active_services"].values()):
         return "signed"
-    if proposal.get("status") == "seller_signed_revised_waiting_buyer_signature":
-        return "negotiating"
     return "proposed"
 
 
@@ -3430,7 +3317,7 @@ def command_selling_pipeline(args: argparse.Namespace, state: dict[str, Any]) ->
         proposals = [proposal for proposal in state["proposals"].values() if proposal.get("service_id") == service_id and proposal.get("selling_agent_id") == args.seller_agent_id]
         stages = {proposal_stage(state, proposal) for proposal in proposals}
         has_open_feed = any(feed.get("status") in {"discovery", "discovery_answered", "proposals_received"} for feed in feeds)
-        stage = "signed" if "signed" in stages else "negotiating" if "negotiating" in stages else "proposed" if proposals else "open" if has_open_feed else "open"
+        stage = "signed" if "signed" in stages else "proposed" if proposals else "open" if has_open_feed else "open"
         if args.status != "all" and stage != args.status:
             continue
         linked_ids = {service_id, *[feed["id"] for feed in feeds], *[proposal["id"] for proposal in proposals]}
@@ -3812,7 +3699,7 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
             {"engagement_feed": feed, "proposals": existing},
             [
                 "Use belong-check-selling-pipeline for seller visibility.",
-                "The Buying Agent should compare, negotiate, or sign autonomously when inside its Buying Playbook and Standing Authorization.",
+                "The Buying Agent should compare or sign autonomously when inside its Buying Playbook and Standing Authorization.",
             ],
         )
     return command_optimization(argparse.Namespace(agent_id=seller_agent_id), state)
@@ -4179,10 +4066,8 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         discovery_questions="What product and customer segment are we onboarding?;What churn or activation target matters?;What systems and stakeholders are involved?",
         pricing_model="fixed_fee",
         price="9000",
-        contract_terms="Standard Service Contract/SOW with one revision window and escrow payment.",
-        discount_limit="10%",
+        contract_terms="Standard Service Contract/SOW with escrow payment.",
         scope_limits="No custom software development beyond workflow templates",
-        negotiation_limits="Escalate indemnity, discounts above 10%, or timelines under one week.",
         delivery_workflow="Kickoff, discovery, draft journey, review workshop, evidence package, acceptance.",
         deliverables="onboarding journey map,CS handoff playbook,activation metrics dashboard",
         evidence_requirements="links,files,meeting notes,acceptance criteria mapping",
@@ -4209,7 +4094,6 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         timeline="30 days",
         selection_rules="Prefer best evidence quality and reputation, then price.",
         rfp_rules="Engage at least two providers for competitive work above $5000.",
-        negotiation_limits="Seek discount or shorter timeline, escalate legal exceptions.",
         proposal_comparison_rules="Compare scope, price, timing, terms, reputation, and fit.",
         contract_authority="May sign standard SOWs up to $50000.",
         payment_rules="Authorize at signature, release final payment on accepted evidence.",
@@ -4241,7 +4125,6 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
     proposals = command_create_proposals(argparse.Namespace(feed_id=feed["id"]), state)["objects"]["proposals"]
     preferred = proposals[0]["proposal"]["id"]
     command_compare_proposals(argparse.Namespace(request_id=request["id"]), state)
-    command_negotiate(argparse.Namespace(proposal_id=preferred, instruction="Ask for a small discount and explicit evidence mapping.", price_delta=None, seller_approved=False), state)
     active = command_sign(argparse.Namespace(proposal_id=preferred, human_approved=False), state)["objects"]["active_service"]
     command_active_action(argparse.Namespace(active_service_id=active["id"], action="fulfillment-task", actor="Selling Agent", details="Schedule kickoff workshop and collect existing onboarding materials.", owner="Maya Seller", due="tomorrow", context="Kickoff prep", evidence_required="calendar invite,source files", files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode=None, human_approved=False), state)
     command_active_action(argparse.Namespace(active_service_id=active["id"], action="meeting", actor="Buying Agent", details="Kickoff workshop for customer onboarding sprint.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode="video", human_approved=False), state)
@@ -4334,9 +4217,7 @@ def build_parser() -> argparse.ArgumentParser:
     sell.add_argument("--pricing-model", default="fixed_fee")
     sell.add_argument("--price", default="5000")
     sell.add_argument("--contract-terms", default="")
-    sell.add_argument("--discount-limit", default="0%")
     sell.add_argument("--scope-limits", default="")
-    sell.add_argument("--negotiation-limits", default="")
     sell.add_argument("--delivery-workflow", default="")
     sell.add_argument("--deliverables", default="")
     sell.add_argument("--evidence-requirements", default="")
@@ -4361,7 +4242,6 @@ def build_parser() -> argparse.ArgumentParser:
     buy.add_argument("--timeline", required=True)
     buy.add_argument("--selection-rules", required=True)
     buy.add_argument("--rfp-rules", default="")
-    buy.add_argument("--negotiation-limits", default="")
     buy.add_argument("--proposal-comparison-rules", default="")
     buy.add_argument("--contract-authority", required=True)
     buy.add_argument("--payment-rules", required=True)
@@ -4418,13 +4298,6 @@ def build_parser() -> argparse.ArgumentParser:
     compare = sub.add_parser("compare-proposals")
     compare.add_argument("--request-id", required=True)
 
-    negotiate = sub.add_parser("negotiate")
-    negotiate.add_argument("--proposal-id", required=True)
-    negotiate.add_argument("--instruction", required=True)
-    negotiate.add_argument("--price-delta", default=None)
-    negotiate.add_argument("--seller-approved", action="store_true")
-    negotiate.add_argument("--as-human", action="store_true")
-
     sign = sub.add_parser("sign")
     sign.add_argument("--proposal-id", required=True)
     sign.add_argument("--human-approved", action="store_true")
@@ -4478,7 +4351,7 @@ def build_parser() -> argparse.ArgumentParser:
     selling_pipeline = sub.add_parser("selling-pipeline")
     selling_pipeline.add_argument("--seller-agent-id", required=True)
     selling_pipeline.add_argument("--service-id", default=None)
-    selling_pipeline.add_argument("--status", choices=["open", "proposed", "negotiating", "signed", "all"], default="all")
+    selling_pipeline.add_argument("--status", choices=["open", "proposed", "signed", "all"], default="all")
 
     run_buying = sub.add_parser("run-buying-agent")
     run_buying.add_argument("--buyer-agent-id", default=None)
@@ -4534,7 +4407,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     override = sub.add_parser("override")
     override.add_argument("--agent-id", required=True)
-    override.add_argument("--action", choices=["pause", "resume", "direct-instruction", "cancel-negotiation", "request-meeting", "intervene"], required=True)
+    override.add_argument("--action", choices=["pause", "resume", "direct-instruction", "request-meeting", "intervene"], required=True)
     override.add_argument("--flow-id", default=None)
     override.add_argument("--details", default="")
     override.add_argument("--actor", default="human")
@@ -4648,7 +4521,6 @@ COMMANDS = {
     "answer-discovery": command_answer_discovery,
     "create-proposals": command_create_proposals,
     "compare-proposals": command_compare_proposals,
-    "negotiate": command_negotiate,
     "sign": command_sign,
     "active-action": command_active_action,
     "propose-meeting": command_propose_meeting,

@@ -1,6 +1,6 @@
 # Way Of Work During An Active Service
 
-[Back to index](index.md) | Previous: [Negotiations](04-negotiations.md) | Next: [Human-To-Human Meetings](06-human-to-human-meetings.md)
+[Back to index](index.md) | Previous: [Legal And Contracts](03-legal-and-contracts.md) | Next: [Human-To-Human Meetings](05-human-to-human-meetings.md)
 
 This section defines how delivery runs after buyer signature creates an Active Service.
 

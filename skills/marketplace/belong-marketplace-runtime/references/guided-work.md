@@ -40,7 +40,7 @@ Every flow must end with:
 
 ## Invariants
 
-Before signing, negotiating, changing scope, moving money, optimizing, or continuing autonomous work, check Production status, pause state, Standing Authorization, Playbook authority, contract/SOW authority, payment rules, cumulative spend, and pending inbox approvals.
+Before signing, changing scope, moving money, optimizing, or continuing autonomous work, check Production status, pause state, Standing Authorization, Playbook authority, contract/SOW authority, payment rules, cumulative spend, and pending inbox approvals.
 
 Paused agents do not start new autonomous work. They may preserve obligations, required notices, deadlines, payment alerts, disputes, and human escalations.
 
@@ -60,7 +60,7 @@ Decision Explanations must cite audit evidence, object IDs, timestamps, Playbook
 
 Maintain coherent local JSON state. Use the runtime rather than inventing one-off objects in prose. Enforce basic lifecycle order:
 
-Account -> Agent training -> Validation -> Production -> Buying Request/Search/Engagement -> Discovery -> seller-signed Service Contract/SOW Proposal -> Negotiation -> buyer signature -> Active Service -> Delivery/Evidence -> Acceptance/Payment -> Reputation/Optimization.
+Account -> Agent training -> Validation -> Production -> Buying Request/Search/Engagement -> Discovery -> seller-signed Service Contract/SOW Proposal -> buyer signature -> Active Service -> Delivery/Evidence -> Acceptance/Payment -> Reputation/Optimization.
 
 Disputes, meetings, fulfillment tasks, change orders, inbox items, overrides, pauses, audit events, and explanations can happen throughout Production.
 

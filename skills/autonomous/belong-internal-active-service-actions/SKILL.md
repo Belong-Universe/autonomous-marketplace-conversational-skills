@@ -54,7 +54,7 @@ Judge can access the complete file record for the whole Active Service.
 
 ## Escalation
 
-Create or inspect Marketplace Inbox items whenever the agent hits spend, discount, scope, contract, payment, legal, ambiguity, confidence, meeting, dispute, or ordinary service-fulfillment limits.
+Create or inspect Marketplace Inbox items whenever the agent hits spend, scope, contract, payment, legal, ambiguity, confidence, meeting, dispute, or ordinary service-fulfillment limits.
 
 If either agent is paused, block new autonomous delivery, Change Order, negotiation, optimization, or payment actions by that agent. Continue required notices, deadlines, dispute handling, payment alerts, and human escalations.
 

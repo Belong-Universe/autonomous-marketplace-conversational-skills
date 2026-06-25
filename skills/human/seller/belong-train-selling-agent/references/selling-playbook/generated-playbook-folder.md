@@ -38,12 +38,11 @@ source-prefill.md
 01-value-proposition.md
 02-monetization-models.md
 03-legal-and-contracts.md
-04-negotiations.md
-05-active-service-work.md
-06-human-to-human-meetings.md
-07-escalations.md
-08-disputes-and-reputation.md
-09-capacity-and-objective.md
+04-active-service-work.md
+05-human-to-human-meetings.md
+06-escalations.md
+07-disputes-and-reputation.md
+08-capacity-and-objective.md
 checkpoints-and-approval.md
 runtime-mapping.md
 approval-log.md

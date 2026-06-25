@@ -1,6 +1,6 @@
 ---
 name: belong-internal-buying-workflow
-description: Internal Buying Agent capability for Production buying workflows in the mocked Belong marketplace. Use when the Belong Buying Agent autonomously runs Buying Requests, semantic Service search with an optional category filter, ranked Service Search Results, direct or competitive Engagement Feeds, seller-led Discovery Questionnaire answers, seller-signed Service Contract/SOW proposal comparison, negotiation, buyer signature, Active Service creation, Composite Buying Requests, and Provider Optimization.
+description: Internal Buying Agent capability for Production buying workflows in the mocked Belong marketplace. Use when the Belong Buying Agent autonomously runs Buying Requests, semantic Service search with an optional category filter, ranked Service Search Results, direct or competitive Engagement Feeds, seller-led Discovery Questionnaire answers, seller-signed Service Contract/SOW proposal comparison, buyer signature, Active Service creation, Composite Buying Requests, and Provider Optimization.
 ---
 
 # Belong Internal Buying Workflow
@@ -11,7 +11,7 @@ Use this once the Buying Agent is in Production. This is an internal agent capab
 
 Run runtime `status` to confirm preconditions. This workflow only runs when a Buying Agent is already in Production; surfacing training to the human is owned by the human-facing `$belong-start-buying-request`. If the precondition is not met, stop instead of proceeding. If no Services exist, the runtime can seed a mocked catalog during search.
 
-Inspect pending buyer inbox items before creating new work. Clear stale authorizations, duplicate information requests, superseded negotiations, and old payment approvals before reporting that nothing is blocked.
+Inspect pending buyer inbox items before creating new work. Clear stale authorizations, duplicate information requests, and old payment approvals before reporting that nothing is blocked.
 
 ## Buying Request
 
@@ -45,7 +45,6 @@ Treat each Proposal as the seller-signed Service Contract/SOW awaiting buyer sig
 Guide:
 
 - `compare-proposals`
-- `negotiate` when scope, price, timeline, or terms should change
 - `sign` only after checking Standing Authorization, contract authority, payment rules, paused state, and cumulative spend across this request, related composite requests, active services, holds, charges, and pending Change Orders
 
 Escalate through `$belong-inbox` when the best action exceeds budget, creates unclear cumulative spend, changes legal terms, requires a payment exception, or needs buyer judgment. Buyer signature creates the Active Service. Any scope, price, timeline, or deliverable change after signature belongs to internal Active Service actions as a Change Order.

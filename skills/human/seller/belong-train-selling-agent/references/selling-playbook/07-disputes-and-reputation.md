@@ -1,6 +1,6 @@
 # Disputes And Reputation Rules
 
-[Back to index](index.md) | Previous: [Escalations](07-escalations.md) | Next: [Capacity And Objective](09-capacity-and-objective.md)
+[Back to index](index.md) | Previous: [Escalations](06-escalations.md) | Next: [Capacity And Objective](08-capacity-and-objective.md)
 
 This section defines how the Selling Agent handles contested outcomes and how reputation should learn from them.
 

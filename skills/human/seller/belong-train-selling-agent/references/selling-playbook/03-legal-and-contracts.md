@@ -1,6 +1,6 @@
 # Legal And Contracts
 
-[Back to index](index.md) | Previous: [Monetization Models](02-monetization-models.md) | Next: [Negotiations](04-negotiations.md)
+[Back to index](index.md) | Previous: [Monetization Models](02-monetization-models.md) | Next: [Way Of Work During An Active Service](04-active-service-work.md)
 
 This section defines what the Selling Agent may put into seller-signed Service Contract/SOW proposals and what must be escalated.
 

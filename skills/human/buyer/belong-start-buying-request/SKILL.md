@@ -39,7 +39,7 @@ Run `start-buying-request`. The command creates the Buying Request, runs semanti
 
 ## Boundaries
 
-Do not sign contracts, answer seller discovery, negotiate, move money, or approve exceptions in this skill. Those are autonomous Buying Agent/internal workflow actions unless they exceed the Buying Playbook and escalate through `$belong-inbox`.
+Do not sign contracts, answer seller discovery, move money, or approve exceptions in this skill. Those are autonomous Buying Agent/internal workflow actions unless they exceed the Buying Playbook and escalate through `$belong-inbox`.
 
 If the human wants to temporarily influence an existing request, route to `$belong-steer-buying-agent`. If the human wants durable changes to budget, selection, payment, signature, or escalation rules, route to `$belong-train-buying-agent`.
 

@@ -122,8 +122,6 @@ def train_ready_seller(state_path, name="Maya Seller", org="Atlas Automation", s
         price,
         "--contract-terms",
         "Standard Service Contract/SOW with one revision window.",
-        "--discount-limit",
-        "10%",
         "--scope-limits",
         "No custom software development",
         "--delivery-workflow",
@@ -424,21 +422,6 @@ class BelongSkillPackTests(unittest.TestCase):
             first = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"]
             second = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"]
             self.assertEqual(first[0]["proposal"]["id"], second[0]["proposal"]["id"])
-
-    def test_seller_discount_authority_blocks_excess_discount(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            state_path = Path(tmpdir) / "state.json"
-            train_ready_seller(state_path, price="9000")
-            train_ready_buyer(state_path)
-            request = run_belong(state_path, "buying-request", "--need", "customer success onboarding help", "--budget", "20000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success onboarding")
-            feed = run_belong(state_path, "engage", "--request-id", request["id"], "--count", "1")["objects"]["engagement_feed"]
-            run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need onboarding journey and evidence.")
-            proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
-            blocked = run_belong(state_path, "negotiate", "--proposal-id", proposal["id"], "--instruction", "Apply a large discount.", "--price-delta", "-2000")
-
-            self.assertIn("exceeds Selling Agent Standing Authorization", blocked["summary"])
-            self.assertEqual(blocked["objects"]["inbox_item"]["owner_role"], "seller")
 
     def test_inbox_approved_change_order_preserves_payment_ledger(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1197,7 +1180,7 @@ class BelongSkillPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "state.json"
             with self.assertRaises(AssertionError) as ctx:
-                train_ready_buyer(state_path, human_controlled_actions="negotiate")
+                train_ready_buyer(state_path, human_controlled_actions="meeting")
             self.assertIn("Ineligible human-controlled action", str(ctx.exception))
 
     def test_scenario_b_reserved_buyer_sign_routes_to_human_then_human_signs(self):

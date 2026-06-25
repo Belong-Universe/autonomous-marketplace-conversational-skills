@@ -12,7 +12,7 @@ Use `--state <path>` for isolated tests.
 
 Run `status` and inspect relevant pending inbox items before Production actions unless the state was just inspected. After each state-changing command, inspect pending inbox again and resolve stale, duplicate, superseded, or satisfied items with notes.
 
-Do not run autonomous create, negotiate, sign, Change Order, payment, optimization, or steering commands for a paused agent. Use `inbox`, `audit`, `explain`, `dispute-*`, required notices, or `override --action resume` instead.
+Do not run autonomous create, sign, Change Order, payment, optimization, or steering commands for a paused agent. Use `inbox`, `audit`, `explain`, `dispute-*`, required notices, or `override --action resume` instead.
 
 Before `sign`, `active-action --action change-order`, `active-action --action payment`, or `composite-request`, check Standing Authorization, contract authority, payment rules, and cumulative exposure across reserved proposal exposure, active services, holds, charges, releases, refunds, collections, composite budgets, and pending Change Orders. Escalate through inbox when unclear or exceeded.
 
@@ -29,7 +29,7 @@ Delivery acceptance requires a Deliverable Evidence Package. Direct `payment` re
 - `setup-account --human-name ... --role buyer|seller|both --org-name ... --notifications email,Slack`
 - `update-account [--account-id ...] [--human-name ...] [--set-notifications ...] [--rename-org ... [--org-id ...]] [--remove-role buyer|seller]`
 - `train-buying --human-name ... --org-name ... --goals ... --timeline ... --selection-rules ... --contract-authority ... --payment-rules ... --acceptance-criteria ... --escalation-rules ... [--human-controlled-actions sign,accept,payment,change-order,dispute] --activate`
-- `train-selling --human-name ... --org-name ... --service-name ... --description ... --category ... --buyer-personas ... --use-cases ... --discovery-questions ... --pricing-model ... --price ... --contract-terms ... --discount-limit ... --scope-limits ... --delivery-workflow ... --deliverables ... --evidence-requirements ... --escalation-paths ... --meeting-rules ... --dispute-rules ... --reputation-rules ... [--human-controlled-actions sign,deliver,accept-change-order,payment,dispute] --activate`
+- `train-selling --human-name ... --org-name ... --service-name ... --description ... --category ... --buyer-personas ... --use-cases ... --discovery-questions ... --pricing-model ... --price ... --contract-terms ... --scope-limits ... --delivery-workflow ... --deliverables ... --evidence-requirements ... --escalation-paths ... --meeting-rules ... --dispute-rules ... --reputation-rules ... [--human-controlled-actions sign,deliver,accept-change-order,payment,dispute] --activate`
 - `update-buying-playbook --agent-id ... --changes ... --reason ...`
 - `update-selling-playbook --agent-id ... --service-id ... --changes ... --reason ...`
 
@@ -43,7 +43,6 @@ Delivery acceptance requires a Deliverable Evidence Package. Direct `payment` re
 - `answer-discovery --feed-id ... --answers ... [--as-human]`
 - `create-proposals --feed-id ... [--as-human]`
 - `compare-proposals --request-id ...`
-- `negotiate --proposal-id ... --instruction ... [--price-delta ...] [--seller-approved] [--as-human]`
 - `sign --proposal-id ... [--human-approved] [--as-human]`
 - `composite-request --goal ... --active-service-ids ...`
 - `run-selling-agent [--seller-agent-id ...] [--service-id ...] [--active-service-id ...] [--mode next|pipeline|active-service|optimization]`
@@ -68,13 +67,13 @@ For Change Orders, include the contract/SOW delta, price change, timeline change
 - `payments --owner-role buyer|seller|all [--active-service-id ...]`
 - `active-services --owner-role buyer|seller|all --status active|completed|all`
 - `buying-requests --buyer-agent-id ... --status open|signed|all`
-- `selling-pipeline --seller-agent-id ... [--service-id ...] --status open|proposed|negotiating|signed|all`
+- `selling-pipeline --seller-agent-id ... [--service-id ...] --status open|proposed|signed|all`
 - `steer-buying-agent --agent-id ... --instruction ... --scope general|buying_request|active_service [--object-id ...] [--expires ...]`
 - `steer-selling-agent --agent-id ... --instruction ... --scope general|service|engagement_feed|proposal|active_service [--object-id ...] [--expires ...]`
 - `steer-agent --agent-id ... --instruction ... --scope general|service|buying_request|engagement_feed|proposal|active_service [--object-id ...] [--expires ...]`
 - `resolve-inbox --item-id ... --decision approve|reject|provided|executed --notes ...`
 - `flow-control --flow-id ... --action take|release|pause|resume [--actor ...] [--details ...]`
-- `override --agent-id ... --action pause|resume|direct-instruction|cancel-negotiation|request-meeting|intervene [--flow-id ...]`
+- `override --agent-id ... --action pause|resume|direct-instruction|request-meeting|intervene [--flow-id ...]`
 - `dispute-open --active-service-id ... --opened-by buyer|seller --reason ... --evidence ...`
 - `dispute-respond --dispute-id ... --actor ... --response ...`
 - `judge --dispute-id ... [--decision ...] [--escalate-human --reason ...]`
@@ -96,10 +95,10 @@ Use `steer-buying-agent` or `steer-selling-agent` for human-facing temporary, au
 
 Use `flow-control` for per-flow manual control, separate from agent-wide pause. Every flow (a Buying Request or an Active Service) has one `control_state`: `agent_controlled` (default, the agent acts), `human_controlled` (the human drives this flow and the agent does not act on it), or `paused` (nobody acts; obligations, deadlines, disputes, and notices stay visible in the Inbox). `take` → `human_controlled`, `release`/`resume` → `agent_controlled`, `pause` → `paused`. `override --action intervene --flow-id ...` is the override-driven way to set `human_controlled`. After taking control, the human performs marketplace actions with `--as-human` (the act-directly flow). Per-flow control does not change the agent-wide pause; other flows keep operating.
 
-Scenario B (standing human-performed actions): a Playbook can reserve high-criticality action types as always performed by the human via `--human-controlled-actions` (buyer eligible: `sign,accept,payment,change-order,dispute`; seller eligible: `sign,deliver,accept-change-order,payment,dispute`). When the agent reaches a reserved action it does not execute and does not ask for approval — the runtime routes it to a `human_performed_action` inbox item; the human then takes control of the flow and performs it with `--as-human`. Operational actions (negotiate, discovery, meeting, message, fulfillment-task) are not eligible.
+Scenario B (standing human-performed actions): a Playbook can reserve high-criticality action types as always performed by the human via `--human-controlled-actions` (buyer eligible: `sign,accept,payment,change-order,dispute`; seller eligible: `sign,deliver,accept-change-order,payment,dispute`). When the agent reaches a reserved action it does not execute and does not ask for approval — the runtime routes it to a `human_performed_action` inbox item; the human then takes control of the flow and performs it with `--as-human`. Operational actions (discovery, meeting, message, fulfillment-task) are not eligible.
 
 Use `explain --audit-id ...` for evidence-rich Decision Explanations. Cite audit event, object ID, timestamp, Playbook rule/version, authority and cumulative spend result, inbox approval, contract/payment/evidence links, and outcome. Do not expose raw model reasoning.
 
 ## Scenario
 
-Use `scenario full-lifecycle --reset` for smoke tests and demos. It creates buyer and seller humans, trains agents, runs search, competitive engagement, discovery, seller-signed contract/SOW proposals, negotiation, buyer signature, Active Service delivery, meeting, change order, evidence, acceptance, payment release, rating, dispute, Belong Judge, human judge escalation, provider optimization, selling optimization, training recommendations, composite buying request, agent pause, inbox, reputation, and audit state.
+Use `scenario full-lifecycle --reset` for smoke tests and demos. It creates buyer and seller humans, trains agents, runs search, competitive engagement, discovery, seller-signed contract/SOW proposals, buyer signature, Active Service delivery, meeting, change order, evidence, acceptance, payment release, rating, dispute, Belong Judge, human judge escalation, provider optimization, selling optimization, training recommendations, composite buying request, agent pause, inbox, reputation, and audit state.
