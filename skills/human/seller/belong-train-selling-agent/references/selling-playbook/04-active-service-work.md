@@ -23,6 +23,15 @@ Look for delivery SOPs, onboarding checklists, kickoff decks, project plans, sta
 - Audit requirements
 - Completion and handoff process
 
+## Deliverable / evidence types (runtime)
+
+Every deliverable the Selling Agent submits is one of two runtime kinds (closed set):
+
+- **External URL** (`external_url`): a link to work hosted off-platform. Requires an `https` URL (no credentials, no private/metadata IPs), a description, and a `sha256:` content hash computed off-marketplace.
+- **Platform file** (`platform_file`): a file uploaded to Belong's storage. Belong computes the `sha256` server-side, records its content type and size (up to 5 GiB), and runs an antivirus scan; only a `clean` file is accepted. No URL is attached.
+
+Both kinds always carry a content hash as the non-repudiation anchor. Supporting material (for example a transcript, recording, or photo) is attached using these same two kinds — it is not a separate type.
+
 ## Quality Bar
 
 The section is `Done` when the Selling Agent can coordinate ordinary delivery, request provider work, submit evidence, support acceptance, and keep payment and audit state coherent.
