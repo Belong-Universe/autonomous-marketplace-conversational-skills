@@ -35,22 +35,21 @@ The mocked Skill Pack must cover all resolved PRD/Q&A functionality.
 - Buyer signature within Standing Authorization or human approval
 - Active Service
 - Stripe Payment Stack mock with authorizations, charges, holds, releases, refunds, collections, seller-side platform fee, and merchant-of-record distinction
-- Payment ledger summaries show event type, gross amount, platform fee, seller net, hold/release/refund/collection state, linked contract/SOW or Change Order, and audit path.
-- Budget and authority checks include cumulative spend across proposals, active services, holds, charges, releases, refunds, collections, composite requests, and pending Change Orders.
+- Payment ledger summaries show event type, gross amount, platform fee, seller net, hold/release/refund/collection state, linked contract/SOW, and audit path.
+- Budget and authority checks include cumulative spend across proposals, active services, holds, charges, releases, refunds, collections, and composite requests.
 - Legal Layer mock with signing provider, contract/SOW versions, approvals, obligations, evidence, and audit
 
 ## Production Operation
 
-- Marketplace Inbox with information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, Change Order approval, pause/resume, and operational intervention requests
+- Marketplace Inbox with information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, pause/resume, and operational intervention requests
 - Fulfillment Tasks for provider-side delivery work
 - Human-to-Human Meetings with prep and follow-up
 - Deliverable Evidence Packages
 - Delivery Acceptance: accept, reject, request revision, or dispute
-- Change Orders as signed contract/SOW amendments that state scope, price, timeline, deliverable, approval/signature, payment ledger impact, and acceptance evidence changes
 - Human Override and Agent Pause
-- Agent Pause blocks new autonomous search engagement, proposals, signatures, Change Orders, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
+- Agent Pause blocks new autonomous search engagement, proposals, signatures, payment movement, optimization, and steering while preserving obligations, required notices, deadlines, payment alerts, disputes, and escalations
 - Per-flow control (separate from agent-wide pause): each Buying Request and Active Service has one `control_state` (`agent_controlled`, `human_controlled`, `paused`); `flow-control` and `override --action intervene` change it, the runtime enforces who may act, and the human acts on a `human_controlled` flow with `--as-human`
-- Scenario B standing human-performed actions: a Playbook may reserve high-criticality action types as always human-performed (buyer: sign, accept, payment, change-order, dispute; seller: sign, deliver, accept-change-order, payment, dispute); the agent routes a reserved action to a human_performed_action inbox item instead of executing or asking for approval
+- Scenario B standing human-performed actions: a Playbook may reserve high-criticality action types as always human-performed (buyer: sign, accept, payment, dispute; seller: sign, deliver, payment, dispute); the agent routes a reserved action to a human_performed_action inbox item instead of executing or asking for approval
 - Disputes managed by agents
 - Belong Judge autonomous decision
 - Belong human judge escalation

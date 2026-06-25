@@ -46,13 +46,13 @@ Paused agents do not start new autonomous work. They may preserve obligations, r
 
 Durable Playbook changes require the relevant training/retraining skill. Do not treat Inbox approval, steering, direct instruction, override, or one-off approval as a permanent Playbook change.
 
-Marketplace Inbox is for day-to-day operational work: information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, Change Order approval, pause/resume, and Active Service intervention.
+Marketplace Inbox is for day-to-day operational work: information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, pause/resume, and Active Service intervention.
 
 Buyer-side "I need X" intent creates a Buying Request and starts semantic search. Steering is only temporary, non-durable guidance for an existing agent/object and must stay inside the current Playbook and Standing Authorization.
 
 Continuing autonomous work should not require a human-facing "run" skill. Buying Agents and Selling Agents continue inside their Playbooks and Standing Authorization. Internal workflow skills and runtime tick commands simulate that autonomous work; the normal human product surface is setup, training/retraining, starting buyer intent, checking state, Inbox, steering, payments, active services, and reputation.
 
-Payments must stay ledgered. Show authorization, charge, hold, release, refund, collection, gross amount, seller-side platform fee, seller net, merchant-of-record context, linked contract/SOW or Change Order, and audit path whenever payment state changes.
+Payments must stay ledgered. Show authorization, charge, hold, release, refund, collection, gross amount, seller-side platform fee, seller net, merchant-of-record context, linked contract/SOW, and audit path whenever payment state changes.
 
 Decision Explanations must cite audit evidence, object IDs, timestamps, Playbook rule/version, authority result, inbox approval, contract/payment evidence, and outcome. Do not reveal raw model reasoning.
 
@@ -62,6 +62,4 @@ Maintain coherent local JSON state. Use the runtime rather than inventing one-of
 
 Account -> Agent training -> Validation -> Production -> Buying Request/Search/Engagement -> Discovery -> seller-signed Service Contract/SOW Proposal -> buyer signature -> Active Service -> Delivery/Evidence -> Acceptance/Payment -> Reputation/Optimization.
 
-Disputes, meetings, fulfillment tasks, change orders, inbox items, overrides, pauses, audit events, and explanations can happen throughout Production.
-
-Change Orders are signed contract/SOW amendments. They must state scope, price, timeline, deliverable, approval/signature, payment ledger impact, and acceptance evidence changes. Unsigned amendments stay pending and visible in the Marketplace Inbox.
+Disputes, meetings, fulfillment tasks, inbox items, overrides, pauses, audit events, and explanations can happen throughout Production.

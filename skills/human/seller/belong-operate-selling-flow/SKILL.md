@@ -1,6 +1,6 @@
 ---
 name: belong-operate-selling-flow
-description: Seller-specific human-facing act-directly skill to operate a single Belong flow by hand while the Selling Agent stands down on it. Use when a Service Provider human wants to take manual control of one inbound flow or Active Service and perform marketplace actions directly — answer-side discovery, create seller-signed proposals, deliver, sign a Change Order, move collection/payment, or open a dispute — without disabling the agent on every other flow.
+description: Seller-specific human-facing act-directly skill to operate a single Belong flow by hand while the Selling Agent stands down on it. Use when a Service Provider human wants to take manual control of one inbound flow or Active Service and perform marketplace actions directly — answer-side discovery, create seller-signed proposals, deliver, move collection/payment, or open a dispute — without disabling the agent on every other flow.
 ---
 
 # Belong Operate Selling Flow
@@ -38,7 +38,6 @@ Pre-contract:
 
 Post-contract (Active Service), via `active-action --active-service-id <id> --as-human --action <type>`:
 - Submit a Fulfillment Task or Deliverable Evidence Package and deliver (`fulfillment-task`, `deliver`)
-- Accept a buyer Change Order (`change-order` with `--signed`)
 - Move collection/payment (`payment` with `--payment-type`)
 - Open a dispute (`dispute`)
 - Send a message (`message`) or coordinate a Human-to-Human Meeting (`meeting`)

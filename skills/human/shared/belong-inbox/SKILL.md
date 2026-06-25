@@ -1,6 +1,6 @@
 ---
 name: belong-inbox
-description: "Human-facing day-to-day Belong Marketplace Inbox. Use for operational escalations: information requests, authorization requests, instruction/execution requests, fulfillment tasks, meeting requests, dispute requests, payment exceptions, Change Order approvals, notifications, human overrides, direct operational instructions, agent pause/resume, approval/rejection, cancellation, and Active Service intervention."
+description: "Human-facing day-to-day Belong Marketplace Inbox. Use for operational escalations: information requests, authorization requests, instruction/execution requests, fulfillment tasks, meeting requests, dispute requests, payment exceptions, notifications, human overrides, direct operational instructions, agent pause/resume, approval/rejection, cancellation, and Active Service intervention."
 ---
 
 # Belong Inbox
@@ -34,7 +34,6 @@ Handle all Marketplace Request types:
 - Meeting
 - Dispute
 - Payment exception
-- Change Order approval
 - Pause/resume
 - Operational intervention
 - Human-performed action (a high-criticality action the Playbook reserves for the human, Scenario B)
@@ -64,7 +63,7 @@ Notifications are mocked as channel messages that send the human back to the age
   decision" item.
 - Human-performed action (Scenario B): the agent reached an action type the Playbook
   reserves as always human-performed (for example sign, payment, accept, deliver,
-  change-order, or dispute). This is not an approval request — the agent will not execute
+  or dispute). This is not an approval request — the agent will not execute
   it. Do not resolve it here; route the human to `$belong-operate-buying-flow` (buyer) or
   `$belong-operate-selling-flow` (seller) to take control of the flow and perform the
   action with `--as-human`. To stop reserving that action type, change the rule in
@@ -72,7 +71,7 @@ Notifications are mocked as channel messages that send the human back to the age
 
 ## Resolve Or Override
 
-Use `resolve-inbox` when the human provides information, approves/rejects authorization, executes an instruction, completes fulfillment, responds to a meeting, handles a dispute, approves a payment exception, signs or rejects a Change Order, pauses/resumes an agent, or intervenes in an Active Service.
+Use `resolve-inbox` when the human provides information, approves/rejects authorization, executes an instruction, completes fulfillment, responds to a meeting, handles a dispute, approves a payment exception, pauses/resumes an agent, or intervenes in an Active Service.
 
 Use `override` when the human wants to:
 
@@ -83,7 +82,7 @@ Use `override` when the human wants to:
 
 Paused agents stop new autonomous actions but preserve active obligations, urgent escalations, deadlines, payment notices, disputes, and required notices.
 
-Enforce pause before every guided action. A paused agent cannot start new search engagement, proposal creation, signature, Change Order, payment movement, optimization, or steering. Resume only after explicit human direction and a fresh pending-inbox check.
+Enforce pause before every guided action. A paused agent cannot start new search engagement, proposal creation, signature, payment movement, optimization, or steering. Resume only after explicit human direction and a fresh pending-inbox check.
 
 ## Per-Flow Control (separate from agent-wide pause)
 

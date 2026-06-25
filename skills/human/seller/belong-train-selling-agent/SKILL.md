@@ -189,7 +189,7 @@ Capture the pricing model (a fixed price in phase 1), the fixed price in USD, se
 
 ### Legal And Contracts
 
-Capture standard Service Contract/SOW terms, deliverables, evidence requirements, acceptance criteria, contract authority, scope boundaries, required signatures, Change Order triggers, legal exceptions, and terms the agent must never change without approval.
+Capture standard Service Contract/SOW terms, deliverables, evidence requirements, acceptance criteria, contract authority, scope boundaries, required signatures, legal exceptions, and terms the agent must never change without approval.
 
 Disclosure discipline is cross-cutting: it applies to every section. The agent should give buyers a clear, usable answer on pricing, capacity, authority, timelines, and other clients while keeping the underlying limits, costs, thresholds, and policy internal. When in doubt about whether something is shareable, treat it as internal and escalate.
 
@@ -247,9 +247,9 @@ Scheduling mechanics the agent must follow:
 
 ### Escalations
 
-Capture ordinary fulfillment escalations, exception thresholds, information requests, authorization requests, payment exceptions, Change Order approvals, agent pause/resume rules, notification channels, and who in the Service Provider organization owns each escalation path.
+Capture ordinary fulfillment escalations, exception thresholds, information requests, authorization requests, payment exceptions, agent pause/resume rules, notification channels, and who in the Service Provider organization owns each escalation path.
 
-Also capture any high-criticality action types reserved as **always performed by the human** (Scenario B): a third authority outcome beyond "agent executes" and "agent escalates for approval". When the agent reaches one, it hands the action to the Service Provider human, who performs it directly with `$belong-operate-selling-flow`. Only this fixed set of seller action types is eligible: `sign` (seller-signed proposal), `deliver`, `accept-change-order`, `payment` (collection), `dispute`. Operational actions (discovery, meeting, message, fulfillment-task) are not eligible. This is a standing rule per action type, never arbitrary sub-flow slicing; treat it as authority-critical and confirm it live before activation. Map the confirmed set to `--human-controlled-actions`.
+Also capture any high-criticality action types reserved as **always performed by the human** (Scenario B): a third authority outcome beyond "agent executes" and "agent escalates for approval". When the agent reaches one, it hands the action to the Service Provider human, who performs it directly with `$belong-operate-selling-flow`. Only this fixed set of seller action types is eligible: `sign` (seller-signed proposal), `deliver`, `payment` (collection), `dispute`. Operational actions (discovery, meeting, message, fulfillment-task) are not eligible. This is a standing rule per action type, never arbitrary sub-flow slicing; treat it as authority-critical and confirm it live before activation. Map the confirmed set to `--human-controlled-actions`.
 
 ### Disputes And Reputation Rules
 
@@ -289,7 +289,7 @@ When the playbook is complete, map the sections into the runtime:
 - Legal And Contracts -> `--contract-terms`, `--scope-limits`, `--deliverables`, `--evidence-requirements`
 - Way Of Work During An Active Service -> `--delivery-workflow`, plus relevant deliverables and evidence requirements
 - Human-To-Human Meetings -> `--meeting-rules`
-- Escalations -> `--escalation-paths`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `deliver`, `accept-change-order`, `payment`, `dispute`)
+- Escalations -> `--escalation-paths`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `deliver`, `payment`, `dispute`)
 - Disputes And Reputation Rules -> `--dispute-rules`, `--reputation-rules`
 - Capacity And Objective -> delivery capacity maps onto `--availability` and at-capacity behavior onto `--escalation-paths`; the optimization objective has no dedicated seller runtime flag (the buyer playbook has `--optimization-goals`), so keep it in the playbook and reflect it through `--reputation-rules`
 

@@ -38,9 +38,7 @@ Use the runtime through buyer-created feeds when available:
 
 If a buyer needs a human workshop, service-specific human action, unusual scope, legal term, payment exception, collections exception, or sensitive dispute, create or resolve Marketplace Inbox items through `$belong-inbox`.
 
-Do not let a paused Selling Agent create new proposals, initiate Change Orders, optimize, or trigger new payment activity. It may still preserve active obligations, required notices, disputes, payment alerts, deadlines, and human escalations.
-
-For post-signature changes, use internal Active Service actions. Change Orders must amend the signed contract/SOW and state scope, price, timeline, deliverable, approval, and payment ledger impact. Human review happens through `$belong-inbox`.
+Do not let a paused Selling Agent create new proposals, optimize, or trigger new payment activity. It may still preserve active obligations, required notices, disputes, payment alerts, deadlines, and human escalations.
 
 ## Output
 

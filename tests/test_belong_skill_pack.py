@@ -183,7 +183,6 @@ class BelongSkillPackTests(unittest.TestCase):
             self.assertTrue(active["delivery"]["evidence_packages"])
             self.assertTrue(active["delivery"]["acceptance"])
             self.assertTrue(active["meetings"])
-            self.assertTrue(active["change_orders"])
             self.assertTrue(state["training_recommendations"])
             self.assertTrue(any(item.get("judge_decision") for item in state["disputes"].values()))
             self.assertTrue(any(item.get("human_judge_escalation") for item in state["disputes"].values()))
@@ -423,69 +422,6 @@ class BelongSkillPackTests(unittest.TestCase):
             second = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"]
             self.assertEqual(first[0]["proposal"]["id"], second[0]["proposal"]["id"])
 
-    def test_inbox_approved_change_order_preserves_payment_ledger(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            state_path = Path(tmpdir) / "state.json"
-            active = execute_basic_active_service(state_path)
-            run_belong(
-                state_path,
-                "active-action",
-                "--active-service-id",
-                active["id"],
-                "--action",
-                "change-order",
-                "--actor",
-                "Buying Agent and Selling Agent",
-                "--details",
-                "Add an enablement workshop.",
-                "--price-change",
-                "3000",
-            )
-            state = json.loads(state_path.read_text())
-            inbox_id = next(item_id for item_id, item in state["inbox"].items() if item["title"] == "Approve Change Order" and item["status"] == "pending")
-            run_belong(state_path, "resolve-inbox", "--item-id", inbox_id, "--decision", "approve", "--actor", "Nia Buyer", "--notes", "Approved workshop amendment.")
-            state = json.loads(state_path.read_text())
-            active_after = state["active_services"][active["id"]]
-            ledger = active_after["payment_ledger"]
-
-            self.assertEqual(ledger["contract_amount"], 12000.0)
-            self.assertEqual(ledger["authorized"], 12000.0)
-            self.assertEqual(ledger["collected"], 0.0)
-            self.assertEqual(ledger["platform_fee_accrued"], 0.0)
-            self.assertTrue(any(payment["type"] == "authorization_delta" for payment in state["payments"].values()))
-
-    def test_pending_change_order_counts_against_signature_authority(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            state_path = Path(tmpdir) / "state.json"
-            active = execute_basic_active_service(state_path, buyer_budget="15000", buyer_max_spend="15000")
-            run_belong(
-                state_path,
-                "active-action",
-                "--active-service-id",
-                active["id"],
-                "--action",
-                "change-order",
-                "--actor",
-                "Buying Agent and Selling Agent",
-                "--details",
-                "Large scope expansion.",
-                "--price-change",
-                "7000",
-            )
-            train_ready_seller(state_path, service="CS Evidence Review", price="6000")
-            request = run_belong(state_path, "buying-request", "--need", "customer success evidence review", "--budget", "15000", "--timeline", "30 days")["objects"]["buying_request"]
-            run_belong(state_path, "search", "--request-id", request["id"], "--query", "customer success evidence review")
-            state = json.loads(state_path.read_text())
-            service_id = next(service_id for service_id, service in state["services"].items() if service["name"] == "CS Evidence Review")
-            feed = run_belong(state_path, "engage", "--request-id", request["id"], "--service-ids", service_id)["objects"]["engagement_feed"]
-            run_belong(state_path, "answer-discovery", "--feed-id", feed["id"], "--answers", "Need additional evidence review.")
-            proposal = run_belong(state_path, "create-proposals", "--feed-id", feed["id"])["objects"]["proposals"][0]["proposal"]
-            blocked = run_belong(state_path, "sign", "--proposal-id", proposal["id"])
-
-            self.assertIn("exceeds Standing Authorization", blocked["summary"])
-            authority = blocked["objects"]["inbox_item"]["metadata"]["authority_check"]
-            self.assertEqual(authority["current_spend"], 16000.0)
-
     def test_composite_budget_and_active_ownership_are_enforced(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "state.json"
@@ -549,17 +485,15 @@ class BelongSkillPackTests(unittest.TestCase):
                 "--active-service-id",
                 active["id"],
                 "--action",
-                "change-order",
+                "meeting",
                 "--actor",
-                "Buying Agent and Selling Agent",
+                "Buying Agent",
                 "--details",
-                "Add manager training.",
-                "--price-change",
-                "1000",
+                "Kickoff alignment meeting.",
             )
             state = json.loads(state_path.read_text())
-            inbox_id = next(item_id for item_id, item in state["inbox"].items() if item["title"] == "Approve Change Order" and item["status"] == "pending")
-            run_belong(state_path, "resolve-inbox", "--item-id", inbox_id, "--decision", "approve", "--actor", "Nia Buyer", "--notes", "Approved amendment.")
+            inbox_id = next(item_id for item_id, item in state["inbox"].items() if item["title"] == "Prepare for Human-to-Human Meeting" and item["status"] == "pending")
+            run_belong(state_path, "resolve-inbox", "--item-id", inbox_id, "--decision", "approve", "--actor", "Nia Buyer", "--notes", "Meeting prepared.")
             state = json.loads(state_path.read_text())
             inbox_audit_id = next(
                 event_id
@@ -582,7 +516,7 @@ class BelongSkillPackTests(unittest.TestCase):
             judge_explanation = run_belong(state_path, "explain", "--audit-id", judge_audit_id)["objects"]["decision_explanation"]
             self.assertIsNotNone(judge_explanation["playbook_version"])
 
-    def test_paused_agent_blocks_optimization_payment_and_change_order(self):
+    def test_paused_agent_blocks_optimization_and_payment(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "state.json"
             active = execute_basic_active_service(state_path)
@@ -593,7 +527,6 @@ class BelongSkillPackTests(unittest.TestCase):
             for command in [
                 ("optimization", "--agent-id", buyer_agent_id),
                 ("active-action", "--active-service-id", active["id"], "--action", "payment", "--payment-type", "hold"),
-                ("active-action", "--active-service-id", active["id"], "--action", "change-order", "--price-change", "1000", "--signed"),
             ]:
                 code, payload = run_belong_raw(state_path, *command)
                 self.assertNotEqual(code, 0)
@@ -1039,7 +972,6 @@ class BelongSkillPackTests(unittest.TestCase):
             "Human-to-Human Meeting",
             "Deliverable Evidence Package",
             "Delivery Acceptance",
-            "Change Order",
             "Dispute",
             "Belong Judge",
             "Agent Reputation",

@@ -9,7 +9,7 @@ description: Human-facing read/check payment and bank view for the mocked Belong
 
 Use this when a Service Provider human or buyer-side human asks about bank setup, transactions, payment status, collections, refunds, holds, platform fees, seller net, or the Stripe Payment Stack mock.
 
-This is a read/check skill. It must not directly move money, authorize payments, charge, release, refund, collect, sign contracts, approve Change Orders, or change payment rules.
+This is a read/check skill. It must not directly move money, authorize payments, charge, release, refund, collect, sign contracts, or change payment rules.
 
 ## Guided Flow
 
@@ -23,7 +23,7 @@ Show:
 - Gross amount, seller-side platform fee, seller net
 - Authorization, charge, hold, release, refund, and collection state
 - Merchant-of-record distinction
-- Linked Service Contract/SOW, Change Order, Active Service, and Audit Log path
+- Linked Service Contract/SOW, Active Service, and Audit Log path
 
 ## Route Actions
 

@@ -1,6 +1,6 @@
 ---
 name: belong-check-active-services
-description: Human-facing read/check Active Service view for the mocked Belong marketplace. Use for Active Services, obligations, delivery state, Fulfillment Tasks, Human-to-Human Meetings, Deliverable Evidence Packages, Delivery Acceptance, Change Orders, Disputes, risks, payment ledger summaries, and linked Marketplace Inbox items.
+description: Human-facing read/check Active Service view for the mocked Belong marketplace. Use for Active Services, obligations, delivery state, Fulfillment Tasks, Human-to-Human Meetings, Deliverable Evidence Packages, Delivery Acceptance, Disputes, risks, payment ledger summaries, and linked Marketplace Inbox items.
 ---
 
 # Belong Check Active Services
@@ -9,7 +9,7 @@ description: Human-facing read/check Active Service view for the mocked Belong m
 
 Use this when a Service Provider human or buyer-side human asks what is happening with Active Services.
 
-This is a read/check skill. It must not directly accept delivery, reject delivery, request revisions, open disputes, move money, create Change Orders, sign contracts, submit evidence, or complete Fulfillment Tasks.
+This is a read/check skill. It must not directly accept delivery, reject delivery, request revisions, open disputes, move money, sign contracts, submit evidence, or complete Fulfillment Tasks.
 
 ## Guided Flow
 
@@ -23,7 +23,6 @@ Show:
 - Deliverable Evidence Package state
 - Delivery Acceptance state
 - Human-to-Human Meeting prep and follow-up state
-- Change Order state
 - Dispute and Belong Judge state
 - Payment ledger summary
 - Linked Marketplace Inbox items
@@ -44,7 +43,7 @@ Show:
 This is a read-only view, so nothing changes. Summarize:
 
 - Which Active Service(s) the human is looking at, by owner role and status
-- Current lifecycle phase: delivery, evidence, acceptance, payment, Change Order, meeting, or dispute
+- Current lifecycle phase: delivery, evidence, acceptance, payment, meeting, or dispute
 - The most relevant state: what is done, what is in progress, and what is blocked or waiting
 - Any linked Marketplace Inbox items that need the human, and the Audit Log path for detail
 - Anything notable the structured view does not capture: risks, anomalies, or approaching deadlines

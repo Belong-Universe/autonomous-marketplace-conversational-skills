@@ -26,7 +26,7 @@ Run `explain --audit-id ...` for a Decision Explanation. Explain from audit evid
 - Relevant instruction or event
 - Playbook rule and version
 - Authority check, including pause state and cumulative spend when relevant
-- Contract/SOW version, Change Order, or payment ledger entry when relevant
+- Contract/SOW version or payment ledger entry when relevant
 - Marketplace evidence with object IDs, timestamps, inbox approvals, messages, deliverables, acceptance mapping, disputes, or ratings
 - Outcome
 
@@ -38,7 +38,7 @@ Explain the Marketplace Privacy Promise: private by default; private Playbooks, 
 
 Explain the Marketplace Learning Boundary: aggregated/anonymized outcomes, reputation, benchmarks, search/conversion patterns, and dispute statistics can improve ranking and recommendations without exposing private transaction data.
 
-Explain Belong Monetization when payment terms appear: for now, Belong earns a seller-side transaction/platform fee because the marketplace is the Service Provider's automated revenue channel. The Service Provider remains merchant of record. Payment explanations must show ledger event type, gross amount, platform fee, seller net, hold/release/refund/collection state, and linked contract/SOW or Change Order.
+Explain Belong Monetization when payment terms appear: for now, Belong earns a seller-side transaction/platform fee because the marketplace is the Service Provider's automated revenue channel. The Service Provider remains merchant of record. Payment explanations must show ledger event type, gross amount, platform fee, seller net, hold/release/refund/collection state, and linked contract/SOW.
 
 ## Output
 

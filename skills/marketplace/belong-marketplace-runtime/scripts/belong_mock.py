@@ -231,8 +231,8 @@ def ensure_flow_actor_can_act(flow: dict[str, Any], as_human: bool, action: str)
 # These are the only action types a Playbook may mark as human-performed; operational actions
 # (discovery, meeting, message, fulfillment-task) are not eligible.
 ELIGIBLE_HUMAN_CONTROLLED_ACTIONS = {
-    "buyer": {"sign", "accept", "payment", "change-order", "dispute"},
-    "seller": {"sign", "deliver", "accept-change-order", "payment", "dispute"},
+    "buyer": {"sign", "accept", "payment", "dispute"},
+    "seller": {"sign", "deliver", "payment", "dispute"},
 }
 
 
@@ -259,8 +259,6 @@ def active_action_human_token(action: str, role: str) -> str | None:
         return "accept"
     if action == "payment":
         return "payment"
-    if action == "change-order":
-        return "change-order" if role == "buyer" else "accept-change-order"
     if action == "dispute":
         return "dispute"
     return None
@@ -1780,7 +1778,6 @@ def command_compare_proposals(args: argparse.Namespace, state: dict[str, Any]) -
 def buyer_agent_exposure(
     state: dict[str, Any],
     buyer_agent_id: str,
-    exclude_change_order_id: str | None = None,
     exclude_composite_request_id: str | None = None,
     exclude_buying_request_id: str | None = None,
 ) -> float:
@@ -1793,11 +1790,6 @@ def buyer_agent_exposure(
         contract = state["contracts"].get(active.get("contract_id"))
         if contract:
             total += float(contract["commercial_terms"].get("amount", 0))
-        for change_order in active.get("change_orders", []):
-            if change_order.get("id") == exclude_change_order_id:
-                continue
-            if change_order.get("status") in {"awaiting_signature", "awaiting_authorization"}:
-                total += max(0.0, float(change_order.get("price_change", 0)))
     proposal_exposure_by_request: dict[str, float] = {}
     for proposal in state["proposals"].values():
         if proposal.get("status") not in {"seller_signed_waiting_buyer_signature", "seller_signed_revised_waiting_buyer_signature"}:
@@ -2003,7 +1995,6 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
         "payment_ledger": payment_ledger_for_contract(contract),
         "messages": [],
         "meetings": [],
-        "change_orders": [],
         "created_at": now(),
     }
     state["active_services"][active_service_id] = active_service
@@ -2072,7 +2063,7 @@ def command_sign(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, A
     control_state = active_service["control_state"]
     summary = f"Executed Service Contract/SOW and created Active Service {active_service_id}."
     next_steps = [
-        "Internal agent capabilities can now coordinate fulfillment tasks, meetings, evidence, Delivery Acceptance, payments, and Change Orders.",
+        "Internal agent capabilities can now coordinate fulfillment tasks, meetings, evidence, Delivery Acceptance, and payments.",
         "Use belong-inbox to resolve provider fulfillment requests.",
         "Use belong-check-reputation to inspect the audit trail and reputation events.",
     ]
@@ -2142,8 +2133,6 @@ def active_required_roles(action: str, payment_type: str | None = None) -> tuple
         if payment_type in {"charge", "collection"}:
             return {"seller"}, {"seller"}
         return {"buyer"}, {"buyer"}
-    if action == "change-order":
-        return {"buyer", "seller"}, {"buyer", "seller"}
     if action in {"dispute", "meeting", "message"}:
         return {"buyer", "seller"}, {"buyer", "seller"}
     return {"buyer", "seller"}, set()
@@ -2187,115 +2176,6 @@ def ensure_payment_lifecycle_ready(active: dict[str, Any], payment_type: str, hu
             raise ValueError(f"Payment event {payment_type} requires buyer acceptance or explicit human-approved exception.")
     if payment_type == "refund" and not human_approved and active.get("status") not in {"disputed", "revision_requested", "rejected"}:
         raise ValueError("Refund requires dispute/revision context or explicit human-approved exception.")
-
-
-def apply_signed_change_order(
-    state: dict[str, Any],
-    active: dict[str, Any],
-    change_order: dict[str, Any],
-    actor: str,
-    human_approved: bool,
-    source: str,
-    as_human: bool = False,
-) -> dict[str, Any]:
-    ensure_active_actor_can_act(state, active, actor, "change-order", as_human=as_human)
-    contract = state["contracts"][active["contract_id"]]
-    buyer_agent = state["agents"][active["buyer_agent_id"]]
-    old_amount = float(contract["commercial_terms"]["amount"])
-    new_amount = round(old_amount + float(change_order.get("price_change", 0)), 2)
-    max_spend = float(buyer_agent["playbook"]["standing_authorization"].get("max_spend", 0))
-    current_spend = buyer_agent_exposure(state, active["buyer_agent_id"], exclude_change_order_id=change_order.get("id"))
-    projected_spend = round(current_spend - old_amount + new_amount, 2)
-    authority_check = {
-        "rule": "Buying Agent cumulative spend limit for Change Order",
-        "threshold": max_spend,
-        "current_spend": current_spend,
-        "current_contract_amount": old_amount,
-        "change_order_delta": float(change_order.get("price_change", 0)),
-        "projected_spend": projected_spend,
-        "result": "passed" if projected_spend <= max_spend else ("human_approved_exception" if (human_approved or as_human) else "blocked_requires_buyer_human_authorization"),
-    }
-    if projected_spend > max_spend and not (human_approved or as_human):
-        change_order["status"] = "awaiting_authorization"
-        inbox = add_inbox(
-            state,
-            "buyer",
-            "authorization",
-            "Approve Change Order spend above Buying Agent Standing Authorization",
-            f"Projected spend {projected_spend} exceeds max spend {max_spend} for Change Order {change_order['id']}.",
-            "Active Service",
-            active["id"],
-            urgency="high",
-            metadata={"change_order_id": change_order["id"], "authority_check": authority_check},
-        )
-        audit(
-            state,
-            actor,
-            "change_order.blocked_authority",
-            "Active Service",
-            active["id"],
-            change_order["summary"],
-            {
-                "change_order": change_order,
-                "contract_before": contract,
-                "payment_ledger": active.get("payment_ledger"),
-                "playbook_version": buyer_agent.get("playbook_version"),
-                "playbook_rule": buyer_agent["playbook"].get("contract_authority"),
-                "authority_check": authority_check,
-                "inbox_item_id": inbox["id"],
-            },
-        )
-        return {"blocked": True, "inbox_item": inbox, "authority_check": authority_check}
-
-    contract_before = deepcopy(contract)
-    ledger = active.setdefault("payment_ledger", payment_ledger_for_contract(contract))
-    ledger_before = deepcopy(ledger)
-    update_contract_amount(contract, new_amount, f"{source} Change Order {change_order['id']}: {change_order['summary']}")
-    change_order["status"] = "signed"
-    change_order["signed_at"] = now()
-    change_order["signed_by"] = actor
-    change_order["contract_version_after"] = contract["version"]
-    ledger["contract_amount"] = round(new_amount, 2)
-    ledger["currency"] = contract["commercial_terms"].get("currency", "USD")
-    ledger["payment_schedule"] = payment_schedule(new_amount, contract["commercial_terms"].get("payment_terms"))
-    ledger["merchant_of_record"] = contract["commercial_terms"].get("merchant_of_record", ledger.get("merchant_of_record", "Service Provider"))
-    ledger["belong_role"] = "workflow/payment facilitator, not merchant of record"
-    auth_delta = max(0.0, round(new_amount - float(ledger.get("authorized", 0)), 2))
-    signature_gap = max(0.0, round(float(ledger["payment_schedule"].get("signature_due", 0)) - float(ledger.get("collected", 0)), 2))
-    payment_events = []
-    if auth_delta:
-        payment_events.append(record_payment_event(state, active, "authorization_delta", auth_delta, f"Change Order {change_order['id']} authorized contract amount delta."))
-    if signature_gap:
-        payment_events.append(record_payment_event(state, active, "collection", signature_gap, f"Change Order {change_order['id']} collected signature milestone delta."))
-    ledger["platform_fee_accrued"] = round(max(0.0, (ledger["collected"] - ledger["refunded"]) * DEFAULT_PLATFORM_FEE_RATE), 2)
-    ledger["seller_net_accrued"] = round(max(0.0, (ledger["collected"] - ledger["refunded"]) * (1 - DEFAULT_PLATFORM_FEE_RATE)), 2)
-    audit(
-        state,
-        actor,
-        "change_order.applied",
-        "Active Service",
-        active["id"],
-        change_order["summary"],
-        {
-            "change_order": change_order,
-            "contract_before": contract_before,
-            "contract": contract,
-            "ledger_before": ledger_before,
-            "payment_ledger": deepcopy(ledger),
-            "payment_events": payment_events,
-            "playbook_version": buyer_agent.get("playbook_version"),
-            "playbook_rule": "Change Orders are signed Service Contract/SOW amendments and must pass contract/payment authority.",
-            "authority_check": authority_check,
-            "source": source,
-        },
-    )
-    return {
-        "blocked": False,
-        "contract": contract,
-        "payment_ledger": ledger,
-        "payment_events": payment_events,
-        "authority_check": authority_check,
-    }
 
 
 def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, Any]:
@@ -2455,70 +2335,6 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
         }
         payment = payment_for_active(state, active["id"], payment_type, details, authority_check)
         created["payment_event"] = payment
-    elif action == "change-order":
-        contract = state["contracts"][active["contract_id"]]
-        change_order = {
-            "id": next_id(state, "change"),
-            "summary": details or "Change order requested",
-            "scope_delta": details or "Change order requested",
-            "price_change": float(args.price_change or 0),
-            "timeline_change": args.timeline_change,
-            "deliverable_delta": split_list(args.deliverable),
-            "acceptance_evidence_delta": split_list(args.acceptance_mapping) or split_list(args.evidence_required),
-            "payment_impact": {
-                "price_change": float(args.price_change or 0),
-                "currency": state["contracts"][active["contract_id"]]["commercial_terms"].get("currency", "USD"),
-                "requires_ledger_update": bool(args.signed),
-            },
-            "signature_state": {
-                "buyer": "signed" if args.signed else "pending",
-                "seller": "signed" if args.signed else "pending",
-                "provider": "Mock Signing Provider (provider choice open for production)",
-            },
-            "status": "signed" if args.signed else "awaiting_signature",
-            "signing_provider": "Mock Signing Provider (provider choice open for production)",
-            "created_at": now(),
-        }
-        active["change_orders"].append(change_order)
-        created["change_order"] = change_order
-        if args.signed:
-            applied = apply_signed_change_order(state, active, change_order, actor, bool(args.human_approved), "direct-signed", as_human=as_human)
-            created.update(applied)
-            if applied.get("blocked"):
-                created["change_order"] = change_order
-                return output(
-                    "Change Order was not applied because it exceeds Standing Authorization.",
-                    {"active_service": active, **created},
-                    [
-                        "Resolve the authorization inbox item as the buyer-side human or lower the Change Order amount.",
-                        "Paused agents still cannot initiate contract or payment changes.",
-                    ],
-                )
-            resolve_matching_inbox(
-                state,
-                "Active Service",
-                active["id"],
-                "Approve Change Order",
-                actor,
-                f"Change Order {change_order['id']} signed and applied to contract/payment terms.",
-            )
-        else:
-            add_inbox(state, "both", "authorization", "Approve Change Order", change_order["summary"], "Active Service", active["id"], urgency="high")
-        audit(
-            state,
-            actor,
-            "change_order.created",
-            "Active Service",
-            active["id"],
-            change_order["summary"],
-            {
-                "change_order": change_order,
-                "contract": contract,
-                "payment_ledger": active.get("payment_ledger"),
-                "playbook_rule": "Change Orders are signed Service Contract/SOW amendments.",
-                "authority_check": {"result": "signed" if args.signed else "pending_authorization", "rule": "Change Order signature/approval required"},
-            },
-        )
     elif action == "meeting":
         meeting = {
             "id": next_id(state, "meeting"),
@@ -2526,7 +2342,7 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
             "purpose": details or "Human-to-Human Meeting",
             "requested_by": actor,
             "prep": "Agent prep: summarize context, goals, risks, open decisions, and recommended asks before the meeting.",
-            "follow_up": "Agent follow-up: capture outcomes, update tasks, send contract/change-order/dispute actions if needed.",
+            "follow_up": "Agent follow-up: capture outcomes, update tasks, send contract/dispute actions if needed.",
             "status": "scheduled",
             "urgency": getattr(args, "urgency", None) or "normal",
             "created_at": now(),
@@ -2547,7 +2363,7 @@ def command_active_action(args: argparse.Namespace, state: dict[str, Any]) -> di
         {"active_service": active, **created},
         [
             "Inspect the Marketplace Inbox for new requests.",
-            "Continue delivery, acceptance, payment, meeting, change-order, or dispute work as needed.",
+            "Continue delivery, acceptance, payment, meeting, or dispute work as needed.",
             "Ask for an Audit Log or Decision Explanation if the human wants to understand what changed.",
         ],
     )
@@ -2743,7 +2559,7 @@ def command_inbox(args: argparse.Namespace, state: dict[str, Any]) -> dict[str, 
         f"Found {len(items)} Marketplace Inbox item(s).",
         {"inbox": items},
         [
-            "Resolve information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, Change Order, pause/resume, or operational intervention requests.",
+            "Resolve information, authorization, instruction/execution, fulfillment, meeting, dispute, payment exception, pause/resume, or operational intervention requests.",
             "Notifications are mocked as reminders to return to the agentic application and open this inbox.",
             "Agents should resolve what they can autonomously and escalate only when their Playbook or Standing Authorization requires it.",
         ],
@@ -2766,7 +2582,7 @@ def command_resolve_inbox(args: argparse.Namespace, state: dict[str, Any]) -> di
     linked_id = item.get("linked_object_id")
     resolution_details: dict[str, Any] = {
         "inbox_item": item,
-        "playbook_rule": "Marketplace Inbox resolution applies day-to-day human information, authorization, instruction, fulfillment, meeting, dispute, payment exception, Change Order, pause/resume, or operational intervention decisions.",
+        "playbook_rule": "Marketplace Inbox resolution applies day-to-day human information, authorization, instruction, fulfillment, meeting, dispute, payment exception, pause/resume, or operational intervention decisions.",
         "authority_check": {"result": "resolved", "rule": item.get("request_type")},
     }
     if linked_type == "Active Service" and linked_id in state["active_services"]:
@@ -2787,14 +2603,6 @@ def command_resolve_inbox(args: argparse.Namespace, state: dict[str, Any]) -> di
                     meeting["prep_notes"] = args.notes
                     meeting["follow_up_status"] = "pending_after_meeting"
                     resolution_details["meeting"] = meeting
-                    break
-        elif item["title"] == "Approve Change Order" and args.decision.lower() in {"approve", "approved", "sign", "signed"}:
-            for change_order in reversed(active.get("change_orders", [])):
-                if change_order.get("status") == "awaiting_signature":
-                    applied = apply_signed_change_order(state, active, change_order, args.actor, True, f"inbox:{args.item_id}")
-                    resolution_details.update(applied)
-                    resolution_details["playbook_rule"] = "Human approved a Change Order as a signed Service Contract/SOW amendment."
-                    resolution_details["authority_check"] = applied.get("authority_check")
                     break
     elif linked_type == "Dispute" and linked_id in state["disputes"]:
         dispute = state["disputes"][linked_id]
@@ -3211,7 +3019,6 @@ def command_active_services(args: argparse.Namespace, state: dict[str, Any]) -> 
                     "evidence_packages": len(active.get("delivery", {}).get("evidence_packages", [])),
                     "acceptance_events": len(active.get("delivery", {}).get("acceptance", [])),
                     "meetings": len(active.get("meetings", [])),
-                    "change_orders": len(active.get("change_orders", [])),
                 },
                 "payment_ledger": active.get("payment_ledger"),
             }
@@ -3475,9 +3282,6 @@ def command_run_buying_agent(args: argparse.Namespace, state: dict[str, Any]) ->
                     acceptance_mapping=None,
                     deliverable=None,
                     payment_type=None,
-                    price_change=None,
-                    timeline_change=None,
-                    signed=False,
                     human_approved=False,
                     meeting_mode=None,
                 ),
@@ -3490,7 +3294,7 @@ def command_run_buying_agent(args: argparse.Namespace, state: dict[str, Any]) ->
             {"active_service": active},
             [
                 "Use belong-check-active-services to inspect obligations and pending evidence.",
-                "Use belong-inbox if the buyer-side human needs to authorize a meeting, Change Order, dispute, or payment exception.",
+                "Use belong-inbox if the buyer-side human needs to authorize a meeting, dispute, or payment exception.",
             ],
         )
 
@@ -3606,9 +3410,6 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
                     acceptance_mapping=None,
                     deliverable=None,
                     payment_type=None,
-                    price_change=None,
-                    timeline_change=None,
-                    signed=False,
                     human_approved=False,
                     meeting_mode=None,
                 ),
@@ -3633,9 +3434,6 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
                     acceptance_mapping=args.acceptance_mapping or ",".join(evidence or deliverables),
                     deliverable=args.deliverable or (deliverables[0] if deliverables else "Service deliverable"),
                     payment_type=None,
-                    price_change=None,
-                    timeline_change=None,
-                    signed=False,
                     human_approved=False,
                     meeting_mode=None,
                 ),
@@ -3648,7 +3446,7 @@ def command_run_selling_agent(args: argparse.Namespace, state: dict[str, Any]) -
             {"active_service": active},
             [
                 "Use belong-check-active-services to inspect evidence and acceptance state.",
-                "Use belong-inbox for seller-side dispute, meeting, Change Order, or payment exceptions.",
+                "Use belong-inbox for seller-side dispute, meeting, or payment exceptions.",
             ],
         )
 
@@ -4126,15 +3924,14 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
     preferred = proposals[0]["proposal"]["id"]
     command_compare_proposals(argparse.Namespace(request_id=request["id"]), state)
     active = command_sign(argparse.Namespace(proposal_id=preferred, human_approved=False), state)["objects"]["active_service"]
-    command_active_action(argparse.Namespace(active_service_id=active["id"], action="fulfillment-task", actor="Selling Agent", details="Schedule kickoff workshop and collect existing onboarding materials.", owner="Maya Seller", due="tomorrow", context="Kickoff prep", evidence_required="calendar invite,source files", files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode=None, human_approved=False), state)
-    command_active_action(argparse.Namespace(active_service_id=active["id"], action="meeting", actor="Buying Agent", details="Kickoff workshop for customer onboarding sprint.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode="video", human_approved=False), state)
-    command_active_action(argparse.Namespace(active_service_id=active["id"], action="change-order", actor="Buying Agent and Selling Agent", details="Add one stakeholder enablement session.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change="750", timeline_change="extend by 3 days", signed=True, meeting_mode=None, human_approved=False), state)
-    command_active_action(argparse.Namespace(active_service_id=active["id"], action="deliver", actor="Selling Agent", details="Delivered onboarding journey, handoff playbook, and dashboard evidence.", owner=None, due=None, context=None, evidence_required=None, files="journey-map.pdf,playbook.docx", links="https://mock.belong/evidence/dashboard", acceptance_mapping="journey map delivered,playbook delivered,dashboard delivered", deliverable="CS Onboarding Sprint Evidence Package", payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode=None, human_approved=False), state)
-    command_active_action(argparse.Namespace(active_service_id=active["id"], action="accept", actor="Buying Agent", details="Evidence matches SOW acceptance criteria.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, price_change=None, timeline_change=None, signed=False, meeting_mode=None, human_approved=False), state)
+    command_active_action(argparse.Namespace(active_service_id=active["id"], action="fulfillment-task", actor="Selling Agent", details="Schedule kickoff workshop and collect existing onboarding materials.", owner="Maya Seller", due="tomorrow", context="Kickoff prep", evidence_required="calendar invite,source files", files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, meeting_mode=None, human_approved=False), state)
+    command_active_action(argparse.Namespace(active_service_id=active["id"], action="meeting", actor="Buying Agent", details="Kickoff workshop for customer onboarding sprint.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, meeting_mode="video", human_approved=False), state)
+    command_active_action(argparse.Namespace(active_service_id=active["id"], action="deliver", actor="Selling Agent", details="Delivered onboarding journey, handoff playbook, and dashboard evidence.", owner=None, due=None, context=None, evidence_required=None, files="journey-map.pdf,playbook.docx", links="https://mock.belong/evidence/dashboard", acceptance_mapping="journey map delivered,playbook delivered,dashboard delivered", deliverable="CS Onboarding Sprint Evidence Package", payment_type=None, meeting_mode=None, human_approved=False), state)
+    command_active_action(argparse.Namespace(active_service_id=active["id"], action="accept", actor="Buying Agent", details="Evidence matches SOW acceptance criteria.", owner=None, due=None, context=None, evidence_required=None, files=None, links=None, acceptance_mapping=None, deliverable=None, payment_type=None, meeting_mode=None, human_approved=False), state)
     command_rate(argparse.Namespace(agent_id=active["selling_agent_id"], score="5", notes="Strong evidence and fast escalation.", linked_object_type="Active Service", linked_object_id=active["id"]), state)
-    dispute = command_dispute_open(argparse.Namespace(active_service_id=active["id"], opened_by="seller", reason="Mock post-acceptance dispute over a late extra request outside scope.", evidence="contract scope,change order,meeting notes"), state)["objects"]["dispute"]
-    command_dispute_respond(argparse.Namespace(dispute_id=dispute["id"], actor="Buying Agent", response="Buyer acknowledges extra request requires separate Change Order."), state)
-    command_judge(argparse.Namespace(dispute_id=dispute["id"], decision="extra_request_requires_new_change_order_no_refund", escalate_human=False, reason=None), state)
+    dispute = command_dispute_open(argparse.Namespace(active_service_id=active["id"], opened_by="seller", reason="Mock post-acceptance dispute over a late extra request outside scope.", evidence="contract scope,meeting notes"), state)["objects"]["dispute"]
+    command_dispute_respond(argparse.Namespace(dispute_id=dispute["id"], actor="Buying Agent", response="Buyer acknowledges the extra request falls outside the signed scope."), state)
+    command_judge(argparse.Namespace(dispute_id=dispute["id"], decision="extra_request_outside_scope_no_refund", escalate_human=False, reason=None), state)
     command_judge(argparse.Namespace(dispute_id=dispute["id"], decision=None, escalate_human=True, reason="Seller wants Belong human judge review for pricing precedent."), state)
     command_optimization(argparse.Namespace(agent_id=active["buyer_agent_id"]), state)
     command_optimization(argparse.Namespace(agent_id=active["selling_agent_id"]), state)
@@ -4305,7 +4102,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     active = sub.add_parser("active-action")
     active.add_argument("--active-service-id", required=True)
-    active.add_argument("--action", choices=["fulfillment-task", "deliver", "accept", "reject", "revise", "dispute", "payment", "change-order", "meeting", "message"], required=True)
+    active.add_argument("--action", choices=["fulfillment-task", "deliver", "accept", "reject", "revise", "dispute", "payment", "meeting", "message"], required=True)
     active.add_argument("--actor", default=None)
     active.add_argument("--details", default="")
     active.add_argument("--owner", default=None)
@@ -4317,9 +4114,6 @@ def build_parser() -> argparse.ArgumentParser:
     active.add_argument("--acceptance-mapping", default=None)
     active.add_argument("--deliverable", default=None)
     active.add_argument("--payment-type", default=None)
-    active.add_argument("--price-change", default=None)
-    active.add_argument("--timeline-change", default=None)
-    active.add_argument("--signed", action="store_true")
     active.add_argument("--human-approved", action="store_true")
     active.add_argument("--as-human", action="store_true")
     active.add_argument("--meeting-mode", default=None)

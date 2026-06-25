@@ -16,7 +16,6 @@ Approval: Not requested
 - Information request rules
 - Authorization request rules
 - Payment exception rules
-- Change Order approval rules
 - Agent pause/resume rules
 - Notification channels
 - Internal owners for each escalation path

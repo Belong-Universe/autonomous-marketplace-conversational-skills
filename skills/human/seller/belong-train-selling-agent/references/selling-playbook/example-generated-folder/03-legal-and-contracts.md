@@ -18,7 +18,6 @@ Approval: Not requested
 - Contract authority
 - Scope boundaries
 - Required signatures
-- Change Order triggers
 - Legal exceptions
 - Terms the agent must never change without approval
 

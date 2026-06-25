@@ -1,6 +1,6 @@
 ---
 name: belong-operate-buying-flow
-description: Buyer-specific human-facing act-directly skill to operate a single Belong flow by hand while the Buying Agent stands down on it. Use when a buyer-side human wants to take manual control of one Buying Request or Active Service and perform marketplace actions directly — answer discovery, sign, accept delivery, move payment, sign a Change Order, or open a dispute — without disabling the agent on every other flow.
+description: Buyer-specific human-facing act-directly skill to operate a single Belong flow by hand while the Buying Agent stands down on it. Use when a buyer-side human wants to take manual control of one Buying Request or Active Service and perform marketplace actions directly — answer discovery, sign, accept delivery, move payment, or open a dispute — without disabling the agent on every other flow.
 ---
 
 # Belong Operate Buying Flow
@@ -39,11 +39,10 @@ Pre-contract (Buying Request):
 Post-contract (Active Service), via `active-action --active-service-id <id> --as-human --action <type>`:
 - Accept delivery (`accept`), request revision (`revise`), reject (`reject`)
 - Move payment (`payment` with `--payment-type`)
-- Sign a Change Order (`change-order` with `--signed`)
 - Open a dispute (`dispute`)
 - Send a message (`message`) or coordinate a Human-to-Human Meeting (`meeting`)
 
-Authority thresholds (max-spend on sign, change-order spend) are bypassed because the human is performing the action directly; this IS the human authorization. Role validation still applies — a buyer-side human cannot perform seller-only actions.
+Authority thresholds (max-spend on sign) are bypassed because the human is performing the action directly; this IS the human authorization. Role validation still applies — a buyer-side human cannot perform seller-only actions.
 
 ## Release Control When Done
 

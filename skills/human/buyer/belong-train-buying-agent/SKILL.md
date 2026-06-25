@@ -71,7 +71,7 @@ Build the sections in the order above. Each summary below is the headline; the f
 2. **Budget And Payment** — total budget, max spend, currency, payment rules and timing, when spend needs human approval. `references/buying-playbook/02-budget-and-payment.md`
 3. **Provider Preferences** — preferred/blocked providers, required constraints, relationship weighting, and the due diligence documents a provider must supply. `references/buying-playbook/03-provider-preferences.md`
 4. **Selection And RFP Rules** — direct vs competitive, RFP structure, ranking and proposal comparison, plus the Provider Due Diligence gate/journey. `references/buying-playbook/04-selection-and-rfp-rules.md`
-5. **Legal And Contracts** — contract/SOW authority, required terms, acceptance criteria, Change Order triggers, the cross-cutting disclosure discipline, and modeling a required provider invoice as an acceptance item. `references/buying-playbook/05-legal-and-contracts.md`
+5. **Legal And Contracts** — contract/SOW authority, required terms, acceptance criteria, the cross-cutting disclosure discipline, and modeling a required provider invoice as an acceptance item. `references/buying-playbook/05-legal-and-contracts.md`
 6. **Escalations** — thresholds, exceptions, pause/resume, channels, who owns each path, and any high-criticality action types reserved as always human-performed (Scenario B). `references/buying-playbook/06-escalations.md`
 7. **Disputes And Reputation** — dispute posture, evidence standards, deadlines, rating behavior. `references/buying-playbook/07-disputes-and-reputation.md`
 8. **Optimization Objective** — what to optimize across providers and the Provider Optimization goals (light for one-off, heavy for recurring). `references/buying-playbook/08-optimization-objective.md`
@@ -94,7 +94,7 @@ When the playbook is complete, map the sections into the runtime:
 - Provider Preferences -> `--provider-preferences`, `--blocked-providers`
 - Selection And RFP Rules -> `--selection-rules`, `--rfp-rules`, `--proposal-comparison-rules`
 - Legal And Contracts -> `--contract-authority`, `--acceptance-criteria`
-- Escalations -> `--escalation-rules`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `accept`, `payment`, `change-order`, `dispute`)
+- Escalations -> `--escalation-rules`; action types reserved as always human-performed -> `--human-controlled-actions` (comma-separated; eligible: `sign`, `accept`, `payment`, `dispute`)
 - Disputes And Reputation -> `--dispute-posture`, `--rating-rules`
 - Optimization Objective -> `--optimization-goals`
 - Human-To-Human Meetings -> no dedicated buyer runtime flag (the seller playbook has `--meeting-rules`); keep it in the playbook and reflect scheduling escalations through `--escalation-rules`

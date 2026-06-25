@@ -9,7 +9,7 @@ description: Seller-specific human-facing read/check view for inbound Selling Ag
 
 Use this when a Service Provider human asks what is happening before a buyer signs: Service listing state, inbound buyer engagements, discovery, proposals, billing readiness, or seller approvals.
 
-This is a read/check skill. It must not create proposals, sign Change Orders, submit evidence, move money, or change the Service Playbook.
+This is a read/check skill. It must not create proposals, submit evidence, move money, or change the Service Playbook.
 
 ## Guided Flow
 

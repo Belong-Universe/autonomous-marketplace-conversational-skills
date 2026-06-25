@@ -6,7 +6,7 @@ This section defines what the Selling Agent may put into seller-signed Service C
 
 ## Source Signals
 
-Look for MSA, SOW, order forms, NDAs, DPAs, security terms, procurement notes, standard clauses, redlines, signature policies, acceptance terms, and Change Order templates.
+Look for MSA, SOW, order forms, NDAs, DPAs, security terms, procurement notes, standard clauses, redlines, signature policies, and acceptance terms.
 
 ## Required Fields
 
@@ -18,12 +18,11 @@ Look for MSA, SOW, order forms, NDAs, DPAs, security terms, procurement notes, s
 - Contract authority and terms the agent may use autonomously
 - Terms the agent may never change without approval
 - Legal exceptions and escalation owners
-- Change Order triggers, approval rules, and signature requirements
 - Data, privacy, security, confidentiality, IP, compliance, and liability boundaries when relevant
 
 ## Quality Bar
 
-The section is `Done` when the Selling Agent can produce a seller-signed proposal inside approved terms, identify legal exceptions, trigger Change Orders correctly, and keep a clear contract trail.
+The section is `Done` when the Selling Agent can produce a seller-signed proposal inside approved terms, identify legal exceptions, and keep a clear contract trail.
 
 ## Guardrails
 

@@ -45,9 +45,9 @@ Treat each Proposal as the seller-signed Service Contract/SOW awaiting buyer sig
 Guide:
 
 - `compare-proposals`
-- `sign` only after checking Standing Authorization, contract authority, payment rules, paused state, and cumulative spend across this request, related composite requests, active services, holds, charges, and pending Change Orders
+- `sign` only after checking Standing Authorization, contract authority, payment rules, paused state, and cumulative spend across this request, related composite requests, active services, holds, and charges
 
-Escalate through `$belong-inbox` when the best action exceeds budget, creates unclear cumulative spend, changes legal terms, requires a payment exception, or needs buyer judgment. Buyer signature creates the Active Service. Any scope, price, timeline, or deliverable change after signature belongs to internal Active Service actions as a Change Order.
+Escalate through `$belong-inbox` when the best action exceeds budget, creates unclear cumulative spend, changes legal terms, requires a payment exception, or needs buyer judgment. Buyer signature creates the Active Service.
 
 When payment state changes at signature, summarize the ledger expectation: authorization or charge, gross amount, seller-side platform fee, seller net, payer, merchant-of-record distinction, and audit path.
 

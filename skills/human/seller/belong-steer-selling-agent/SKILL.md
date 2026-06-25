@@ -19,7 +19,7 @@ Use this when a Service Provider human wants a temporary, auditable nudge such a
 
 Steering is non-durable. It does not change the Service Playbook, Standing Authorization, contract/SOW authority, payment rules, legal terms, pricing, scope limits, collections rules, escalation thresholds, or reputation rules.
 
-Do not use steering to move money, sign contracts, approve Change Orders, bypass Agent Pause, expand authority, or permanently alter a Playbook.
+Do not use steering to move money, sign contracts, bypass Agent Pause, expand authority, or permanently alter a Playbook.
 
 Route instead:
 

@@ -1,6 +1,6 @@
 # Legal And Contracts
 
-Capture contract/SOW authority, who can sign at what value, required terms and protections, Delivery Acceptance criteria, Change Order triggers, and terms the agent must never accept without approval. For a single decision-maker, the signing-authority hierarchy collapses to "this human signs up to their own budget"; record that explicitly instead of a value hierarchy.
+Capture contract/SOW authority, who can sign at what value, required terms and protections, Delivery Acceptance criteria, and terms the agent must never accept without approval. For a single decision-maker, the signing-authority hierarchy collapses to "this human signs up to their own budget"; record that explicitly instead of a value hierarchy.
 
 If the buyer requires a provider invoice for their own accounting or tax records, model it
 as part of the acceptance criteria / Deliverable Evidence Package rather than a new object:
