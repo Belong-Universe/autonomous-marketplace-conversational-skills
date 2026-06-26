@@ -10,16 +10,21 @@ Look for pricing sheets, proposals, order forms, invoices, finance notes, and sa
 
 ## Required Fields
 
-- Pricing model (for phase 1 this is a fixed price)
+- Pricing model: one of the five Belong marketplace models (closed set) — `fixed`, `hourly`, `milestone`, `recurring`, `consumption`. This is declared on the Service/Listing as the *shape* of the price; no amount ever lives on the Listing.
 - Fixed price (the currency is always USD)
+- For a `recurring` model, the billing cycle (`monthly`, `quarterly`, or `annual`)
 - Seller-side platform fee awareness and seller net explanation
 - Payment readiness assumptions
 - Payment exception escalation path
 
-In phase 1 there is one payment modality: escrow. The full amount is held when the
-contract is signed and released to the seller when the buyer accepts the deliverable.
-There is no starting price, no billing cycle, and no collections policy, because there
-are no negotiations or discounts in this phase.
+The pricing model declares how the Service intends to charge, mirroring the real
+marketplace's closed set. Today the only model Belong authors end-to-end (priced offer
+through payment) is `fixed` with escrow: the full amount is held when the contract is
+signed and released to the seller when the buyer accepts the deliverable. The other
+models (`hourly`, `milestone`, `recurring`, `consumption`) — and the billing cycle a
+`recurring` model carries — are declarable now but not yet driven through the
+offer/payment flow, so do not promise a buyer a billing cycle or usage-based charge the
+marketplace cannot execute yet.
 
 ## Quality Bar
 

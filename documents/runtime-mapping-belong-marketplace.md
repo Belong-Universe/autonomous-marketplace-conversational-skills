@@ -50,17 +50,17 @@ conversational skill drives the CLI directly on behalf of a Company.
 | membership role (implicit) | **Company Membership** role: `owner\|admin\|developer\|finance\|support\|buyer\|approver` | Org & Roles | Our mock has no explicit role set; 7 canonical roles exist on the real side. |
 | Selling Agent | **Provider Agent** | Onboarding / Provider Gateway | Has `agentUrl`, Agent Card at `/.well-known/agent.json`, Signing Secret, API-key scopes. |
 | Buying Agent | *(no equivalent)* | — | Buyer acts as User/Company via CLI/MCP. Buying-side autonomy lives only in our conversational layer. |
-| `service` / svc | **Listing** | Catalog Integration + Universe | Declares exactly one **PricingModel** + `scoping_required`; **never carries a price**. |
+| `service` / svc | **Listing** | Catalog Integration + Universe | Declares exactly one **PricingModel** from the closed set `{fixed, hourly, milestone, recurring, consumption}` + `scoping_required`; **never carries a price**. Mock (Stage 1): records the declared `pricing_model` (same 5-value closed set); the active priced/escrow flow stays `fixed`. |
 | service tags/description | Catalog data (title, description, embedding) | Universe | Held Universe-side; Backend keeps only a thin anchor. |
 | Buying Request (direct) | **Quote Request** | Negotiation | Customer-initiated request for a commercial offer against a Listing. |
 | Buying Request (competitive) | **Broadcast RFP** → N **RFP Invitations** | Negotiation | Fans one requirements set to N qualifying providers; each replies with a **Sealed Quote**. |
 | Discovery Questionnaire | **Service Scoping** | Service Scoping | Optional per Listing (`scoping_required`); scope summary + requirements + acceptance criteria. |
-| Proposal | **Quote** | Negotiation | Commercial offer: `amount` (minor units) + `currency` + `expiry/TTL`. May be a **revision** in a counter chain. |
+| Proposal | **Quote** | Negotiation | Commercial offer: `amount` (minor units) + `currency` + `expiry/TTL`. May be a **revision** in a counter chain. The quote perimeter authors `fixed` today; `milestone` carries declared `milestoneTerms`, but authoring non-fixed models through the perimeter is FUTURE work (`quote.ts` defaults to `fixed`). |
 | Negotiation round | **Counter-offer / Revision / Round** | Negotiation | Immutable revision chain (`parent_quote_id`, `round_index`, `root_quote_id`, per-round TTL). |
 | Sign / acceptance | **Accept Quote** → creates **MSA + SOW** | Negotiation → Contract Engine | Accept fires SOW creation inside the same transaction. |
 | Contract | **MSA (Master Service Agreement)** | Contract Engine | Created implicitly on the first SOW between a (buyer, provider) pair; holds governing law/jurisdiction. |
 | Active Service | **SOW (Statement of Work)** | Contract Engine | Owns delivery, progress, SLA, settlement; own state machine. |
-| milestone | SOW milestone (PricingModel `milestone`) | Contract Engine | Real supports fixed/hourly/milestone/recurring/consumption billing shapes. |
+| milestone | SOW milestone (PricingModel `milestone`) | Contract Engine | Real supports fixed/hourly/milestone/recurring/consumption billing shapes. Billing cycle lives per-model: `recurring` carries a required `billingInterval` (`monthly\|quarterly\|annual`) + `checkpointCadence`; `hourly` carries a `cadence` (`weekly\|bi_weekly\|monthly`). |
 | deliverable | **Deliverable** | Contract Engine | `external_url` + `description` + `content_hash` (`sha256:<64 hex>`). Both kinds wired: `external_url` (off-platform link) and `platform_file` (uploaded to Belong storage, server-computed sha256 + AV scan, size up to 5 GiB). |
 | accept/reject/revise deliverable | **Customer Request** (kind `choice`, options `accept\|request_revision\|reject`) | Contract Engine | **No direct accept/reject** — acceptance flows ONLY through answering a Choice. |
 | revise thread | **Deliverable Feedback** (`comment\|revision_request\|resolution`) | Contract Engine | Append-only thread. |

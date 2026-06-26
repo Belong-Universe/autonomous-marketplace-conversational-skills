@@ -185,7 +185,7 @@ Capture what the Service is, who it is for, the buyer pain or outcome, proof poi
 
 ### Monetization Models
 
-Capture the pricing model (a fixed price in phase 1), the fixed price in USD, seller-side platform fee awareness and seller net, payment readiness assumptions, the escrow modality (the full amount is held at signature and released to the seller when the buyer accepts the deliverable), and when payment exceptions require human approval.
+Capture the pricing model — one of the five Belong marketplace models (`fixed`, `hourly`, `milestone`, `recurring`, `consumption`), declared as the shape of the price — the fixed price in USD, the billing cycle if the model is `recurring`, seller-side platform fee awareness and seller net, payment readiness assumptions, the escrow modality (the full amount is held at signature and released to the seller when the buyer accepts the deliverable; `fixed` + escrow is the only model authored end-to-end today), and when payment exceptions require human approval.
 
 ### Legal And Contracts
 

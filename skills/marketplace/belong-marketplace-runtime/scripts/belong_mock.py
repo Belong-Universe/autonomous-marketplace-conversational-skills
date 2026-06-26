@@ -17,6 +17,10 @@ from typing import Any
 STATE_VERSION = "2026-06-08.5"
 DEFAULT_PLATFORM_FEE_RATE = 0.08
 ESCROW_PAYMENT_TERMS = "Escrow: the full amount is held at signature and released to the seller when the buyer accepts the deliverable."
+# The real marketplace declares a Listing's pricing model from this closed set (no money on the
+# Listing — only the shape). Stage 1 convergence records the declared model on every Service; the
+# active priced/escrow flow stays `fixed` (the only model the real quote perimeter authors today).
+PRICING_MODELS = ("fixed", "hourly", "milestone", "recurring", "consumption")
 STOPWORDS = {
     "and",
     "are",
@@ -774,10 +778,27 @@ def command_update_account(args: argparse.Namespace, state: dict[str, Any]) -> d
     )
 
 
+def normalize_pricing_model(value: Any) -> str:
+    """Map a declared pricing model onto the real marketplace closed set.
+
+    Legacy `fixed_fee` maps to the real `fixed`; an unknown model is rejected.
+    """
+    model = value.strip() if isinstance(value, str) else value
+    if not model:
+        model = "fixed"
+    if model == "fixed_fee":
+        model = "fixed"
+    if model not in PRICING_MODELS:
+        raise ValueError(
+            f"unknown pricing_model {model!r}; expected one of {', '.join(PRICING_MODELS)}"
+        )
+    return model
+
+
 def service_price(args: argparse.Namespace) -> dict[str, Any]:
     amount = float(args.price or 5000)
     return {
-        "pricing_model": args.pricing_model,
+        "pricing_model": normalize_pricing_model(getattr(args, "pricing_model", "fixed")),
         "price": amount,
         "currency": "USD",
         "payment_terms": ESCROW_PAYMENT_TERMS,
@@ -1133,7 +1154,7 @@ def seed_marketplace_catalog(state: dict[str, Any]) -> None:
                 "What evidence will prove the work is accepted?",
             ],
             "pricing": {
-                "pricing_model": "fixed_fee",
+                "pricing_model": "fixed",
                 "price": item["price"],
                 "currency": "USD",
                 "payment_terms": ESCROW_PAYMENT_TERMS,
@@ -3898,7 +3919,7 @@ def run_full_lifecycle(state: dict[str, Any]) -> dict[str, Any]:
         buyer_personas="Head of CS, founder, operations leader",
         use_cases="new customer onboarding, churn reduction, implementation process",
         discovery_questions="What product and customer segment are we onboarding?;What churn or activation target matters?;What systems and stakeholders are involved?",
-        pricing_model="fixed_fee",
+        pricing_model="fixed",
         price="9000",
         contract_terms="Standard Service Contract/SOW with escrow payment.",
         scope_limits="No custom software development beyond workflow templates",
@@ -4046,7 +4067,7 @@ def build_parser() -> argparse.ArgumentParser:
     sell.add_argument("--buyer-personas", default="")
     sell.add_argument("--use-cases", default="")
     sell.add_argument("--discovery-questions", default="")
-    sell.add_argument("--pricing-model", default="fixed_fee")
+    sell.add_argument("--pricing-model", choices=PRICING_MODELS, default="fixed")
     sell.add_argument("--price", default="5000")
     sell.add_argument("--contract-terms", default="")
     sell.add_argument("--scope-limits", default="")
