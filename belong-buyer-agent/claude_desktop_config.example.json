@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "belong-buyer-agent": {
+      "command": "npx",
+      "args": [
+        "tsx",
+        "/Users/simetrik/Documents/experiments/a4e/autonomous-marketplace-conversational-skills/belong-buyer-agent/src/mcp-server.ts"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-..."
+      }
+    }
+  }
+}

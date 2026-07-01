@@ -1,0 +1,20 @@
+flowchart TD
+  USER["Usuario"]
+  GTM["GTM Agent<br/>(puente / orquestador)"]
+
+  subgraph PLUGIN["Belong Marketplace Plugin"]
+    SK["Skills<br/>(prospectar, discovery,<br/>proponer, cobrar, escalar)"]
+    TL["Tools<br/>(acciones del marketplace)"]
+    CN["Connectors<br/>(CRM, Zendesk, Calendly...)"]
+  end
+
+  subgraph KNOW["Playbook (conocimiento)"]
+    CORE["GTM Core Playbook<br/>(9 secciones, compartido)"]
+    PROF["Service Profiles (N)<br/>value-prop · ICP · pricing · scope"]
+  end
+
+  USER <--> GTM
+  GTM -->|usa / invoca| PLUGIN
+  GTM -->|lee| CORE
+  GTM -->|carga 1 activo| PROF
+  CORE -.->|binding por slots| PROF

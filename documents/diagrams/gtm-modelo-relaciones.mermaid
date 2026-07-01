@@ -1,0 +1,40 @@
+flowchart TB
+  subgraph DOCS["Documentos del Playbook"]
+    CORE["GTM Core Playbook<br/>(nivel compañia)"]
+    PROF["Service Profiles<br/>(1 por servicio)"]
+    IFACE["Interface / Handoff Contracts"]
+    AUTH["Authority Model /<br/>Standing Authorization"]
+  end
+
+  subgraph AGENTS["Agentes"]
+    GTM["GTM Agent<br/>vende · contrata · security · cobra · CS"]
+    IMPL["Implementation Agent<br/>(otro compañero)"]
+    BUY["Buying Agent<br/>(contraparte)"]
+    JUDGE["Belong Judge<br/>(disputas)"]
+  end
+
+  subgraph ENT["Entidades del marketplace"]
+    SVC["Service"]
+    PROP["Proposal = Contrato/SOW<br/>firmado por el seller"]
+    AS["Active Service"]
+    PAY["Payment / Escrow"]
+    INBOX["Marketplace Inbox"]
+    REP["Reputation"]
+  end
+
+  CORE --> GTM
+  PROF --> GTM
+  IFACE --> GTM
+  AUTH --> GTM
+
+  GTM <-->|discovery · propuesta · negociacion| BUY
+  GTM -->|publica| SVC
+  GTM -->|envia| PROP
+  PROP -->|firma del buyer crea| AS
+  GTM -->|handoff de entrega| IMPL
+  IMPL -->|evidencia de entrega| AS
+  GTM -->|expectativa de cobro| PAY
+  GTM -->|escala fuera de autoridad| INBOX
+  GTM -.->|acciones reservadas a humano:<br/>sign · deliver · payment · dispute| INBOX
+  AS --> REP
+  GTM -->|disputa| JUDGE

@@ -1,0 +1,32 @@
+{
+  "name": "belong-buyer-agent",
+  "version": "1.0.0",
+  "description": "Buyer agent autónomo para el marketplace Belong Universe (Mastra + Anthropic). MCP mockeado, LLM real.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "mastra dev",
+    "mcp": "tsx src/mcp-server.ts",
+    "mcp:http": "tsx src/mcp-server-http.ts",
+    "build": "mastra build",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.46.0",
+    "@mastra/loggers": "^1.2.0",
+    "@mastra/mcp": "^1.12.0",
+    "dotenv": "^17.0.0",
+    "mastra": "^1.15.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

@@ -1,0 +1,36 @@
+flowchart LR
+  subgraph CORE["GTM Core Playbook (secciones)"]
+    S1["01 Positioning & Value"]
+    S2["02 Qualification"]
+    S3["03 Monetization rules"]
+    S4["04 Legal & Contracts"]
+    S5["05 Security & Diligence"]
+    S6["06 Meetings"]
+    S7["07 Escalations & Authority"]
+    S8["08 Disputes & Reputation"]
+    S9["09 Capacity & Objective"]
+  end
+
+  subgraph PROF["Service Profile (campos)"]
+    F1["value-prop / proof-points"]
+    F2["ICP / discovery / casos-a-evitar"]
+    F3["pricing-model / price"]
+    F4["scope / deliverables"]
+    F5["compliance-reqs (opcional)"]
+    F9["availability / lead-time"]
+  end
+
+  S1 --> F1
+  S2 --> F2
+  S3 --> F3
+  S4 --> F4
+  S5 -.opcional.-> F5
+  S9 --> F9
+
+  S6 -.->|solo core| X6[" "]
+  S7 -.->|solo core*| X7[" "]
+  S8 -.->|solo core| X8[" "]
+
+  style X6 fill:transparent,stroke:transparent
+  style X7 fill:transparent,stroke:transparent
+  style X8 fill:transparent,stroke:transparent

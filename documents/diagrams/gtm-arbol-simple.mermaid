@@ -1,0 +1,36 @@
+flowchart TD
+  GTM["GTM Agent"]
+
+  CAP["Capacidades (Skills)<br/>lo que sabe HACER"]
+  CORE["GTM Core Playbook<br/>lo que SABE (compartido)"]
+  PROF["Service Profiles (N)<br/>parametros por servicio"]
+  IFACE["Interfaces / Handoffs<br/>lo que USA por fuera"]
+
+  GTM --> CAP
+  GTM --> CORE
+  GTM --> PROF
+  GTM --> IFACE
+
+  CAP --> C1["Prospectar / Discovery"]
+  CAP --> C2["Proponer / Contratar"]
+  CAP --> C3["Cobrar"]
+  CAP --> C4["CS / Soporte"]
+
+  CORE --> S1["01 Positioning & Value"]
+  CORE --> S2["02 Qualification"]
+  CORE --> S3["03 Monetization rules"]
+  CORE --> S4["04 Legal & Contracts"]
+  CORE --> S5["05 Security & Diligence"]
+  CORE --> S6["06 Meetings"]
+  CORE --> S7["07 Escalations & Authority"]
+  CORE --> S8["08 Disputes & Reputation"]
+  CORE --> S9["09 Capacity & Objective"]
+
+  PROF --> SP["Service Profile"]
+  SP --> P1["Value Prop"]
+  SP --> P2["ICP"]
+  SP --> P3["Pricing"]
+  SP --> P4["Scope"]
+
+  IFACE --> I1["Implementation Agent"]
+  IFACE --> I2["Support N3 → Ingenieria"]

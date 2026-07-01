@@ -59,6 +59,10 @@ Always re-confirm the authority-critical fields live before activation, never ac
 
 Run `train-buying` with `--activate` once the human confirms and the Playbook is complete.
 
+## Reference Playbook
+
+When the user asks for the playbook structure, wants examples, or the section draft needs a quality bar, read `references/buying-playbook/index.md`, then load only the relevant linked page. The reference is wiki-style and covers source prefill, all ten buyer playbook sections, the generated playbook folder, checkpoints, approval gates, consistency checks, and exactly one good and one bad example. The reference centers on the pre-contract quotation flow: need, sourcing, discovery, seller-signed proposals, comparison, negotiation, and signature.
+
 ## Generated Playbook Folder
 
 Once the buyer is known, create the markdown playbook folder and its full file set with `TBD` placeholders, then update each file as its section is drafted, revised, approved, and mapped to runtime. Default path `.belong/buying-playbooks/<org-or-buyer-slug>/` (organization slug for a company, buyer's name slug for an individual). Folder path and required file set: `references/buying-playbook/generated-playbook-folder.md`.
